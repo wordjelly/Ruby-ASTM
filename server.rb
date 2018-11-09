@@ -1,13 +1,16 @@
 require 'rubygems'
 require 'eventmachine'
 require "active_support/all"
+require "json"
+require "redis"
 require "/home/bhargav/Github/ruby_astm/line"
 require "/home/bhargav/Github/ruby_astm/frame"
-require "/home/bhargav/Github/ruby_astm/record"
+require "/home/bhargav/Github/ruby_astm/order"
 require "/home/bhargav/Github/ruby_astm/lab_interface"
 require "/home/bhargav/Github/ruby_astm/header"
 require "/home/bhargav/Github/ruby_astm/patient"
-require "/home/bhargav/Github/ruby_astm/record"
+require "/home/bhargav/Github/ruby_astm/result"
+
 
 include LabInterface
 
@@ -18,7 +21,14 @@ $start_text = "[2]"
 $end_text = "[3]"
 $record_end = "[13]"
 $frame_end = "[10]"
-
+begin
+	$redis = Redis.new
+	puts " ----------- started redis, bound to global variable $redis --------------- "
+rescue => e
+	puts " ------------ ERROR STARTING REDIS ---------------"
+	puts e.to_s
+	puts " ------------ ERROR ENDS -------------------------"
+end
 =begin
 EventMachine.run {
   EventMachine::start_server $SERVER_IP, $SERVER_PORT, LabInterface

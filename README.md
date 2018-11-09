@@ -42,14 +42,14 @@ The gem, basically parses incoming data, and dumps each patient order into redis
 			"orders" => [
 				{
 					"id" => "the patient id",
-					"timestamp" => 1321312091092,
 					"results" => [
 						{
 							"name" => "Blood Count",
 							"value" => "10",
 							"units" => "10^3 pg/ml",
-							"flags" => ["a","b","c"],
-							"status" => "FINAL/FAILED/PRELIMINARY"
+							"flags" => "N",
+							"dilution" => 1,
+							"timestamp" => "2018-11-06T09:35:09.000+05:30"
 						}
 					]
 				}

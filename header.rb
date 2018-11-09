@@ -7,7 +7,18 @@ class Header
 		self.patients = []
 	end
 
+	## pushes each patient into a redis list called "patients"
 	def commit
-		puts "committing header"
+		self.patients.map{|patient| $redis.lpush("patients",patient.to_json)}
+		puts JSON.pretty_generate(JSON.parse(self.to_json))
 	end
+
+	def to_json
+        hash = {}
+        self.instance_variables.each do |x|
+            hash[x] = self.instance_variable_get x
+        end
+        return hash.to_json
+    end
+
 end

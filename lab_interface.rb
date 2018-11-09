@@ -1,7 +1,7 @@
 module LabInterface
 
 	ACK = "\x06"
-  mattr_accessor :machines
+  mattr_accessor :headers
 
 	def receive_data(data)
 		  text = data.bytes.to_a.pack('c*')
@@ -10,7 +10,6 @@ module LabInterface
    	end
 
    	def process_text(text)
-   		#puts "text is: #{text}"
 		  line = Line.new({:text => text})
       process_type(line)
    	end
@@ -19,19 +18,19 @@ module LabInterface
       case line.type
       when "Header"
         header = Header.new(line)
-        self.machines ||= []
-        self.machines << header
+        self.headers ||= []
+        self.headers << header
       when "Patient"
         patient = Patient.new(line)
-        self.machines[-1].patients << patient
+        self.headers[-1].patients << patient
       when "Order"
         order = Order.new(line)
-        self.machines[-1].patients[-1].orders << order
+        self.headers[-1].patients[-1].orders << order
       when "Result"
         result = Result.new(line)
-        self.machines[-1].patientw[-1].orders[-1].results << result
+        self.headers[-1].patients[-1].orders[-1].results[result.name] = result
       when "Terminator"
-        self.machines.each do |header|
+        self.headers.each do |header|
           header.commit
         end
       end
