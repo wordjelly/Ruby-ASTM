@@ -21,6 +21,8 @@ $start_text = "[2]"
 $end_text = "[3]"
 $record_end = "[13]"
 $frame_end = "[10]"
+$mappings = JSON.parse(IO.read("mappings.json"))
+
 begin
 	$redis = Redis.new
 	puts " ----------- started redis, bound to global variable $redis --------------- "

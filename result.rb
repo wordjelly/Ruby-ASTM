@@ -7,9 +7,10 @@ class Result
 	attr_accessor :reference_ranges
 	attr_accessor :dilution
 
+	## here will call mappings and check the result correlation
 	def initialize(line)
 		line.fields[2].scan(/\^{4}(?<name>[A-Za-z0-9]+)\^(?<dilution>\d+)/) { |name,dilution|  
-			self.name = name
+			self.name = lookup_mapping(name)
 			self.dilution = dilution
 		}
 		self.value = line.fields[3].strip
@@ -18,6 +19,11 @@ class Result
 		line.fields[12].strip.scan(/(?<year>\d{4})(?<month>\d{2})(?<day>\d{2})(?<hours>\d{2})(?<minutes>\d{2})(?<seconds>\d{2})/) {|year,month,day,hours,minutes,seconds|
 			self.timestamp = Time.new(year,month,day,hours,minutes,seconds)
 		}
+	end
+
+	## @return[String] the name defined in the mappings.json file, or the name that wqs passed in.
+	def lookup_mapping(name)
+		$mappings[name] || name
 	end
 
 end
