@@ -2,7 +2,7 @@
 	"_comment" : "the key is the CODE as sent by the EQUIPMENT(like a blood analyzer), the value is the code for the test in the LIS. Override #lookup_mapping in the Result class if you want to change how this works. Currently just searches the mappings, and if its not found in the mappings, will return the same name as the EQUIPMENT.",
 	"WBC" : "TLCparam",
 	"RBC" : "RBCparam",
-	"HGB" : "HGBparam",
+	"HGB" : "HBparam",
 	"HCT" : "HCTparam",
 	"MCV" : "MCVparam",
 	"MCH" : "MCHparam",
