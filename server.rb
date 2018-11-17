@@ -11,8 +11,8 @@ require "/home/bhargav/Github/ruby_astm/header"
 require "/home/bhargav/Github/ruby_astm/patient"
 require "/home/bhargav/Github/ruby_astm/result"
 
-
-include LabInterface
+#this creates the problem.
+#include LabInterface
 
 $SERVER_IP = "192.168.1.11"
 $SERVER_PORT = "3000"
@@ -31,14 +31,16 @@ rescue => e
 	puts e.to_s
 	puts " ------------ ERROR ENDS -------------------------"
 end
-=begin
+
+
 EventMachine.run {
   EventMachine::start_server $SERVER_IP, $SERVER_PORT, LabInterface
   puts "running echo server on #{$SERVER_PORT}"
 }
-=end
 
 
+=begin
 IO.read("sample.txt").each_line do |l|
 	process_text(l)
 end
+=end

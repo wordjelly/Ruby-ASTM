@@ -4,17 +4,21 @@ module LabInterface
   mattr_accessor :headers
 
 	def receive_data(data)
+      puts "receiving data----------------------------------"
 		  text = data.bytes.to_a.pack('c*')
+      puts "processing text"
+      puts text.to_s
 		  process_text(text)
+      puts "sending ACK"
       send_data(ACK)
-   	end
+  end
 
-   	def process_text(text)
+  def process_text(text)
 		  line = Line.new({:text => text})
       process_type(line)
-   	end
+  end
 
-    def process_type(line)
+  def process_type(line)
       case line.type
       when "Header"
         header = Header.new(line)
@@ -34,10 +38,10 @@ module LabInterface
           header.commit
         end
       end
-    end
+  end
 
-   	def unbind
+  def unbind
      puts "-- someone disconnected from the echo server!"
-   	end
+  end
 
 end
