@@ -1,0 +1,36 @@
+PATH
+  remote: .
+  specs:
+    ruby_astm (0.0.0)
+      activesupport
+      eventmachine
+      json
+      redis
+
+GEM
+  remote: http://www.rubygems.org/
+  specs:
+    activesupport (5.2.1)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
+      i18n (>= 0.7, < 2)
+      minitest (~> 5.1)
+      tzinfo (~> 1.1)
+    concurrent-ruby (1.1.3)
+    eventmachine (1.2.7)
+    i18n (1.1.1)
+      concurrent-ruby (~> 1.0)
+    json (2.1.0)
+    minitest (5.11.3)
+    redis (4.0.3)
+    thread_safe (0.3.6)
+    tzinfo (1.2.5)
+      thread_safe (~> 0.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  ruby_astm!
+
+BUNDLED WITH
+   1.16.4

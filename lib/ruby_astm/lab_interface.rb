@@ -1,16 +1,39 @@
+require "active_support/all"
+
 module LabInterface
 
 	ACK = "\x06"
   mattr_accessor :headers
+  
 
 	def receive_data(data)
-      puts "receiving data----------------------------------"
-		  text = data.bytes.to_a.pack('c*')
-      puts "processing text"
-      puts text.to_s
-		  process_text(text)
-      puts "sending ACK"
+      
+      byte_arr = []
+      
+      concat = ""
+      
+      data.bytes.to_a.each do |byte|
+        x = [byte].pack('c*').force_encoding('UTF-8')
+        if x == "\r"
+          concat+="\n"
+        elsif x == "\n"
+          puts "new line found --- "
+          concat+=x
+          puts "last thing in concat."
+          puts concat[-1].to_s
+        else
+          concat+=x
+        end
+      end
+      
+      #process_text(concat)
+      
+      open('em_sample.txt', 'a') { |f|
+        f.puts concat
+      }
+
       send_data(ACK)
+    
   end
 
   def process_text(text)

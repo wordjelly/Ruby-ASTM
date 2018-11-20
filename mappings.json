@@ -17,5 +17,6 @@
 	"LYMPH#":"ALCparam",
 	"MONO#":"AMCparam",
 	"EO#":"AECparam",
-	"BASO#":"ABCparam"		
+	"BASO#":"ABCparam",
+	"RDW-CV":"RDWCVparam"		
 }

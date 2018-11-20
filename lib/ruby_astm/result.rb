@@ -9,7 +9,7 @@ class Result
 
 	## here will call mappings and check the result correlation
 	def initialize(line)
-		line.fields[2].scan(/\^{4}(?<name>[A-Za-z0-9\%\#]+)\^(?<dilution>\d+)/) { |name,dilution|  
+		line.fields[2].scan(/\^+(?<name>[A-Za-z0-9\%\#]+)\^?(?<dilution>\d+)?/) { |name,dilution|  
 			self.name = lookup_mapping(name)
 			self.dilution = dilution
 		}

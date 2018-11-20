@@ -92,6 +92,7 @@ class Adapter
       }
     ]
 =end
+  ## pretty simple, if the value is not already there it will be updated, otherwise it won't be.
 	def update_LIS(data)
 
 	end
