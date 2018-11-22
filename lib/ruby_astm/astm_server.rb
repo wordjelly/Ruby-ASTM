@@ -15,16 +15,23 @@ class AstmServer
 	$frame_end = "[10]"
 
 	def initialize(server_ip,server_port,mpg)
-		server_ip ||= "192.168.1.14"
-		server_port ||= 3000
-		mpg = JSON.parse(IO.read("mappings.json"))
-		$mappings = mpg
+		self.server_ip = server_ip || "192.168.1.14"
+		self.server_port = server_port || 3000
+		$mappings = JSON.parse(IO.read("mappings.json"))
 		$redis = Redis.new
-		EventMachine.run {
-		  EventMachine::start_server server_ip, server_port, LabInterface
-		  puts "running ASTM SERVER on #{server_port}"
-		}
 	end
+
+	def start_server
+		EventMachine.run {
+			puts "Server ip and port is:"
+			puts self.server_ip
+			puts self.server_port
+			self.server_signature = EventMachine::start_server self.server_ip, self.server_port, LabInterface
+			#puts "signature is:#{self.server_signature}"
+			puts "running ASTM SERVER on #{server_port}"
+		}
+	end	
+
 
 =begin
 	IO.read("sample.txt").each_line do |l|

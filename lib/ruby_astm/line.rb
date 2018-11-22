@@ -3,7 +3,7 @@ class Line
 	TYPES = {
 		"H" => "Header",
 		"P" => "Patient",
-		"Q" => "Request",
+		"Q" => "Query",
 		"O" => "Order",
 		"R" => "Result",
 		"L" => "Terminator"

@@ -1,3 +1,4 @@
+require "ruby_astm/query"
 require "ruby_astm/adapter"
 require "ruby_astm/frame"
 require "ruby_astm/header"
