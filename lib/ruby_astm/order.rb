@@ -66,10 +66,10 @@ class Order
 		raise "provide a test priority" if self.priority.blank?
 		
 		if self.specimen_type.blank?
-			puts "no specimen type has been provided, sending SERUM"
+			#puts "no specimen type has been provided, sending SERUM"
 		end
 
-		"O|#{self.sequence_number}|#{self.id}||^^^#{self.tests.join('^^^')}|#{self.priority}||#{Time.now.strftime("%Y%m%d%H%M%S")}||||N||||#{self.specimen_type || 'SERUM'}\r"
+		"3O|#{self.sequence_number}|#{self.id}||^^^#{self.tests.join('^^^')}|#{self.priority}||#{Time.now.strftime("%Y%m%d%H%M%S")}||||N||||#{self.specimen_type || 'PLASMA'}\r"
 	end	
 
 end

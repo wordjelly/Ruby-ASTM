@@ -29,6 +29,7 @@ class TestRubyAstm < Minitest::Test
   end
 =end
 
+=begin
   def test_em_200_parses_query
   	server = AstmServer.new("127.0.0.1",3000,nil)
   	$redis.del("patients")
@@ -37,10 +38,13 @@ class TestRubyAstm < Minitest::Test
   	server.process_text_file(em200_input_file_path)
   	assert_equal "010520182", server.headers[-1].queries[-1].sample_id
   end
-
+=end
 
   def test_responds_to_query
-
+    server = AstmServer.new("192.168.1.14",3000,nil,true)
+    $redis.del("patients")
+    server.start_server
+    #server.send_enq
   end
 
 =begin

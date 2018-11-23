@@ -20,19 +20,18 @@ class Header
 	## pushes each patient into a redis list called "patients"
 	def commit
 		self.patients.map{|patient| $redis.lpush("patients",patient.to_json)}
-		puts JSON.pretty_generate(JSON.parse(self.to_json))
+		#puts JSON.pretty_generate(JSON.parse(self.to_json))
 	end
 
 	## used to respond to queries.
 	## @return[String] response_to_query : response to the header query.
 	def build_responses
-		self.queries.map {|query|
-			header_response = ""
-			header_response += "1H|\`^&||||||||||P|E 1394-97|#{Time.now.strftime("%Y%m%d%H%M%S")}\r"
-			header_response += query.build_response
-			query.response = header_response
+		responses = self.queries.map {|query|
+			header_response = "H|\`^&||||||||||P|E 1394-97|#{Time.now.strftime("%Y%m%d%H%M%S")}\r"
+			query.response = header_response + query.build_response
 			query.response
 		}
+		responses
 	end
 
 	def to_json
