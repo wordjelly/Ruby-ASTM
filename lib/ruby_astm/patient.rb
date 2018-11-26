@@ -18,7 +18,7 @@ class Patient
 
 	## patient id.
 	def build_response
-		"2P|#{self.sequence_number}|#{self.patient_id}|||||||||||||||\r"
+		"P|#{self.sequence_number}|#{self.patient_id}|||||||||||||||\r"
 	end
 
 	def to_json

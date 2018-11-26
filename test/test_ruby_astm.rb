@@ -40,11 +40,35 @@ class TestRubyAstm < Minitest::Test
   end
 =end
 
+=begin
   def test_responds_to_query
     server = AstmServer.new("192.168.1.14",3000,nil,true)
     $redis.del("patients")
     server.start_server
     #server.send_enq
+  end
+=end
+
+=begin
+  def test_polls_server
+    poller = Poller.new
+    poller.poll_lis
+  end
+=end
+
+  ## this much should pass.
+  ## we will be stubbing out the actual poll lis part.
+  def test_pre_poll_LIS_no_existing_key
+    poller = Poller.new
+    poller.pre_poll_LIS
+  end
+
+  def test_pre_poll_LIS_running
+
+  end
+
+  def test_pre_poll_LIS_expired_key
+
   end
 
 =begin

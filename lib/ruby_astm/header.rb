@@ -2,6 +2,7 @@ class Header
 	attr_accessor :machine_name
 	attr_accessor :patients
 	attr_accessor :queries
+	attr_accessor :response_sent
 
 	def initialize(args)
 		if args[:line]
@@ -15,6 +16,7 @@ class Header
 		end
 		self.patients = []
 		self.queries = []
+		self.response_sent = false
 	end
 
 	## pushes each patient into a redis list called "patients"
@@ -27,7 +29,7 @@ class Header
 	## @return[String] response_to_query : response to the header query.
 	def build_responses
 		responses = self.queries.map {|query|
-			header_response = "H|\`^&||||||||||P|E 1394-97|#{Time.now.strftime("%Y%m%d%H%M%S")}\r"
+			header_response = "1H|\`^&||||||||||P|E 1394-97|#{Time.now.strftime("%Y%m%d%H%M%S")}\r"
 			query.response = header_response + query.build_response
 			query.response
 		}

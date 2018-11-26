@@ -97,10 +97,15 @@ class Adapter
 
 	end
 
-	##@param[Array] data : array of objects.
-	##@return[String] response : json string of the response from the LIS.
-	def query_LIS(data)
+  ## will poll the lis, and store locally, in a redis sorted set the following:
+  ## key => specimen_id
+  ## value => tests designated for that specimen.
+  ## score => time of requisition of that specimen.
+  ## name of the sorted set can be defined in the class that inherits from adapter, or will default to "requisitions"
+  ## when a query is sent from any laboratory equipment to the local ASTMServer, it will query the redis sorted set, for the test information.
+  ## so this poller basically constantly replicates the cloud based test information to the local server.
+	def poll_LIS(requisitions_hash_name="requisitions")
 
-	end
+  end
 
 end

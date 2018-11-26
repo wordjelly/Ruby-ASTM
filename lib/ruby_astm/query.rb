@@ -19,12 +19,10 @@ class Query
 			:sequence_number => "0",
 			:patient_id => "abcde",
 			:specimen_id => self.sample_id,
-			:tests => ["GLU","ALK"],
+			:tests => ["TRIG"],
 			:priority => "R"
 		}
 
-		
-		
 		patient = Patient.new({:sequence_number => "0", :patient_id => "abcde"})
 		
 		order = Order.new({:sequence_number => patient.sequence_number, :specimen_id => variables[:specimen_id], :tests => variables[:tests], :priority => variables[:priority]})
