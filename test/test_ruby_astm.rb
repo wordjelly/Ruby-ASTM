@@ -56,34 +56,63 @@ class TestRubyAstm < Minitest::Test
   end
 =end
 
-  ## this much should pass.
-  ## we will be stubbing out the actual poll lis part.
+=begin
   def test_pre_poll_LIS_no_existing_key
     poller = Poller.new
+    $redis.flushall
     poller.pre_poll_LIS
+    processing_status = JSON.parse($redis.get(Poller::POLL_STATUS_KEY))
+    assert_equal Poller::RUNNING, processing_status[Poller::LAST_REQUEST_STATUS]
   end
 
   def test_pre_poll_LIS_running
-
+    poller = Poller.new
+    $redis.flushall
+    poller.pre_poll_LIS
+    processing_status = JSON.parse($redis.get(Poller::POLL_STATUS_KEY))
+    assert_equal Poller::RUNNING, processing_status[Poller::LAST_REQUEST_STATUS]
+    running_time = processing_status[Poller::LAST_REQUEST_AT]
+    ## PRE POLL.
+    poller.pre_poll_LIS
+    processing_status = JSON.parse($redis.get(Poller::POLL_STATUS_KEY))
+    assert_equal(running_time,processing_status[Poller::LAST_REQUEST_AT])
   end
 
   def test_pre_poll_LIS_expired_key
-
+    poller = Poller.new
+    $redis.flushall
+    poller.pre_poll_LIS
+    processing_status = JSON.parse($redis.get(Poller::POLL_STATUS_KEY))
+    assert_equal Poller::RUNNING, processing_status[Poller::LAST_REQUEST_STATUS]
+    expired_time = (Time.now - 10.years).to_i
+    processing_status[Poller::LAST_REQUEST_AT] = (Time.now - 10.years).to_i
+    $redis.set(Poller::POLL_STATUS_KEY,JSON.generate(processing_status))
+    ## now pre poll again.
+    ## the time should not be equal to processing time.
+    poller.pre_poll_LIS
+    processing_status = JSON.parse($redis.get(Poller::POLL_STATUS_KEY))
+    assert_equal (processing_status[Poller::LAST_REQUEST_AT] == expired_time), false
   end
 
-=begin
-  
-  def test_logs_results
-
-  end
-  
-  def test_logs_any_errors
-
-  end
-  
-  def test_polls
-  
-  end
+  def test_post_poll_LIS
+    poller = Poller.new
+    $redis.flushall
+    poller.pre_poll_LIS
+    processing_status = JSON.parse($redis.get(Poller::POLL_STATUS_KEY))
+    assert_equal Poller::RUNNING, processing_status[Poller::LAST_REQUEST_STATUS]
+    poller.post_poll_LIS
+    processing_status = JSON.parse($redis.get(Poller::POLL_STATUS_KEY))
+    assert_equal Poller::COMPLETED, processing_status[Poller::LAST_REQUEST_STATUS]
+  end 
 =end
+
+
+  def test_poll_LIS_for_requisition
+    poller = Poller.new
+    poller.poll_LIS_for_requisition
+  end
+
+  ## now comes the actual loading and dumping.
+  ## and the mapping of the keys.
 
 end

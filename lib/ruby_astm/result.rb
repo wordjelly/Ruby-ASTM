@@ -28,7 +28,7 @@ class Result
 
 	## @return[String] the name defined in the mappings.json file, or the name that wqs passed in.
 	def lookup_mapping(name)
-		$mappings[name] || name
+		$mappings[name]["LIS_CODE"] || name
 	end
 
 end

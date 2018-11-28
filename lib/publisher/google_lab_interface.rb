@@ -5,6 +5,19 @@ require 'fileutils'
 
 class Google_Lab_Interface < Adapter
 
+  ## WRITTEN BY A DOCTOR ;}
+=begin
+
+=end
+  EDTA = "EDTA"
+  SERUM = "SERUM"
+  PLASMA = "PLASMA"
+  FLUORIDE = "FLUORIDE"
+  ESR = "ESR"
+  URINE = "URINE"
+
+  REQUISITIONS_SORTED_SET = "requisitions_sorted_set"
+  REQUISITIONS_HASH = "requisitions_hash"
 
   OOB_URI = 'urn:ietf:wg:oauth:2.0:oob'.freeze
   APPLICATION_NAME = 'Google Apps Script API Ruby Quickstart'.freeze
@@ -49,74 +62,102 @@ class Google_Lab_Interface < Adapter
     credentials
   end
 
-  def initialize
-    puts "initializing lab interface."
-    puts "root path is: #{root_path}"
+  ## @param[String] mpg : path to mappings file. Defaults to nil.
+  def initialize(mpg=nil)
+    AstmServer.log("Initialized Google Lab Interface")
     $service = Google::Apis::ScriptV1::ScriptService.new
     $service.client_options.application_name = APPLICATION_NAME
     $service.authorization = authorize
+    ## this mapping is from MACHINE CODE AS THE KEY
+    $mappings = JSON.parse(IO.read(mpg || ("mappings.json")))
+    ## INVERTING THE MAPPINGS, GIVES US THE LIS CODE AS THE KEY.
+    $inverted_mappings = Hash[$mappings.values.map{|c| c = c["LIS_CODE"]}.zip($mappings.keys)]
   end
 
-  def pre_poll_LIS
-    previous_requisition_request_status = nil
-    
-    if previous_requisition_request_status = $redis.get("requisition_request_status")
+  def build_tests_hash(record)
+    tests_hash = {}
 
-      last_request_at = previous_requisition_request_status["last_request_at"]
-      
-      last_request_status = previous_requisition_request_status["last_request_status"]  
+    ## key -> TUBE_NAME : eg: EDTA
+    ## value -> its barcode id.
+    tube_ids = {}
+    ## assign.
+    ## lavender -> index 28
+    ## serum -> index 29
+    ## plasm -> index 30
+    ## fluoride -> index 31
+    ## urine -> index 32
+    ## esr -> index 33
+    unless record[28].blank?
+      tube_ids[EDTA] = record[28]
+      tests_hash[EDTA + ":" + record[28]] = []
     end
 
-    running_time = Time.now.to_i
+    unless record[29].blank?
+      tube_ids[SERUM] = record[29]
+      tests_hash[SERUM + ":" + record[29]] = []
+    end
 
-    $redis.watch("requisition_request_status") do
+    unless record[30].blank?
+      tube_ids[PLASMA] = record[30]
+      tests_hash[PLASMA + ":" + record[30]] = []
+    end
 
-      if $redis.get("requisition_request_status") == previous_requisition_request_status
-        if ((last_request_status != "running") || ((Time.now.to_i - last_request_at) > 600))
-          $redis.multi do |multi|
-            multi.set("requisition_request_status", {"last_request_status" => "running", "last_request_at" => running_time})
-          end
-        end
+    unless record[31].blank?
+      tube_ids[FLUORIDE] = record[31]
+      tests_hash[FLUORIDE + ":" + record[31]] = []
+    end
+
+    unless record[32].blank?
+      tube_ids[URINE] = record[32]
+      tests_hash[URINE + ":" + record[32]] = []
+    end
+
+    unless record[33].blank?
+      tube_ids[ESR] = record[33]
+      tests_hash[ESR + ":" + record[33]] = []
+    end
+
+
+    tests = record[8].split(",")
+    tests.each do |test|
+      ## use the inverted mappings to 
+      if machine_code = $inverted_mappings[test]
+        ## now get its tube type
+        ## mappings have to match the tubes defined in this file.
+        tube = $mappings[machine_code]["TUBE"]
+        ## now find the tests_hash which has this tube.
+        ## and the machine code to its array.
+        ## so how to find this.
+        tube_key = tests_hash.keys.select{|c| c=~/#{tube}/ }[0] 
+        tests_hash[tube_key] << machine_code   
       else
-        $redis.unwatch
-        return
-      end
+        AstmServer.log("ERROR: Test: #{test} does not have an LIS code")
+      end 
+    end
+    AstmServer.log("tests hash generated")
+    AstmServer.log(JSON.generate(tests_hash))
+    tests_hash
+  end
+
+  ## @param[Integer] epoch : the epoch at which these tests were requested.
+  ## @param[Hash] tests : {"EDTA:barcode" => [MCV,MCH,MCHC...]}
+  def merge_with_requisitions_hash(epoch,tests)
+    ## so we basically now add this to the epoch ?
+    ## or a sorted set ?
+    ## key -> TUBE:specimen_id
+    ## value -> array of tests as json
+    ## score -> time.
+    $redis.multi do |multi|
+      $redis.zadd REQUISITIONS_SORTED_SET, epoch, JSON.generate(tests)
+      tests.keys.each do |tube_barcode|
+        $redis.hset REQUISITIONS_HASH, tube_barcode, JSON.generate(tests[tube_barcode])
+      end  
     end
   end
 
-  ## uses redis CAS to ensure that two requests don't overlap.
-  ## will update to the requisitions hash the specimen id -> and the 
-  ## now lets test this.
-  ## how to stub it out ?
-  ## first we call it direct.
-  def post_poll_LIS(requisitions_hash_name="requisitions")
-    
-    requisition_status = JSON.parse($redis.get("requisition_request_status"))
-    
-    if ((requisition_status["last_request_status"] == "running") && (requisition_status["last_request_at"] == running_time))
-
-      $redis.watch("requisition_request_status") do
-
-        ## if it is still equal to that, then , to the multi exec where you will set it to completed, and 
-        if $redis.get("requisition_request_status") == JSON.generate(requisition_status)
-
-          $redis.multi do |multi|
-            multi.set("requisition_request_status",JSON.generate({"last_request_status" => "completed", "last_request_at" => running_time}))
-          end
-
-        else
-          $redis.unwatch("requisition_request_status")
-        end
-
-      end
-
-    end
-
-  end
-
-
-
-  def poll_LIS_request
+  def poll_LIS_for_requisition
+  
+    AstmServer.log("polling LIS for new requisitions")
     
     epoch = (Time.now - 5.days).to_i*1000
     
@@ -132,23 +173,23 @@ class Google_Lab_Interface < Adapter
     begin 
       resp = $service.run_script(SCRIPT_ID, request)
       if resp.error
-        puts "there was an error."
-        puts resp.error
-        puts resp.error.message
-        puts resp.error.code
+        AstmServer.log("Response Error polling LIS for requisitions: #{resp.error.message}: #{resp.error.code}")
       else
-        puts resp.to_s
-        puts "success"
-        puts resp.response.to_s
         lab_results = JSON.parse(resp.response["result"])
-        puts lab_results.to_s
+        AstmServer.log("lab resuls downloaded from Google Drive")
+        AstmServer.log(JSON.generate(lab_results))
+        lab_results.keys.each do |epoch|
+          merge_with_requisitions_hash(epoch,build_tests_hash(lab_results[epoch][0]))
+        end
+        AstmServer.log("Successfully polled lis for requisitions: #{resp.response}")
       end
     rescue => e
-      puts "error ----------"
-      puts e.to_s
+      AstmServer.log("Rescue Error polling LIS for requisitions: #{e.to_s}")
+      AstmServer.log("Error backtrace")
+      AstmServer.log(e.backtrace.to_s)
     end
-
   end
+
 
   # method overriden from adapter.
   # data should be an array of objects.

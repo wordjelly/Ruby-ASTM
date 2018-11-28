@@ -1,22 +1,191 @@
 {
-	"_comment" : "the key is the CODE as sent by the EQUIPMENT(like a blood analyzer), the value is the code for the test in the LIS. Override #lookup_mapping in the Result class if you want to change how this works. Currently just searches the mappings, and if its not found in the mappings, will return the same name as the EQUIPMENT.",
-	"WBC" : "TLCparam",
-	"RBC" : "RBCparam",
-	"HGB" : "HBparam",
-	"HCT" : "HCTparam",
-	"MCV" : "MCVparam",
-	"MCH" : "MCHparam",
-	"MCHC": "MCHCparam",
-	"PLT" : "PCparam",
-	"NEUT%": "Nparam",
-	"LYMPH%": "Lparam",
-	"MONO%": "Mparam",
-	"EO%":"Eparam",
-	"BASO%":"Basoparam",
-	"NEUT#":"ANCparam",
-	"LYMPH#":"ALCparam",
-	"MONO#":"AMCparam",
-	"EO#":"AECparam",
-	"BASO#":"ABCparam",
-	"RDW-CV":"RDWCVparam"		
+	"_comment" : "key -> code sent by analyzer, eg sysmex sends WBC count under the code 'WBC'. value -> object. Object structure: 'LIS_CODE': in the google lab interface, this code is present in two places on google drive. one) in the name of the file, two) inside the file, where the test result value should be added. For eg in the hemogram report, TLCparam, is present in the name of the file, as well as inside the file, so the google script will update it with the relevant value. 'TUBE' stands for the type of tube in which this test has to be performed. This should match the constants in the Google Lab Interface.rb file. Now there is another problem that we have to deal with here. When going bidirectional, in some machines like Roche Cobas e411, the test codes come in as numbers, and not letters, so the keys here in this file are numbers, for those tests. Because Roche is a bitch basically.",
+	"WBC" : 
+	{
+		"LIS_CODE" : "TLCparam",
+		"TUBE" : "EDTA"
+	},
+	"RBC" : 
+	{
+		"LIS_CODE" : "RBCparam",
+		"TUBE" : "EDTA"
+	},
+	"HGB" : 
+	{
+		"LIS_CODE" : "HBparam",
+		"TUBE" : "EDTA"
+	},
+	"HCT" : {
+		"LIS_CODE" : "HCTparam",
+		"TUBE" : "EDTA"
+	},
+	"MCV" : 
+	{
+		"LIS_CODE" : "MCVparam",
+		 "TUBE" : "EDTA"
+	},
+	"MCH" : {
+		"LIS_CODE" : "MCHparam",
+		"TUBE" : "EDTA"
+	},
+	"MCHC": {
+		"LIS_CODE" : "MCHCparam",
+		 "TUBE" : "EDTA"
+	},
+	"PLT" : {
+		"LIS_CODE" : "PCparam",
+		"TUBE" : "EDTA"
+	},
+	"NEUT%": {
+		"LIS_CODE" : "Nparam",
+		"TUBE" : "EDTA"
+	},
+	"LYMPH%": {
+		"LIS_CODE" : "Lparam",
+		"TUBE" : "EDTA"
+	},
+	"MONO%": {
+		"LIS_CODE" : "Mparam",
+		"TUBE" : "EDTA"
+	},
+	"EO%": {
+		"LIS_CODE" : "Eparam",
+		"TUBE" : "EDTA"
+	},
+	"BASO%": {
+		"LIS_CODE" : "BASOparam",
+		"TUBE" : "EDTA"
+	},
+	"NEUT#": {
+		"LIS_CODE" : "ANCparam",
+		"TUBE" : "EDTA"
+	},
+	"LYMPH#": {
+		"LIS_CODE" : "ALCparam",
+		"TUBE" : "EDTA"
+	},
+	"MONO#": {
+		"LIS_CODE" : "AMCparam",
+		"TUBE" : "EDTA"
+	},
+	"EO#": {
+		"LIS_CODE" : "AECparam",
+		"TUBE" : "EDTA"
+	},
+	"BASO#": {
+		"LIS_CODE" : "ABCparam",
+		"TUBE" : "EDTA"
+	},
+	"RDW-CV": {
+		"LIS_CODE" : "RDWCVparam",
+		"TUBE" : "EDTA"
+	},
+	"GLUR" : {
+		"LIS_CODE" : "GLUR",
+		"TUBE" : "FLUORIDE"
+	},
+	"GLUPP" : {
+		"LIS_CODE" : "GLUPP",
+		"TUBE" : "FLUORIDE"
+	},
+	"GLUF" : {
+		"LIS_CODE" : "GLUF",
+		"TUBE" : "FLUORIDE"
+	},
+	"CHOL" : {
+		"LIS_CODE" : "CHOL",
+		"TUBE" : "SERUM"
+	},
+	"TRIG" : {
+		"LIS_CODE" : "TRIG",
+		"TUBE" : "SERUM"
+	},
+	"HDLC" : {
+		"LIS_CODE" : "HDLC",
+		"TUBE" : "SERUM"
+	},
+	"LDL" : {
+		"LIS_CODE" : "LDL",
+		"TUBE" : "SERUM"
+	},
+	"VLDL" : {
+		"LIS_CODE" : "VLDL",
+		"TUBE" : "SERUM"
+	},
+	"CRE" : {
+		"LIS_CODE" : "CRE",
+		"TUBE" : "SERUM"
+	},
+	"UREA" : {
+		"LIS_CODE" : "UREA",
+		"TUBE" : "SERUM"
+	},
+	"BUN" : {
+		"LIS_CODE" : "BUN",
+		"TUBE" : "SERUM"
+	},
+	"ALB" : {
+		"LIS_CODE" : "ALB",
+		"TUBE" : "SERUM"
+	},
+	"GGT" : {
+		"LIS_CODE" : "GGT",
+		"TUBE" : "SERUM"
+	},
+	"BID" : {
+		"LIS_CODE" : "BID",
+		"TUBE" : "SERUM"
+	},
+	"BIT" : {
+		"LIS_CODE" : "BIT",
+		"TUBE" : "SERUM"
+	},
+	"ALPU" : {
+		"LIS_CODE" : "ALPU",
+		"TUBE" : "SERUM"
+	},
+	"GOTHL" : {
+		"LIS_CODE" : "GOTHL",
+		"TUBE" : "SERUM"
+	},
+	"GPTHL" : {
+		"LIS_CODE" : "GPTHL",
+		"TUBE" : "SERUM"
+	},
+	"HOMOCY" : {
+		"LIS_CODE" : "HOMOCY",
+		"TUBE" : "SERUM"
+	},
+	"8" : {
+		"LIS_CODE" : "TSH",
+		"TUBE" : "SERUM"
+	},
+	"7" : {
+		"LIS_CODE" : "T4",
+		"TUBE" : "SERUM"
+	},
+	"6" : {
+		"LIS_CODE" : "T3",
+		"TUBE" : "SERUM"
+	},
+	"5" : {
+		"LIS_CODE" : "HIV",
+		"TUBE" : "PLASMA"
+	},
+	"4" : {
+		"LIS_CODE" : "HBS",
+		"TUBE" : "PLASMA"
+	},
+	"3" : {
+		"LIS_CODE" : "VITD",
+		"TUBE" : "SERUM"
+	},
+	"2" : {
+		"LIS_CODE" : "HCV",
+		"TUBE" : "PLASMA"
+	},
+	"1" : {
+		"LIS_CODE" : "B12",
+		"TUBE" : "SERUM"
+	}
 }

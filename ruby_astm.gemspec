@@ -13,6 +13,7 @@ Gem::Specification.new do |s|
   s.license       = 'MIT'
   
   s.add_dependency 'eventmachine'
+  s.add_dependency 'em-rubyserial'
   s.add_dependency 'activesupport'
   s.add_dependency 'json'
   s.add_dependency 'redis'

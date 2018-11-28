@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'eventmachine'
+require 'em-rubyserial'
 require "active_support/all"
 require "json"
 require "redis"
@@ -7,6 +8,11 @@ require "redis"
 class AstmServer
 
 	include LabInterface
+
+	def self.log(message)
+		puts "" + message
+    	$redis.zadd("ruby_astm_log",Time.now.to_i,message)
+  	end
 
 	$ENQ = "[5]"
 	$start_text = "[2]"
@@ -25,16 +31,14 @@ class AstmServer
 	def start_server
 		EventMachine.run {
 			self.server_signature = EventMachine::start_server self.server_ip, self.server_port, LabInterface
+			serial = EventMachine.open_serial('/dev/ttyUSB0', 9600, 8)
+			serial.on_data do |data|
+			  	puts "got some data"
+			  	puts data.to_s
+			    serial.send_data("\X06")
+			end
 			puts "running ASTM SERVER on #{server_port}"
 		}
 	end	
-
-
-=begin
-	IO.read("sample.txt").each_line do |l|
-		process_text(l)
-	end
-=end
-
 
 end
