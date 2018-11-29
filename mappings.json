@@ -187,5 +187,9 @@
 	"1" : {
 		"LIS_CODE" : "B12",
 		"TUBE" : "SERUM"
+	},
+	"ESR" : {
+		"LIS_CODE" : "ESR",
+		"TUBE" : "ESR"
 	}
 }
