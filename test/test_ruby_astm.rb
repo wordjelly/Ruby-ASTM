@@ -3,7 +3,15 @@ require 'minitest/autorun'
 require 'ruby_astm'
 
 class TestRubyAstm < Minitest::Test
-	
+
+=begin	 
+  def test_r
+    #puts AstmServer.root_path
+    #file = File.join AstmServer.root_path, "../","mappings.json"
+    #puts JSON.parse(IO.read(file))
+  end
+=end
+
 
   def test_sysmex_550_receives_results
   	server = AstmServer.new("127.0.0.1",3000,nil)

@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'ruby_astm'
-  s.version     = '0.0.1'
+  s.version     = '0.0.5'
   s.date        = '2018-11-20'
   s.summary     = "A Ruby gem to interface with Medical instruments that work on the ASTM protocol"
   s.description = "This gem provides a server that can handle communication from medical instruments that send/receive information on the ASTM protocol."
@@ -17,5 +17,8 @@ Gem::Specification.new do |s|
   s.add_dependency 'activesupport'
   s.add_dependency 'json'
   s.add_dependency 'redis'
+  s.add_dependency 'google-api-client', '0.25.0'
+  s.add_dependency 'rufus-scheduler', '3.5.2'
+
 
 end

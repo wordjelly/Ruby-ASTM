@@ -14,6 +14,14 @@ class AstmServer
     	$redis.zadd("ruby_astm_log",Time.now.to_i,message)
   	end
 
+  	def self.root_path
+  		File.dirname __dir__
+  	end
+
+  	def self.default_mappings
+  		File.join AstmServer.root_path, "../","mappings.json"
+  	end
+
 	$ENQ = "[5]"
 	$start_text = "[2]"
 	$end_text = "[3]"
@@ -26,7 +34,7 @@ class AstmServer
 		self.server_ip = server_ip || "127.0.0.1"
 		self.server_port = server_port || 3000
 		self.respond_to_queries = respond_to_queries
-		$mappings = JSON.parse(IO.read(mpg || ("mappings.json")))
+		$mappings = JSON.parse(IO.read(mpg || AstmServer.default_mappings))
 	end
 
 	def start_server

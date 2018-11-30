@@ -27,7 +27,7 @@ class Poller
 	def initialize(mpg=nil)
 		$redis = Redis.new
 		## this mapping is from MACHINE CODE AS THE KEY
-	    $mappings = JSON.parse(IO.read(mpg || ("mappings.json")))
+	    $mappings = JSON.parse(IO.read(mpg || AstmServer.default_mappings))
 	    ## INVERTING THE MAPPINGS, GIVES US THE LIS CODE AS THE KEY.
 	    $inverted_mappings = Hash[$mappings.values.map{|c| c = c["LIS_CODE"]}.zip($mappings.keys)]
 	end
@@ -207,7 +207,7 @@ class Poller
 
   	## override to define how the data is updated.
   	def update(data)
-  	
+
   	end
 
 	##@param[Array] data : array of objects.
