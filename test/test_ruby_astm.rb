@@ -81,7 +81,6 @@ class TestRubyAstm < Minitest::Test
     assert_equal Poller::COMPLETED, processing_status[Poller::LAST_REQUEST_STATUS]
   end 
 
-
   def test_process_LIS_response
     poller = Poller.new
     $redis.del Poller::REQUISITIONS_SORTED_SET
@@ -103,5 +102,7 @@ class TestRubyAstm < Minitest::Test
     
   end
 
+
+  ## next step is to run the poller and get it all working with hemat + biochemistry.
 
 end

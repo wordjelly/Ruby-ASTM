@@ -11,7 +11,7 @@ module LabInterface
   EOT = "\x04"
 
   mattr_accessor :headers
-  mattr_accessor :server_signature
+  mattr_accessor :ethernet_server
   mattr_accessor :server_ip
   mattr_accessor :server_port
   mattr_accessor :mapping

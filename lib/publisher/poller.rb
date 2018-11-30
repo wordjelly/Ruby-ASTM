@@ -205,40 +205,10 @@ class Poller
 	    end
   	end
 
-
-  	## should i make it a class method on the poller ?
-  	## pre poll and all that ?
-  	## leave the lower level implementation on the rest of it.
-  	## this can be called from another file, directly on the file implementing the poller.
-	def poll_lis
-=begin
-		scheduler = Rufus::Scheduler.new
-		scheduler.every '3s' do
-			prepare_redis
-			patients_to_process = $redis.llen("patients") > 0
-			puts "patients to process is: #{patients_to_process}"
-			while patients_to_process == true
-				if patient_results = $redis.rpoplpush("patients","processing")
-					patient_results = JSON.parse(patient_results)
-					google_lint = Google_Lab_Interface.new
-					google_lint.update_LIS(patient_results["@orders"])
-					google_lint.poll_LIS
-					patients_to_process = $redis.llen("patients") > 0
-				else
-					patients_to_process = false
-				end
-			end
-			##
-			puts "polling LIS for new results to replicate to the local server."
-			google_lint = Google_Lab_Interface.new
-			google_lint.poll_LIS
-		end
-		scheduler.join
-=end
-		google_lint = Google_Lab_Interface.new
-		google_lint.poll_LIS
-	end
-
+  	## override to define how the data is updated.
+  	def update(data)
+  	
+  	end
 
 	##@param[Array] data : array of objects.
 	##@return[Boolean] true/false : depending on whether it was successfully updated or not.
@@ -333,8 +303,18 @@ class Poller
     ]
 =end
   	## pretty simple, if the value is not already there it will be updated, otherwise it won't be.
-	def update_LIS(data)
-
+	def update_LIS
+		prepare_redis
+		patients_to_process = $redis.llen("patients") > 0
+		while patients_to_process == true
+			if patient_results = $redis.rpoplpush("patients","processing")
+				patient_results = JSON.parse(patient_results)
+				update(patient_results)
+				patients_to_process = $redis.llen("patients") > 0
+			else
+				patients_to_process = false
+			end
+		end
 	end
 
 	## this method should be overriden.
@@ -347,6 +327,13 @@ class Poller
   	## so this poller basically constantly replicates the cloud based test information to the local server.
 	def poll_LIS_for_requisition
 
+  	end
+
+  	def poll
+  		pre_poll_LIS
+  		poll_LIS_for_requisition
+  		update_LIS
+  		post_poll_LIS
   	end
 
 end

@@ -21,23 +21,24 @@ class AstmServer
 	$frame_end = "[10]"
 
 	def initialize(server_ip,server_port,mpg,respond_to_queries=false)
+		$redis = Redis.new
+		AstmServer.log("Initializing AstmServer")
 		self.server_ip = server_ip || "192.168.1.14"
 		self.server_port = server_port || 3000
 		self.respond_to_queries = respond_to_queries
 		$mappings = JSON.parse(IO.read(mpg || ("mappings.json")))
-		$redis = Redis.new
 	end
 
 	def start_server
 		EventMachine.run {
-			self.server_signature = EventMachine::start_server self.server_ip, self.server_port, LabInterface
-			serial = EventMachine.open_serial('/dev/ttyUSB0', 9600, 8)
-			serial.on_data do |data|
-			  	puts "got some data"
-			  	puts data.to_s
-			    serial.send_data("\X06")
-			end
-			puts "running ASTM SERVER on #{server_port}"
+			self.ethernet_server = EventMachine::start_server self.server_ip, self.server_port, LabInterface
+			AstmServer.log("Running ETHERNET SERVER on #{server_port}")
+			#serial = EventMachine.open_serial('/dev/ttyUSB0', 9600, 8)
+			#serial.on_data do |data|
+			#  	puts "got some data"
+			#  	puts data.to_s
+			#    serial.send_data("\X06")
+			#end
 		}
 	end	
 

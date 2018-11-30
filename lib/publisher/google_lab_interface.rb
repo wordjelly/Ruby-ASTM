@@ -96,7 +96,7 @@ class Google_Lab_Interface < Poller
   # method overriden from adapter.
   # data should be an array of objects.
   # see adapter for the recommended structure.
-  def update_LIS(data)
+  def update(data)
 
     orders = JSON.generate(data)
 
@@ -109,27 +109,27 @@ class Google_Lab_Interface < Poller
       parameters: pp
     )
 
-    ## here we have to have some kind of logging.
-    ## should it be with redis / to a log file.
-    ## logging is also sent to redis.
-    ## at each iteration of the poller.
-
     begin
-      puts "request is:"
-      puts request.parameters.to_s
-      puts $service.authorization.to_s
+      AstmServer.log("updating following results to LIS")
+      AstmServer.log(request.parameters.to_s)
       resp = $service.run_script(SCRIPT_ID, request)
-
       if resp.error
-        puts "there was an error."
+        AstmServer.log("Error updating results to LIS, message follows")
+        AstmServer.log("error: #{resp.error.message} : code: #{resp.error.code}")
+        #puts "there was an error."
       else
-        puts "success"
+        AstmServer.log("Updating results to LIS successfull")
       end
     rescue => e
-      puts "error ----------"
-      puts e.to_s
+      AstmServer.log("Error updating results to LIS, backtrace follows")
+      AstmServer.log(e.backtrace.to_s)
     end
 
+  end
+
+
+  def poll
+    super
   end
 
 end
