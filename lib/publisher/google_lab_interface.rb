@@ -49,8 +49,8 @@ class Google_Lab_Interface < Poller
 
   ## @param[String] mpg : path to mappings file. Defaults to nil.
   def initialize(mpg=nil)
-    AstmServer.log("Initialized Google Lab Interface")
     super(mpg)
+    AstmServer.log("Initialized Google Lab Interface")
     $service = Google::Apis::ScriptV1::ScriptService.new
     $service.client_options.application_name = APPLICATION_NAME
     $service.authorization = authorize
@@ -59,7 +59,7 @@ class Google_Lab_Interface < Poller
 
   def poll_LIS_for_requisition
     
-    pre_poll_LIS
+    
      
     AstmServer.log("polling LIS for new requisitions")
     
@@ -87,7 +87,7 @@ class Google_Lab_Interface < Poller
       AstmServer.log("Error backtrace")
       AstmServer.log(e.backtrace.to_s)
     ensure
-      post_poll_LIS
+      
     end
 
   end
@@ -126,7 +126,6 @@ class Google_Lab_Interface < Poller
     end
 
   end
-
 
   def poll
     super

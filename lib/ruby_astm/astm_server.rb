@@ -20,10 +20,10 @@ class AstmServer
 	$record_end = "[13]"
 	$frame_end = "[10]"
 
-	def initialize(server_ip,server_port,mpg,respond_to_queries=false)
+	def initialize(server_ip=nil,server_port=nil,mpg=nil,respond_to_queries=false)
 		$redis = Redis.new
 		AstmServer.log("Initializing AstmServer")
-		self.server_ip = server_ip || "192.168.1.14"
+		self.server_ip = server_ip || "127.0.0.1"
 		self.server_port = server_port || 3000
 		self.respond_to_queries = respond_to_queries
 		$mappings = JSON.parse(IO.read(mpg || ("mappings.json")))
@@ -41,5 +41,9 @@ class AstmServer
 			#end
 		}
 	end	
+
+	## now we need to run the server and poller.
+	## thats what we need.
+
 
 end
