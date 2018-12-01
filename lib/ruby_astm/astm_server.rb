@@ -19,7 +19,7 @@ class AstmServer
   	end
 
   	def self.default_mappings
-  		File.join AstmServer.root_path, "../","mappings.json"
+  		File.join AstmServer.root_path,"mappings.json"
   	end
 
 	$ENQ = "[5]"
@@ -49,9 +49,5 @@ class AstmServer
 			#end
 		}
 	end	
-
-	## now we need to run the server and poller.
-	## thats what we need.
-
 
 end

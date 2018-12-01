@@ -110,7 +110,9 @@ class TestRubyAstm < Minitest::Test
     
   end
 
-
-  ## next step is to run the poller and get it all working with hemat + biochemistry.
-
+  ## kindly note, the credentials specified herein are no longer active ;)
+  def test_initialized_google_lab_interface
+    goog = Google_Lab_Interface.new(nil,"/home/bhargav/Desktop/credentials.json","/home/bhargav/Desktop/token.yaml")
+  end
+  
 end

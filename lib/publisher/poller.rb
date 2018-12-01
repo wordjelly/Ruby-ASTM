@@ -119,33 +119,33 @@ class Poller
 	    ## urine -> index 32
 	    ## esr -> index 33
 	    unless record[28].blank?
-	      tube_ids[EDTA] = record[28]
-	      tests_hash[EDTA + ":" + record[28]] = []
+	      tube_ids[EDTA] = record[28].to_s
+	      tests_hash[EDTA + ":" + record[28].to_s] = []
 	    end
 
 	    unless record[29].blank?
-	      tube_ids[SERUM] = record[29]
-	      tests_hash[SERUM + ":" + record[29]] = []
+	      tube_ids[SERUM] = record[29].to_s
+	      tests_hash[SERUM + ":" + record[29].to_s] = []
 	    end
 
 	    unless record[30].blank?
-	      tube_ids[PLASMA] = record[30]
-	      tests_hash[PLASMA + ":" + record[30]] = []
+	      tube_ids[PLASMA] = record[30].to_s
+	      tests_hash[PLASMA + ":" + record[30].to_s] = []
 	    end
 
 	    unless record[31].blank?
-	      tube_ids[FLUORIDE] = record[31]
-	      tests_hash[FLUORIDE + ":" + record[31]] = []
+	      tube_ids[FLUORIDE] = record[31].to_s
+	      tests_hash[FLUORIDE + ":" + record[31].to_s] = []
 	    end
 
 	    unless record[32].blank?
-	      tube_ids[URINE] = record[32]
-	      tests_hash[URINE + ":" + record[32]] = []
+	      tube_ids[URINE] = record[32].to_s
+	      tests_hash[URINE + ":" + record[32].to_s] = []
 	    end
 
 	    unless record[33].blank?
-	      tube_ids[ESR] = record[33]
-	      tests_hash[ESR + ":" + record[33]] = []
+	      tube_ids[ESR] = record[33].to_s
+	      tests_hash[ESR + ":" + record[33].to_s] = []
 	    end
 
 

@@ -9,11 +9,9 @@ class Google_Lab_Interface < Poller
 
   OOB_URI = 'urn:ietf:wg:oauth:2.0:oob'.freeze
   APPLICATION_NAME = 'Google Apps Script API Ruby Quickstart'.freeze
-  CREDENTIALS_PATH = 'credentials.json'.freeze
-  # The file token.yaml stores the user's access and refresh tokens, and is
-  # created automatically when the authorization flow completes for the first
-  # time.
-  TOKEN_PATH = 'token.yaml'.freeze
+  ## these two cannot be hardcoded.
+  #CREDENTIALS_PATH = 'credentials.json'.freeze
+  #TOKEN_PATH = 'token.yaml'.freeze
   SCOPE = 'https://www.googleapis.com/auth/script.projects'.freeze
 
   SCOPES = ["https://www.googleapis.com/auth/documents","https://www.googleapis.com/auth/drive","https://www.googleapis.com/auth/script.projects","https://www.googleapis.com/auth/spreadsheets"]
@@ -21,6 +19,8 @@ class Google_Lab_Interface < Poller
   $service = nil
   SCRIPT_ID = "M7JDg7zmo0Xldo4RTWFGCsI2yotVzKYhk"
 
+  attr_accessor :credentials_path
+  attr_accessor :token_path
   
   ##
   # Ensure valid credentials, either by restoring from the saved credentials
@@ -29,9 +29,8 @@ class Google_Lab_Interface < Poller
   #
   # @return [Google::Auth::UserRefreshCredentials] OAuth2 credentials
   def authorize
-
-    client_id = Google::Auth::ClientId.from_file(root_path + "/publisher/" + CREDENTIALS_PATH)
-    token_store = Google::Auth::Stores::FileTokenStore.new(file: (root_path + "/publisher/" + TOKEN_PATH))
+    client_id = Google::Auth::ClientId.from_file(self.credentials_path)
+    token_store = Google::Auth::Stores::FileTokenStore.new(file: self.token_path)
     authorizer = Google::Auth::UserAuthorizer.new(client_id, SCOPES, token_store)
     user_id = 'default'
     credentials = authorizer.get_credentials(user_id)
@@ -48,8 +47,13 @@ class Google_Lab_Interface < Poller
   end
 
   ## @param[String] mpg : path to mappings file. Defaults to nil.
-  def initialize(mpg=nil)
+  ## @param[String] credentials_path : the path to look for the credentials.json file, defaults to nil ,and will raise an error unless provided
+  ## @param[String] token_path : the path where the oauth token will be stored, also defaults to the path of the gem : eg. ./token.yaml - be careful with write permissions, because token.yaml gets written to this path after the first authorization.
+  def initialize(mpg=nil,credentials_path,token_path)
     super(mpg)
+    self.credentials_path = credentials_path
+    self.token_path = token_path
+    raise "Please provide the full path of the google oauth credentials.json file. If you don't have this file, please go to the Apps Script project, which has your google apps script, and Choose Create Credentials -> help me choose -> and use 'Calling Scripts Api from a UI based platform'. Also ensure that your script has permissions set for Drive, Sheets, and more. Lastly in the Apps script project ensure that settings -> google apps script API is ON." if self.credentials_path.nil?
     AstmServer.log("Initialized Google Lab Interface")
     $service = Google::Apis::ScriptV1::ScriptService.new
     $service.client_options.application_name = APPLICATION_NAME

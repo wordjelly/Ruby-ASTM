@@ -37,11 +37,11 @@ class Order
 	def initialize(args)
 		if args[:line]
 			line = args[:line]
-			if line.fields[2]
+			if !line.fields[2].strip.blank?
 				line.fields[2].strip.scan(/(?<specimen_id>[^\^]+)/) { |specimen_id|
 					self.id ||= specimen_id
 				}
-			elsif line.fields[3]
+			elsif !line.fields[3].strip.blank?
 				## for the sysmex xn-550 this is the regex.
 				line.fields[3].strip.scan(/(?<tube_rack>\d+\^)+(?<patient_id>.+)\^/) { |tube_rack,patient_id|  self.id = patient_id.strip}
 			end
