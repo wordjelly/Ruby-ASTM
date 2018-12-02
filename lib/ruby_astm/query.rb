@@ -12,6 +12,15 @@ class Query
 		end
 	end
 
+	def get_tests
+		tests = []
+		sample_tests = $redis.hget(Poller::REQUISITIONS_HASH,self.sample_id)
+		unless sample_tests.blank?
+			tests = JSON.parse(sample_tests)
+		end
+		tests
+	end
+
 	## each query will build one patient and one order inside it.
 	## the order can have many tests.
 	def build_response(variables=nil)
@@ -27,11 +36,7 @@ class Query
 =end
 
 		## tests are got from the requisitions hash.
-		tests = []
-		sample_tests = $redis.hget(Poller::REQUISITIONS_HASH,self.sample_id)
-		unless sample_tests.blank?
-			tests = JSON.parse(sample_tests)
-		end
+		tests = get_tests
 
 		## default sequence number is 0 (THIS MAY LEAD TO PROBLEMS.)
 		sequence_number = "0"

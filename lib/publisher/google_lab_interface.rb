@@ -68,15 +68,7 @@ class Google_Lab_Interface < Poller
     
     AstmServer.log("polling LIS for new requisitions")
     
-    latest_two_entries = $redis.zrange Poller::REQUISITIONS_SORTED_SET, -2, -1, {withscores: true}
-
-    epoch = latest_two_entries[-1][1].to_i
-
-    puts "sending the latest epoch as: #{epoch}"
-
-    
-    epoch = (Time.now - 5.days).to_i*1000
-    
+    epoch = get_checkpoint
     
     pp = {
       :input => JSON.generate([epoch])

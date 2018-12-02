@@ -104,17 +104,38 @@ class TestRubyAstm < Minitest::Test
   ## kindly note, the credentials specified herein are no longer active ;)
   def test_initialized_google_lab_interface
     goog = Google_Lab_Interface.new(nil,"/home/bhargav/Desktop/credentials.json","/home/bhargav/Desktop/token.yaml","MNWKZC-L05-ufApJTSqaLq42yotVzKYhk")
-    #goog.poll
+    
   end 
 
   ## these two specs have to pass.
   def test_polls_for_requisitions_after_checkpoint
-    ## so how do we do this exactly ?
-
+    poller = Poller.new
+    $redis.del Poller::REQUISITIONS_SORTED_SET
+    $redis.del Poller::REQUISITIONS_HASH
+    ## here the only issue is that it is dependent, so we cannot test this like this. 
+    lis_response = {
+      "1543490233000" => [
+        [nil, nil, nil, nil, nil, nil, nil, "HIV,HBS,ESR,GLUPP", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, "Lavender:barcode", "Serum:barcode", "Plasma:barcode", "Fluoride:barcode", "Urine:barcode", "ESR:barcode"]
+      ],
+      "1543490233001" => [
+        [nil, nil, nil, nil, nil, nil, nil, "HIV,HBS,ESR,GLUPP", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, "Lavender:barcode", "Serum:barcode", "Plasma:barcode", "Fluoride:barcode", "Urine:barcode", "ESR:barcode"]
+      ]
+    }
+    poller.process_LIS_response(JSON.generate(lis_response))
+    checkpoint = poller.get_checkpoint
+    assert_equal checkpoint, 1543490233001
   end
 
   def test_query_uses_requisitions_hash_to_generate_response
-
+    server = AstmServer.new("127.0.0.1",3000,nil)
+    $redis.del("patients")
+    root_path = File.dirname __dir__
+    em200_input_file_path = File.join root_path,'test','resources','em_200_query_sample.txt'
+    ## add an entry for the id specified in the query.
+    $redis.hset(Poller::REQUISITIONS_HASH,"010520182",JSON.generate(["GLUR"]))
+    server.process_text_file(em200_input_file_path)
+    tests = server.headers[-1].queries[-1].get_tests
+    assert_equal tests, JSON.parse($redis.hget(Poller::REQUISITIONS_HASH,"010520182"))
   end
  
 end

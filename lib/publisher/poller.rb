@@ -193,7 +193,19 @@ class Poller
 	      end  
 	    end
 	end
+	
+	def default_checkpoint
+		(Time.now - 5.days).to_i*1000
+	end
 
+	def get_checkpoint
+		latest_two_entries = $redis.zrange Poller::REQUISITIONS_SORTED_SET, -2, -1, {withscores: true}
+		unless latest_two_entries.blank?
+    		latest_two_entries[-1][1].to_i
+    	else
+    		default_checkpoint
+		end
+	end
 
   	## @param[String] json_response : contains the response from the LIS
   	## it should be the jsonified version of a hash that is structured as follows: 
