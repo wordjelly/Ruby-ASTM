@@ -189,11 +189,15 @@ class Poller
 	    $redis.multi do |multi|
 	      $redis.zadd REQUISITIONS_SORTED_SET, epoch, JSON.generate(tests)
 	      tests.keys.each do |tube_barcode|
-	        $redis.hset REQUISITIONS_HASH, tube_barcode, JSON.generate(tests[tube_barcode])
+	      	## in this hash we want the key to be only the specimen id.
+	      	## and not prefixed by the tube type like FLUORIDE etc.
+	      	tube_barcode.scan(/:(?<barcode>.*)$/) { |barcode|  
+	      		$redis.hset REQUISITIONS_HASH, barcode, JSON.generate(tests[tube_barcode])
+	      	}
 	      end  
 	    end
 	end
-	
+
 	def default_checkpoint
 		(Time.now - 5.days).to_i*1000
 	end

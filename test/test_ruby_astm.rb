@@ -97,7 +97,7 @@ class TestRubyAstm < Minitest::Test
     assert_equal 1543490233000.0, sorted_set[0][1]
     assert_equal [["{\"EDTA:Lavender:barcode\":[],\"SERUM:Serum:barcode\":[],\"PLASMA:Plasma:barcode\":[\"5\",\"4\"],\"FLUORIDE:Fluoride:barcode\":[\"GLUPP\"],\"URINE:Urine:barcode\":[],\"ESR:ESR:barcode\":[\"ESR\"]}", 1543490233000.0]], sorted_set
     requisitions_hash = $redis.hgetall Poller::REQUISITIONS_HASH
-    assert_equal requisitions_hash, {"EDTA:Lavender:barcode"=>"[]", "SERUM:Serum:barcode"=>"[]", "PLASMA:Plasma:barcode"=>"[\"5\",\"4\"]", "FLUORIDE:Fluoride:barcode"=>"[\"GLUPP\"]", "URINE:Urine:barcode"=>"[]", "ESR:ESR:barcode"=>"[\"ESR\"]"}
+    assert_equal requisitions_hash, {"Lavender:barcode"=>"[]", "Serum:barcode"=>"[]", "Plasma:barcode"=>"[\"5\",\"4\"]", "Fluoride:barcode"=>"[\"GLUPP\"]", "Urine:barcode"=>"[]", "ESR:barcode"=>"[\"ESR\"]"}
     
   end
 

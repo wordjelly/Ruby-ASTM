@@ -62,7 +62,7 @@ class Order
 		
 		raise "provide a sequence number" if self.sequence_number.blank?
 		raise "provide a specimen id" if self.id.blank?
-		raise "provide a list of tests" if self.tests.blank?
+		#raise "provide a list of tests" if self.tests.blank?
 		raise "provide a test priority" if self.priority.blank?
 		
 		if self.specimen_type.blank?
