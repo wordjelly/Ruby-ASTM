@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'ruby_astm'
-  s.version     = '0.0.9'
+  s.version     = '1.0.0'
   s.date        = '2018-11-20'
   s.summary     = "A Ruby gem to interface with Medical instruments that work on the ASTM protocol"
   s.description = "This gem provides a server that can handle communication from medical instruments that send/receive information on the ASTM protocol."
