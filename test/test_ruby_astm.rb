@@ -4,15 +4,6 @@ require 'ruby_astm'
 
 class TestRubyAstm < Minitest::Test
 
-=begin	 
-  def test_r
-    #puts AstmServer.root_path
-    #file = File.join AstmServer.root_path, "../","mappings.json"
-    #puts JSON.parse(IO.read(file))
-  end
-=end
-
-
   def test_sysmex_550_receives_results
   	server = AstmServer.new("127.0.0.1",3000,nil)
   	$redis.del("patients")
@@ -96,7 +87,7 @@ class TestRubyAstm < Minitest::Test
     ## here the only issue is that it is dependent, so we cannot test this like this. 
     lis_response = {
       "1543490233000" => [
-        [nil, nil, nil, nil, nil, nil, nil, nil, "HIV,HBS,ESR,GLUPP", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, "Lavender:barcode", "Serum:barcode", "Plasma:barcode", "Fluoride:barcode", "Urine:barcode", "ESR:barcode"]
+        [nil, nil, nil, nil, nil, nil, nil, "HIV,HBS,ESR,GLUPP", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, "Lavender:barcode", "Serum:barcode", "Plasma:barcode", "Fluoride:barcode", "Urine:barcode", "ESR:barcode"]
       ]
     }
     poller.process_LIS_response(JSON.generate(lis_response))
@@ -112,7 +103,18 @@ class TestRubyAstm < Minitest::Test
 
   ## kindly note, the credentials specified herein are no longer active ;)
   def test_initialized_google_lab_interface
-    goog = Google_Lab_Interface.new(nil,"/home/bhargav/Desktop/credentials.json","/home/bhargav/Desktop/token.yaml")
+    goog = Google_Lab_Interface.new(nil,"/home/bhargav/Desktop/credentials.json","/home/bhargav/Desktop/token.yaml","MNWKZC-L05-ufApJTSqaLq42yotVzKYhk")
+    #goog.poll
+  end 
+
+  ## these two specs have to pass.
+  def test_polls_for_requisitions_after_checkpoint
+    ## so how do we do this exactly ?
+
   end
-  
+
+  def test_query_uses_requisitions_hash_to_generate_response
+
+  end
+ 
 end

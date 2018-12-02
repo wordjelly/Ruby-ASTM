@@ -106,6 +106,8 @@ class Poller
   	end	
 
   	def build_tests_hash(record)
+  		#puts "Record is ---------------------------------------------"
+  		#puts record
 	    tests_hash = {}
 
 	    ## key -> TUBE_NAME : eg: EDTA
@@ -118,38 +120,41 @@ class Poller
 	    ## fluoride -> index 31
 	    ## urine -> index 32
 	    ## esr -> index 33
+	    unless record[24].blank?
+	      tube_ids[EDTA] = record[24].to_s
+	      tests_hash[EDTA + ":" + record[24].to_s] = []
+	    end
+
+	    unless record[25].blank?
+	      tube_ids[SERUM] = record[25].to_s
+	      tests_hash[SERUM + ":" + record[25].to_s] = []
+	    end
+
+	    unless record[26].blank?
+	      tube_ids[PLASMA] = record[26].to_s
+	      tests_hash[PLASMA + ":" + record[26].to_s] = []
+	    end
+
+	    unless record[27].blank?
+	      tube_ids[FLUORIDE] = record[27].to_s
+	      tests_hash[FLUORIDE + ":" + record[27].to_s] = []
+	    end
+
 	    unless record[28].blank?
-	      tube_ids[EDTA] = record[28].to_s
-	      tests_hash[EDTA + ":" + record[28].to_s] = []
+	      tube_ids[URINE] = record[28].to_s
+	      tests_hash[URINE + ":" + record[28].to_s] = []
 	    end
 
 	    unless record[29].blank?
-	      tube_ids[SERUM] = record[29].to_s
-	      tests_hash[SERUM + ":" + record[29].to_s] = []
+	      tube_ids[ESR] = record[29].to_s
+	      tests_hash[ESR + ":" + record[29].to_s] = []
 	    end
 
-	    unless record[30].blank?
-	      tube_ids[PLASMA] = record[30].to_s
-	      tests_hash[PLASMA + ":" + record[30].to_s] = []
-	    end
+	    tests = record[7].split(",").compact
 
-	    unless record[31].blank?
-	      tube_ids[FLUORIDE] = record[31].to_s
-	      tests_hash[FLUORIDE + ":" + record[31].to_s] = []
-	    end
-
-	    unless record[32].blank?
-	      tube_ids[URINE] = record[32].to_s
-	      tests_hash[URINE + ":" + record[32].to_s] = []
-	    end
-
-	    unless record[33].blank?
-	      tube_ids[ESR] = record[33].to_s
-	      tests_hash[ESR + ":" + record[33].to_s] = []
-	    end
-
-
-	    tests = record[8].split(",")
+	    puts "tests are:"
+	    puts tests.to_s
+	    return tests_hash if tests_hash.empty?
 	    tests.each do |test|
 	      ## use the inverted mappings to 
 	      if machine_code = $inverted_mappings[test]
@@ -159,6 +164,9 @@ class Poller
 	        ## now find the tests_hash which has this tube.
 	        ## and the machine code to its array.
 	        ## so how to find this.
+	        puts "tube is : #{tube}"
+	        puts "tests hash is:"
+	        puts tests_hash.to_s
 	        tube_key = tests_hash.keys.select{|c| c=~/#{tube}/ }[0] 
 	        tests_hash[tube_key] << machine_code   
 	      else

@@ -17,10 +17,10 @@ class Google_Lab_Interface < Poller
   SCOPES = ["https://www.googleapis.com/auth/documents","https://www.googleapis.com/auth/drive","https://www.googleapis.com/auth/script.projects","https://www.googleapis.com/auth/spreadsheets"]
 
   $service = nil
-  SCRIPT_ID = "M7JDg7zmo0Xldo4RTWFGCsI2yotVzKYhk"
 
   attr_accessor :credentials_path
   attr_accessor :token_path
+  attr_accessor :script_id
   
   ##
   # Ensure valid credentials, either by restoring from the saved credentials
@@ -49,25 +49,34 @@ class Google_Lab_Interface < Poller
   ## @param[String] mpg : path to mappings file. Defaults to nil.
   ## @param[String] credentials_path : the path to look for the credentials.json file, defaults to nil ,and will raise an error unless provided
   ## @param[String] token_path : the path where the oauth token will be stored, also defaults to the path of the gem : eg. ./token.yaml - be careful with write permissions, because token.yaml gets written to this path after the first authorization.
-  def initialize(mpg=nil,credentials_path,token_path)
+  def initialize(mpg=nil,credentials_path,token_path,script_id)
     super(mpg)
     self.credentials_path = credentials_path
     self.token_path = token_path
+    self.script_id = script_id
     raise "Please provide the full path of the google oauth credentials.json file. If you don't have this file, please go to the Apps Script project, which has your google apps script, and Choose Create Credentials -> help me choose -> and use 'Calling Scripts Api from a UI based platform'. Also ensure that your script has permissions set for Drive, Sheets, and more. Lastly in the Apps script project ensure that settings -> google apps script API is ON." if self.credentials_path.nil?
+    raise "Please provide a script id for your google script" if self.script_id.blank?
     AstmServer.log("Initialized Google Lab Interface")
     $service = Google::Apis::ScriptV1::ScriptService.new
     $service.client_options.application_name = APPLICATION_NAME
     $service.authorization = authorize
   end
 
-
+  ## how to decide for what to poll for the requisition.
+  ## this should be tested.
   def poll_LIS_for_requisition
     
-    
-     
     AstmServer.log("polling LIS for new requisitions")
     
+    latest_two_entries = $redis.zrange Poller::REQUISITIONS_SORTED_SET, -2, -1, {withscores: true}
+
+    epoch = latest_two_entries[-1][1].to_i
+
+    puts "sending the latest epoch as: #{epoch}"
+
+    
     epoch = (Time.now - 5.days).to_i*1000
+    
     
     pp = {
       :input => JSON.generate([epoch])
@@ -79,7 +88,7 @@ class Google_Lab_Interface < Poller
     )
 
     begin 
-      resp = $service.run_script(SCRIPT_ID, request)
+      resp = $service.run_script(self.script_id, request)
       if resp.error
         AstmServer.log("Response Error polling LIS for requisitions: #{resp.error.message}: #{resp.error.code}")
       else
@@ -116,7 +125,7 @@ class Google_Lab_Interface < Poller
     begin
       AstmServer.log("updating following results to LIS")
       AstmServer.log(request.parameters.to_s)
-      resp = $service.run_script(SCRIPT_ID, request)
+      resp = $service.run_script(self.script_id, request)
       if resp.error
         AstmServer.log("Error updating results to LIS, message follows")
         AstmServer.log("error: #{resp.error.message} : code: #{resp.error.code}")
