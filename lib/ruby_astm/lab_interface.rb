@@ -37,10 +37,13 @@ module LabInterface
     "L|1|N\r"
   end
 
+
   def checksum(input)
     strString = input
     checksum = strString.sum
+    #puts "checksum before to_s is: #{checksum}"
     b = checksum.to_s(16)
+    #puts "b is: #{b}"
     strCksm = b[-2..-1]
     if strCksm.length < 2 
       for i in strString.length..1

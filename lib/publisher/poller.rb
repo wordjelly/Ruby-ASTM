@@ -230,8 +230,9 @@ class Poller
   	end
 
   	## override to define how the data is updated.
+  	## expected to return Boolean value, depending on whether the update was successfull or not.
   	def update(data)
-
+  		true
   	end
 
 	##@param[Array] data : array of objects.
@@ -333,8 +334,11 @@ class Poller
 		while patients_to_process == true
 			if patient_results = $redis.rpoplpush("patients","processing")
 				patient_results = JSON.parse(patient_results)
-				update(patient_results)
+				## do this before the update, so that we don't go into an endless loop if the current update fails.
 				patients_to_process = $redis.llen("patients") > 0
+				unless update(patient_results)
+					$redis.lpush("patients",JSON.generate(patient_results))
+				end
 			else
 				patients_to_process = false
 			end

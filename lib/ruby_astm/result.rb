@@ -11,7 +11,7 @@ class Result
 	def initialize(args)
 		if args[:line]
 			line = args[:line]
-			line.fields[2].scan(/\^+(?<name>[A-Za-z0-9\%\#-]+)\^?(?<dilution>\d+)?/) { |name,dilution|  
+			line.fields[2].scan(/\^+(?<name>[A-Za-z0-9\%\#\-\_\?\/]+)\^?(?<dilution>\d+)?/) { |name,dilution|  
 				self.name = lookup_mapping(name)
 				self.dilution = dilution
 			}

@@ -101,6 +101,7 @@ class Google_Lab_Interface < Poller
   # method overriden from adapter.
   # data should be an array of objects.
   # see adapter for the recommended structure.
+  # @return[Boolean] true/false : depending on if there was an error or not.
   def update(data)
 
     orders = JSON.generate(data)
@@ -121,13 +122,15 @@ class Google_Lab_Interface < Poller
       if resp.error
         AstmServer.log("Error updating results to LIS, message follows")
         AstmServer.log("error: #{resp.error.message} : code: #{resp.error.code}")
-        #puts "there was an error."
+        false
       else
         AstmServer.log("Updating results to LIS successfull")
+        true
       end
     rescue => e
       AstmServer.log("Error updating results to LIS, backtrace follows")
       AstmServer.log(e.backtrace.to_s)
+      false
     end
 
   end

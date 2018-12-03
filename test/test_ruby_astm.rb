@@ -4,12 +4,15 @@ require 'ruby_astm'
 
 class TestRubyAstm < Minitest::Test
 
+
   def test_sysmex_550_receives_results
   	server = AstmServer.new("127.0.0.1",3000,nil)
   	$redis.del("patients")
   	root_path = File.dirname __dir__
   	sysmex_input_file_path = File.join root_path,'test','resources','sysmex_550_sample.txt'
   	server.process_text_file(sysmex_input_file_path)
+    patient = JSON.parse($redis.lrange("patients",0,0)[0])
+    assert_equal "16.4", patient["@orders"][0]["results"]["HBparam"]["value"]
   	assert_equal 1, $redis.llen("patients")
   end
 
@@ -137,5 +140,38 @@ class TestRubyAstm < Minitest::Test
     tests = server.headers[-1].queries[-1].get_tests
     assert_equal tests, JSON.parse($redis.hget(Poller::REQUISITIONS_HASH,"010520182"))
   end
- 
+
+
+  def test_calculates_checksum_correctly
+    root_path = File.dirname __dir__
+    e411_checksum_file_path = File.join root_path,'test','resources','e411_checksum.txt'
+    server = AstmServer.new("127.0.0.1",3000,nil)
+    assert_equal "D4", server.checksum(IO.read(e411_checksum_file_path))
+  end
+
+
+  def test_script_error_in_update_reverts_redis_rpoplpush
+    Poller.class_eval do 
+      def update(data)
+        false
+      end
+    end    
+    server = AstmServer.new("127.0.0.1",3000,nil)
+    $redis.del("patients")
+    root_path = File.dirname __dir__
+    sysmex_input_file_path = File.join root_path,'test','resources','sysmex_550_sample.txt'
+    server.process_text_file(sysmex_input_file_path)
+    p = Poller.new
+    p.update_LIS
+    ## resetting.
+    Poller.class_eval do 
+      def update(data)
+        true
+      end
+    end    
+    ## it should be that this is still there in the patients.
+    assert_equal 1, $redis.llen("patients")
+
+  end 
+
 end
