@@ -3,7 +3,8 @@
 	"WBC" : 
 	{
 		"LIS_CODE" : "TLCparam",
-		"TUBE" : "EDTA"
+		"TUBE" : "EDTA",
+		"TRANSFORM" : "(self.value.to_f*1000).to_i.to_s"
 	},
 	"RBC" : 
 	{
@@ -34,7 +35,8 @@
 	},
 	"PLT" : {
 		"LIS_CODE" : "PCparam",
-		"TUBE" : "EDTA"
+		"TUBE" : "EDTA",
+		"TRANSFORM" : "(self.value.to_f*1000).to_i.to_s"
 	},
 	"NEUT%": {
 		"LIS_CODE" : "Nparam",

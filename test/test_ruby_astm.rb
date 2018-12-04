@@ -13,9 +13,10 @@ class TestRubyAstm < Minitest::Test
   	server.process_text_file(sysmex_input_file_path)
     patient = JSON.parse($redis.lrange("patients",0,0)[0])
     assert_equal "16.4", patient["@orders"][0]["results"]["HBparam"]["value"]
-  	assert_equal 1, $redis.llen("patients")
+  	assert_equal "16740", patient["@orders"][0]["results"]["TLCparam"]["value"]
+    assert_equal "586000", patient["@orders"][0]["results"]["PCparam"]["value"]
+    assert_equal 1, $redis.llen("patients")
   end
-
 
   def test_em_200_receives_results
   	server = AstmServer.new("127.0.0.1",3000,nil)
