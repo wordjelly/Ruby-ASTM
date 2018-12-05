@@ -4,6 +4,8 @@ class Line
 		"H" => "Header",
 		"MSH" => "Hl7_Header",
 		"OBX" => "Hl7_Observation",
+		"PID" => "Hl7_Patient",
+		"OBR" => "Hl7_Order",
 		"P" => "Patient",
 		"Q" => "Query",
 		"O" => "Order",

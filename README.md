@@ -69,3 +69,13 @@ The gem, basically parses incoming data, and dumps each patient order into redis
 ## TESTED WITH INSTRUMENTS
 
 1. Sysmex-XN550
+
+
+
+## Development Notes:
+
+1. HL7 documentation was a bit hard to find. Eventually, I used the following link to get the structure of any component out of HL7 messages. [HL7 structure](http://hl7-definition.caristix.com:9010/HL7%20v2.4.9/segment/OBX)
+
+2. ASTM documentation was even harder to find. I used the interfacing guide provided by Erba-Mannheim for the machine EM-200. It had quite a few details. It has been uploaded as a part of this repository.  
+
+3. HL7 acknowledgement message structure was adopted from : [HL7 Acknowledgement Message](http://hl7reference.com/HL7%20Specifications%20ORM-ORU.PDF)

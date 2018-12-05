@@ -5,15 +5,22 @@ class Patient
 	attr_accessor :patient_id
 	attr_accessor :orders
 	
-	def initialize(args)
-		if args[:line]
-			line = args[:line]
-			self.sequence_number = line.fields[1].to_i
-			self.orders = []
+	def set_sequence_number(args)
+		if line = args[:line]
+			self.sequence_number = line.fields[-1].to_i
 		else
 			self.sequence_number = args[:sequence_number]
-			self.patient_id = args[:patient_id]
 		end
+	end
+
+	def set_patient_id(args)
+		self.patient_id = args[:patient_id]
+	end
+
+	def initialize(args)
+		set_sequence_number(args)
+		set_patient_id(args)
+		self.orders = []
 	end
 
 	## patient id.

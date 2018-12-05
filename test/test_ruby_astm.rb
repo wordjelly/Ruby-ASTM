@@ -18,8 +18,28 @@ class TestRubyAstm < Minitest::Test
     root_path = File.dirname __dir__
     siemens_input_file_path = File.join root_path,'test','resources','siemens_clinitek.txt'
     server.process_text_file(siemens_input_file_path)
+    server.headers[-1].commit
+    assert_equal 1, $redis.llen("patients")
+    patient = JSON.parse($redis.lrange("patients",0,0)[0])
+    assert_equal "Clear", patient["@orders"][0]["results"]["CLA"]["value"]
+    assert_equal "Yellow", patient["@orders"][0]["results"]["COL"]["value"]
+    assert_equal "6.0", patient["@orders"][0]["results"]["pH"]["value"]
+  end
+
+
+  def test_generates_ack_message_for_hl7_protocol
+    server = AstmServer.new("127.0.0.1",3000,nil)
+    $redis.del("patients")
+    root_path = File.dirname __dir__
+    siemens_input_file_path = File.join root_path,'test','resources','siemens_clinitek.txt'
+    server.process_text_file(siemens_input_file_path)
+    server.headers[-1].commit
+    ack_success = server.headers[-1].generate_ack_success_response
+    puts ack_success.to_s
+    ## so instead of this data, it has to send back the rest of it.
   end
   
+
   def test_sysmex_550_receives_results
   	server = AstmServer.new("127.0.0.1",3000,nil)
   	$redis.del("patients")
@@ -189,5 +209,6 @@ class TestRubyAstm < Minitest::Test
     assert_equal 1, $redis.llen("patients")
 
   end 
+
 
 end

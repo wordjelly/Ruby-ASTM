@@ -3,23 +3,39 @@ class Header
 	attr_accessor :patients
 	attr_accessor :queries
 	attr_accessor :response_sent
+	attr_accessor :protocol
+
+	def is_astm?
+		self.protocol == "ASTM"
+	end		
+
+	def is_hl7?
+		self.protocol == "HL7"
+	end
+
+
+	def set_protocol(args)
+		self.protocol = "ASTM"
+	end	
 
 	def initialize(args)
 		self.patients = []
 		self.queries = []
 		self.response_sent = false
-		if args[:line]
-			line = args[:line]
-			line
+		if line = args[:line]
+			set_machine_name(args)
+			set_protocol(args)
 		else
 			super
 		end
 	end
 
-	def set_machine_name(line)
-		unless line.fields[4].empty?
-			fields = line.fields[4].split(/\^/)
-			self.machine_name = fields[0].strip
+	def set_machine_name(args)
+		if line = args[:line]
+			unless line.fields[4].empty?
+				fields = line.fields[4].split(/\^/)
+				self.machine_name = fields[0].strip
+			end
 		end
 	end
 

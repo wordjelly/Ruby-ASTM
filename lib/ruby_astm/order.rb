@@ -34,7 +34,55 @@ class Order
 	## index (11)
 	attr_accessor :action_code
 
+	def set_id(args)
+		if line = args[:line]
+			if !line.fields[2].strip.blank?
+				line.fields[2].strip.scan(/(?<specimen_id>[^\^]+)/) { |specimen_id|
+					self.id ||= specimen_id
+				}
+			elsif !line.fields[3].strip.blank?
+				## for the sysmex xn-550 this is the regex.
+				line.fields[3].strip.scan(/(?<tube_rack>\d+\^)+(?<patient_id>.+)\^/) { |tube_rack,patient_id|  self.id = patient_id.strip}
+			end
+		else
+			self.id = args[:specimen_id]
+		end
+	end
+
+	def set_sequence_number(args)
+		self.sequence_number = args[:sequence_number]
+	end
+
+	def set_tests(args)
+		self.tests = args[:tests]
+	end
+
+	def set_specimen_type(args)
+		self.specimen_type = args[:specimen_type]
+	end
+
+	def set_date_time(args)		
+		self.date_time = args[:date_time]
+	end
+
+	def set_priority(args)
+		self.priority = args[:priority]
+	end
+
+	def set_action_Code(args)
+		self.action_code = args[:args]
+	end
+
 	def initialize(args)
+		set_id(args)
+		set_priority(args)
+		set_sequence_number(args)
+		set_tests(args)
+		set_specimen_type(args)
+		set_date_time(args)
+		set_priority(args)
+		set_action_Code(args)
+=begin		
 		if args[:line]
 			line = args[:line]
 			if !line.fields[2].strip.blank?
@@ -50,11 +98,11 @@ class Order
 			self.tests = args[:tests]
 			self.id = args[:specimen_id]
 			self.specimen_type = args[:specimen_type]
-			self.tests = args[:tests]
 			self.date_time = args[:date_time]
 			self.priority = args[:priority]
 			self.action_code = args[:action_code]
 		end
+=end
 		self.results = {}
 	end
 

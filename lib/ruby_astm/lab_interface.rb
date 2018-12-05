@@ -29,7 +29,9 @@ module LabInterface
   def process_text_file(full_file_path)
     #full_file_path ||= File.join root,'../test','resources','sysmex_550_sample.txt'
     IO.read(full_file_path).each_line do |line|
-      process_text(line)
+      line.split('\\r').each do |txt| 
+        process_text(txt)
+      end
     end
   end
 
@@ -98,7 +100,14 @@ module LabInterface
       else
         ## send the header 
         puts "--------- SENT ACK -----------"
-        send_data(ACK)
+        ## here it depends if the header is a hl7_header ?
+        if self.headers[-1].protocol.is_astm?
+          send_data(ACK)
+        elsif self.headers[-1].protocol.is_hl7?
+          if self.headers.size > 0
+            send_data(self.headers[-1].generate_ack_success_response)
+          end
+        end
       end
   end
 
@@ -109,6 +118,8 @@ module LabInterface
   end
 
   def process_text(text)
+      ## should replace carriage returns with new lines, before processing any file.
+      ## or text.
       text.split("\n").each do |l|
 		    line = Line.new({:text => l})
         process_type(line)
@@ -125,9 +136,11 @@ module LabInterface
         hl7_observation = Hl7Observation.new({:line => line})
         self.headers[-1].patients[-1].orders[-1].results[hl7_observation.name] = hl7_observation
       when "Hl7_Patient"
-        ## like a patient
-      when "Hl7_Patient_Visti"
-        ## like an order.
+        hl7_patient = Hl7Patient.new({:line => line})
+        self.headers[-1].patients << hl7_patient
+      when "Hl7_Order"
+        hl7_order = Hl7Order.new({:line => line})
+        self.headers[-1].patients[-1].orders << hl7_order
       when "Header"
         header = Header.new({:line => line})
         self.headers ||= []
@@ -145,6 +158,7 @@ module LabInterface
         result = Result.new({:line => line})
         self.headers[-1].patients[-1].orders[-1].results[result.name] = result
       when "Terminator"
+        ## it didn't terminate so there was no commit being called.
         self.headers[-1].commit
       end
   end
