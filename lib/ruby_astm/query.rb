@@ -42,7 +42,7 @@ class Query
 		sequence_number = "0"
 
 		## default patient id:
-		patient_id = "abcde#{Time.now.strftime("%b %d, %Y, %H:%M:%S"}"
+		patient_id = "abcde#{Time.now.strftime('%b %d, %Y, %H:%M:%S')}"
 
 		patient = Patient.new({:sequence_number => sequence_number, :patient_id => patient_id})
 		
