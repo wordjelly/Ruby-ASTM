@@ -6,7 +6,9 @@ class Hl7Patient < Patient
 
 	def set_patient_id(args)
 		if line = args[:line]
-			self.patient_id = line.fields[1].strip
+			unless line.fields[3].blank?
+				self.patient_id = line.fields[3].strip
+			end
 		end
 	end
 end

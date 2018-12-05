@@ -11,7 +11,6 @@ class TestRubyAstm < Minitest::Test
   end
 =end
 
-
   def test_receives_siemens_results
     server = AstmServer.new("127.0.0.1",3000,nil)
     $redis.del("patients")
@@ -24,6 +23,7 @@ class TestRubyAstm < Minitest::Test
     assert_equal "Clear", patient["@orders"][0]["results"]["CLA"]["value"]
     assert_equal "Yellow", patient["@orders"][0]["results"]["COL"]["value"]
     assert_equal "6.0", patient["@orders"][0]["results"]["pH"]["value"]
+    assert_equal "010820187", patient["@orders"][0]["id"]
   end
 
 

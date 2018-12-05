@@ -100,11 +100,12 @@ module LabInterface
       else
         ## send the header 
         puts "--------- SENT ACK -----------"
-        ## here it depends if the header is a hl7_header ?
-        if self.headers[-1].protocol.is_astm?
+        if self.headers[-1].is_astm?
           send_data(ACK)
-        elsif self.headers[-1].protocol.is_hl7?
+        elsif self.headers[-1].is_hl7?
           if self.headers.size > 0
+            ## commit should return the jsonified thing, if possible.
+            self.headers[-1].commit
             send_data(self.headers[-1].generate_ack_success_response)
           end
         end
@@ -139,7 +140,7 @@ module LabInterface
         hl7_patient = Hl7Patient.new({:line => line})
         self.headers[-1].patients << hl7_patient
       when "Hl7_Order"
-        hl7_order = Hl7Order.new({:line => line})
+        hl7_order = Hl7Order.new({:line => line, :patient_id => self.headers[-1].patients[-1].patient_id})
         self.headers[-1].patients[-1].orders << hl7_order
       when "Header"
         header = Header.new({:line => line})

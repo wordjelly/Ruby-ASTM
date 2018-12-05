@@ -193,5 +193,53 @@
 	"ESR" : {
 		"LIS_CODE" : "ESR",
 		"TUBE" : "ESR"
+	},
+	"GLU" : {
+		"LIS_CODE" : "GLU",
+		"TUBE" : "URINE_CONTAINER"
+	},
+	"BIL" : {
+		"LIS_CODE" : "BIL",
+		"TUBE" : "URINE_CONTAINER"
+	},
+	"KET" : {
+		"LIS_CODE" : "KET",
+		"TUBE" : "URINE_CONTAINER"
+	},
+	"SG" : {
+		"LIS_CODE" : "SG",
+		"TUBE" : "URINE_CONTAINER"
+	},
+	"BLO" : {
+		"LIS_CODE" : "BLO",
+		"TUBE" : "URINE_CONTAINER"
+	},
+	"pH" : {
+		"LIS_CODE" : "pH",
+		"TUBE" : "URINE_CONTAINER"
+	},
+	"PRO" : {
+		"LIS_CODE" : "PRO",
+		"TUBE" : "URINE_CONTAINER"
+	},
+	"URO" : {
+		"LIS_CODE" : "URO",
+		"TUBE" : "URINE_CONTAINER"
+	},
+	"NIT" : {
+		"LIS_CODE" : "NIT",
+		"TUBE" : "URINE_CONTAINER"
+	},
+	"LEU" : {
+		"LIS_CODE" : "LEU",
+		"TUBE" : "URINE_CONTAINER"
+	},
+	"COL" : {
+		"LIS_CODE" : "COL",
+		"TUBE" : "URINE_CONTAINER"
+	},
+	"CLA" : {
+		"LIS_CODE" : "CLA",
+		"TUBE" : "URINE_CONTAINER"
 	}
 }

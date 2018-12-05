@@ -42,7 +42,7 @@ class Header
 	## pushes each patient into a redis list called "patients"
 	def commit
 		self.patients.map{|patient| $redis.lpush("patients",patient.to_json)}
-		#puts JSON.pretty_generate(JSON.parse(self.to_json))
+		puts JSON.pretty_generate(JSON.parse(self.to_json))
 	end
 
 	## used to respond to queries.
