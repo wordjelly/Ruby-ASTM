@@ -5,7 +5,7 @@ The library provides an EventMachine Server, and several helpful classes that do
 The library is so small, that it doesn't need a Wiki. ;)
 The architecture that you get with this gem is outlined in the following figure.
 
-![RUBY-ASTM-ARCHITECTURE](http://url/to/img.png)
+![RUBY-ASTM-ARCHITECTURE](https://github.com/wordjelly/Ruby-ASTM/blob/master/architecture.svg)
 
 
 
