@@ -4,7 +4,22 @@ require 'ruby_astm'
 
 class TestRubyAstm < Minitest::Test
 
+=begin
+  def test_server
+    server = AstmServer.new("192.168.1.11",3000,nil)
+    server.start_server
+  end
+=end
 
+
+  def test_receives_siemens_results
+    server = AstmServer.new("127.0.0.1",3000,nil)
+    $redis.del("patients")
+    root_path = File.dirname __dir__
+    siemens_input_file_path = File.join root_path,'test','resources','siemens_clinitek.txt'
+    server.process_text_file(siemens_input_file_path)
+  end
+  
   def test_sysmex_550_receives_results
   	server = AstmServer.new("127.0.0.1",3000,nil)
   	$redis.del("patients")

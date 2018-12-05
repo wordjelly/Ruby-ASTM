@@ -2,6 +2,8 @@ class Line
 
 	TYPES = {
 		"H" => "Header",
+		"MSH" => "Hl7_Header",
+		"OBX" => "Hl7_Observation",
 		"P" => "Patient",
 		"Q" => "Query",
 		"O" => "Order",
@@ -23,8 +25,6 @@ class Line
 	##
 	########################################################
 
-	
-	
 	## sets the types, and fields
 	## we can have processing based on line.
 	def initialize(args)
@@ -41,23 +41,12 @@ class Line
 	def detect_type
 		#puts "detecting line type: #{self.text}"
 		line_type = self.fields[0]
-		line_type.scan(/(?<ltype>[A-Z])/) { |ltype| 
-			#puts "got ltype as: #{ltype[0]}"
-			#puts Line::TYPES.to_s
+		line_type.scan(/(?<ltype>[A-Z]+)/) { |ltype| 
 			if Line::TYPES[ltype[0]]
 				self.type = Line::TYPES[ltype[0]]
-				#puts "assigning type as: #{self.type}"
 			end
 		}		
-	
-=begin
-			if self.fields[0][1..-1] =~/#{type}/
-				puts "got type: #{Line::TYPES[type]}"
-				self.type = Line::TYPES[type]
-				break
-			end
-=end
-		
+
 	end
 
 	

@@ -7,8 +7,66 @@ class Result
 	attr_accessor :reference_ranges
 	attr_accessor :dilution
 
+	def set_name(args)
+		if line = args[:line]
+			line.fields[2].scan(/\^+(?<name>[A-Za-z0-9\%\#\-\_\?\/]+)\^?(?<dilution>\d+)?/) { |name,dilution|  
+				self.name = lookup_mapping(name)
+			}
+		end
+	end
+
+	def set_value(args)
+		if line = args[:line]
+			self.value = line.fields[3].strip
+			line.fields[2].scan(/\^+(?<name>[A-Za-z0-9\%\#\-\_\?\/]+)\^?(?<dilution>\d+)?/) { |name,dilution|  
+				if transform_expression = lookup_transform(name)
+					self.value = eval(transform_expression)
+				end
+			}
+		end
+	end
+
+	def set_flags(args)
+		if line = args[:line]
+			self.flags = line.fields[6].strip
+		end 
+	end	
+
+	def set_units(args)
+
+	end
+
+	def set_timestamp(args)
+		if line = args[:line]
+			line.fields[12].strip.scan(/(?<year>\d{4})(?<month>\d{2})(?<day>\d{2})(?<hours>\d{2})(?<minutes>\d{2})(?<seconds>\d{2})/) {|year,month,day,hours,minutes,seconds|
+				self.timestamp = Time.new(year,month,day,hours,minutes,seconds)
+			}
+		end
+	end
+
+	def set_reference_ranges(args)
+		if line = args[:line]
+			self.reference_ranges = line.fields[5].strip
+		end
+	end
+
+	def set_dilution(args)
+		if line = args[:line]
+			line.fields[2].scan(/\^+(?<name>[A-Za-z0-9\%\#\-\_\?\/]+)\^?(?<dilution>\d+)?/) { |name,dilution|  
+				self.dilution = dilution
+			}
+		end
+	end
+
 	## here will call mappings and check the result correlation
 	def initialize(args)
+		set_name(args)
+		set_flags(args)
+		set_value(args)
+		set_timestamp(args)
+		set_dilution(args)
+		set_units(args)
+=begin
 		if args[:line]
 			line = args[:line]
 			transform_expression = nil
@@ -18,13 +76,9 @@ class Result
 				transform_expression = lookup_transform(name)
 			}
 			self.value = line.fields[3].strip
-			
 			if transform_expression
-				#puts "got transform expression, now evalling it."
 				self.value = eval(transform_expression)
-				#puts "Value after eval: #{self.value}"
 			end
-			#eval(transform_expression) unless transform_expression.blank?
 			self.reference_ranges = line.fields[5].strip
 			self.flags = line.fields[6].strip 
 			line.fields[12].strip.scan(/(?<year>\d{4})(?<month>\d{2})(?<day>\d{2})(?<hours>\d{2})(?<minutes>\d{2})(?<seconds>\d{2})/) {|year,month,day,hours,minutes,seconds|
@@ -33,6 +87,7 @@ class Result
 		else
 			super
 		end
+=end
 	end
 
 	## @return[String] the name defined in the mappings.json file, or the name that wqs passed in.

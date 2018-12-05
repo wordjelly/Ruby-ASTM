@@ -33,6 +33,7 @@ module LabInterface
     end
   end
 
+
   def terminator
     "L|1|N\r"
   end
@@ -41,9 +42,7 @@ module LabInterface
   def checksum(input)
     strString = input
     checksum = strString.sum
-    #puts "checksum before to_s is: #{checksum}"
     b = checksum.to_s(16)
-    #puts "b is: #{b}"
     strCksm = b[-2..-1]
     if strCksm.length < 2 
       for i in strString.length..1
@@ -58,7 +57,6 @@ module LabInterface
       puts "incoming data bytes."
 
       concat = ""
-      
       
       puts data.bytes.to_a.to_s
 
@@ -77,35 +75,25 @@ module LabInterface
       end
       
       #puts "concat is:"
-      puts concat.to_s
+      #puts concat.to_s
       process_text(concat)      
       
       if data.bytes.to_a[0] == 4
-        puts "sent ENQ"
         send_data(ENQ)
       elsif data.bytes.to_a[0] == 6
-        ## so now the middle part has to be 
-=begin
-        response = STX + "1H|\`^&||||||||||P|E 1394-97|#{Time.now.strftime("%Y%m%d%H%M%S")}\r" + terminator + ETX + checksum("1H|\`^&||||||||||P|E 1394-97|#{Time.now.strftime("%Y%m%d%H%M%S")}\r" + terminator) + "\r"
-        response = response.bytes.to_a
-        response << 10
-        send_data(response.pack('c*'))
-=end
         self.headers[-1].build_responses.each do |response|
           message_checksum = checksum(response + terminator + ETX)
-          puts "Calculated checksum is: #{message_checksum}"
+          #puts "Calculated checksum is: #{message_checksum}"
           final_resp = STX + response + terminator + ETX + message_checksum + "\r" 
           final_resp_arr = final_resp.bytes.to_a
           final_resp_arr << 10
-          puts final_resp_arr.to_s
+          #puts final_resp_arr.to_s
           if (self.headers[-1].response_sent == false)
             send_data(final_resp_arr.pack('c*')) 
             self.headers[-1].response_sent = true
           else
-            puts "response was already sent."
             send_data(EOT)
           end
-
         end
       else
         ## send the header 
@@ -129,6 +117,17 @@ module LabInterface
 
   def process_type(line)
       case line.type
+      when "Hl7_Header"
+        hl7_header = Hl7Header.new({:line => line})
+        self.headers ||= []
+        self.headers << hl7_header
+      when "Hl7_Observation"
+        hl7_observation = Hl7Observation.new({:line => line})
+        self.headers[-1].patients[-1].orders[-1].results[hl7_observation.name] = hl7_observation
+      when "Hl7_Patient"
+        ## like a patient
+      when "Hl7_Patient_Visti"
+        ## like an order.
       when "Header"
         header = Header.new({:line => line})
         self.headers ||= []

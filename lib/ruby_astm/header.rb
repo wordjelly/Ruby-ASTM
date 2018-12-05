@@ -5,18 +5,22 @@ class Header
 	attr_accessor :response_sent
 
 	def initialize(args)
-		if args[:line]
-			line = args[:line]
-			unless line.fields[4].empty?
-				fields = line.fields[4].split(/\^/)
-				self.machine_name = fields[0].strip
-			end
-		else
-			super
-		end
 		self.patients = []
 		self.queries = []
 		self.response_sent = false
+		if args[:line]
+			line = args[:line]
+			line
+		else
+			super
+		end
+	end
+
+	def set_machine_name(line)
+		unless line.fields[4].empty?
+			fields = line.fields[4].split(/\^/)
+			self.machine_name = fields[0].strip
+		end
 	end
 
 	## pushes each patient into a redis list called "patients"

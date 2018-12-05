@@ -1,8 +1,10 @@
 # RUBY-ASTM
 
-Medical Laboratory Instruments work on the ASTM Protocol. I didn't find any gems that provide a low level API to deal with this protocol. This gem hopes to bridge that gap.
+Medical Laboratory Instruments work either on the ASTM Protocol or the HL7 protocol. I didn't find any gems that provide a low level API to deal with these protocols in a simple and customizable way. This gem hopes to bridge that gap.
 The library provides an EventMachine Server, and several helpful classes that do nearly all of the heavy lifting.
 The library is so small, that it doesn't need a Wiki. ;)
+The architecture that you get with this gem is outlined in the following figure.
+
 
 ## How to Use
 
@@ -26,7 +28,7 @@ Configure the server PORT and HOST_IP. This should be the same HOST_IP AND PORT 
 
 ### Database_Adapter:
 
-The gem, basically parses incoming data, and dumps each patient order into redis. You can take a look at the __adapter.rb__ file, and subclass it to decide how you want to deal with the data. Alternatively, override the __commit__ method on the __Header__ class to send the data to your own database. I have used PORO's so that there are no assumptions about databases.  
+The gem, basically parses incoming data, and dumps each patient order into redis. Override the __commit__ method on the __Header__ class to send the data to your own database. I have used PORO's so that there are no assumptions about databases.  
 
 
 
