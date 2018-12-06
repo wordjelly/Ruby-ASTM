@@ -4,13 +4,13 @@ require 'ruby_astm'
 
 class TestRubyAstm < Minitest::Test
 
-=begin
+
   def test_server
     server = AstmServer.new("192.168.1.11",3000,nil)
     server.start_server
   end
-=end
 
+=begin
   def test_receives_siemens_results
     server = AstmServer.new("127.0.0.1",3000,nil)
     $redis.del("patients")
@@ -209,6 +209,6 @@ class TestRubyAstm < Minitest::Test
     assert_equal 1, $redis.llen("patients")
 
   end 
-
+=end
 
 end
