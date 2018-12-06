@@ -199,7 +199,7 @@ class Poller
 	end
 
 	def default_checkpoint
-		(Time.now - 5.days).to_i*1000
+		(Time.now - 1.days).to_i*1000
 	end
 
 	def get_checkpoint
