@@ -4,13 +4,13 @@ require 'ruby_astm'
 
 class TestRubyAstm < Minitest::Test
 
-
+=begin
   def test_server
     server = AstmServer.new("192.168.1.11",3000,nil)
     server.start_server
   end
+=end
 
-=begin
   def test_receives_siemens_results
     server = AstmServer.new("127.0.0.1",3000,nil)
     $redis.del("patients")
@@ -134,17 +134,18 @@ class TestRubyAstm < Minitest::Test
     sorted_set = $redis.zrange Poller::REQUISITIONS_SORTED_SET, 0, -1, {withscores: true}
     assert_equal 1, sorted_set.size
     assert_equal 1543490233000.0, sorted_set[0][1]
-    assert_equal [["{\"EDTA:Lavender:barcode\":[],\"SERUM:Serum:barcode\":[],\"PLASMA:Plasma:barcode\":[\"5\",\"4\"],\"FLUORIDE:Fluoride:barcode\":[\"GLUPP\"],\"URINE:Urine:barcode\":[],\"ESR:ESR:barcode\":[\"ESR\"]}", 1543490233000.0]], sorted_set
+    assert_equal [["{\"EDTA:Lavender:barcode\":[],\"SERUM:Serum:barcode\":[],\"PLASMA:Plasma:barcode\":[\"5\",\"4\"],\"FLUORIDE:Fluoride:barcode\":[\"GLUPP\"],\"URINE_CONTAINER:Urine:barcode\":[],\"ESR:ESR:barcode\":[\"ESR\"]}", 1543490233000.0]], sorted_set
     requisitions_hash = $redis.hgetall Poller::REQUISITIONS_HASH
     assert_equal requisitions_hash, {"Lavender:barcode"=>"[]", "Serum:barcode"=>"[]", "Plasma:barcode"=>"[\"5\",\"4\"]", "Fluoride:barcode"=>"[\"GLUPP\"]", "Urine:barcode"=>"[]", "ESR:barcode"=>"[\"ESR\"]"}
     
   end
 
+=begin
   ## kindly note, the credentials specified herein are no longer active ;)
   def test_initialized_google_lab_interface
-    goog = Google_Lab_Interface.new(nil,"/home/bhargav/Desktop/credentials.json","/home/bhargav/Desktop/token.yaml","MNWKZC-L05-ufApJTSqaLq42yotVzKYhk")
-    
+    goog = Google_Lab_Interface.new(nil,"/home/bhargav/Desktop/credentials.json","/home/bhargav/Desktop/token.yaml","MNWKZC-L05-ufApJTSqaLq42yotVzKYhk")    
   end 
+=end
 
   ## these two specs have to pass.
   def test_polls_for_requisitions_after_checkpoint
@@ -209,6 +210,6 @@ class TestRubyAstm < Minitest::Test
     assert_equal 1, $redis.llen("patients")
 
   end 
-=end
+
 
 end
