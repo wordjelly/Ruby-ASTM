@@ -15,7 +15,7 @@ class Poller
   	PLASMA = "PLASMA"
   	FLUORIDE = "FLUORIDE"
   	ESR = "ESR"
-  	URINE = "URINE"
+  	URINE = "URINE_CONTAINER"
   	REQUISITIONS_SORTED_SET = "requisitions_sorted_set"
   	REQUISITIONS_HASH = "requisitions_hash"
 	POLL_STATUS_KEY = "ruby_astm_lis_poller"
