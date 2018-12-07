@@ -100,13 +100,17 @@ module LabInterface
       else
         ## send the header 
         puts "--------- SENT ACK -----------"
-        if self.headers[-1].is_astm?
+        if self.headers.blank?
           send_data(ACK)
-        elsif self.headers[-1].is_hl7?
-          if self.headers.size > 0
-            ## commit should return the jsonified thing, if possible.
-            self.headers[-1].commit
-            send_data(self.headers[-1].generate_ack_success_response)
+        else
+          if self.headers[-1].is_astm?
+            send_data(ACK)
+          elsif self.headers[-1].is_hl7?
+            if self.headers.size > 0
+              ## commit should return the jsonified thing, if possible.
+              self.headers[-1].commit
+              send_data(self.headers[-1].generate_ack_success_response)
+            end
           end
         end
       end
