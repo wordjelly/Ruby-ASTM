@@ -41,8 +41,9 @@ class Line
 	end 
 
 	def detect_type
-		#puts "detecting line type: #{self.text}"
+		puts "detecting line type: #{self.text}"
 		line_type = self.fields[0]
+		return unless line_type
 		line_type.scan(/(?<ltype>[A-Z]+)/) { |ltype| 
 			if Line::TYPES[ltype[0]]
 				self.type = Line::TYPES[ltype[0]]

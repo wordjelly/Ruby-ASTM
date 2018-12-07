@@ -45,14 +45,40 @@ class Header
 		puts JSON.pretty_generate(JSON.parse(self.to_json))
 	end
 
+	def build_one_response
+		responses = []
+		self.queries.each do |query|
+			header_response = "1H|\`^&||||||||||P|E 1394-97|#{Time.now.strftime("%Y%m%d%H%M%S")}\r"
+			query.build_response.each do |qresponse|
+				header_response += qresponse
+				#responses << (header_response + qresponse)
+			end
+			responses << header_response
+		end
+		responses
+	end
+
 	## used to respond to queries.
 	## @return[String] response_to_query : response to the header query.
 	def build_responses
+		responses = []
+		self.queries.each do |query|
+			header_response = "1H|\`^&||||||||||P|E 1394-97|#{Time.now.strftime("%Y%m%d%H%M%S")}\r"
+			query.build_response.each do |qresponse|
+				responses << (header_response + qresponse)
+			end
+		end
+=begin
 		responses = self.queries.map {|query|
 			header_response = "1H|\`^&||||||||||P|E 1394-97|#{Time.now.strftime("%Y%m%d%H%M%S")}\r"
+			## here the queries have multiple responses.
+			query.build_response.each do |qresponse|
+
+			end
 			query.response = header_response + query.build_response
 			query.response
 		}
+=end
 		responses
 	end
 

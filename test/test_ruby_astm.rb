@@ -6,7 +6,7 @@ class TestRubyAstm < Minitest::Test
 
 =begin
   def test_server
-    server = AstmServer.new("192.168.1.11",3000,nil)
+    server = AstmServer.new("192.168.1.7",3000,nil)
     server.start_server
   end
 =end
@@ -27,6 +27,7 @@ class TestRubyAstm < Minitest::Test
     end
   end
 =end
+
 
   def test_roche_result
     server = AstmServer.new("127.0.0.1",3000,nil)
@@ -100,7 +101,7 @@ class TestRubyAstm < Minitest::Test
   	root_path = File.dirname __dir__
   	em200_input_file_path = File.join root_path,'test','resources','em_200_query_sample.txt'
   	server.process_text_file(em200_input_file_path)
-  	assert_equal "010520182", server.headers[-1].queries[-1].sample_id
+  	assert_equal "010520182", server.headers[-1].queries[-1].sample_ids[0]
   end
 
   def test_pre_poll_LIS_no_existing_key
@@ -200,7 +201,7 @@ class TestRubyAstm < Minitest::Test
     ## add an entry for the id specified in the query.
     $redis.hset(Poller::REQUISITIONS_HASH,"010520182",JSON.generate(["GLUR"]))
     server.process_text_file(em200_input_file_path)
-    tests = server.headers[-1].queries[-1].get_tests
+    tests = server.headers[-1].queries[-1].get_tests("010520182")
     assert_equal tests, JSON.parse($redis.hget(Poller::REQUISITIONS_HASH,"010520182"))
   end
 

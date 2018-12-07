@@ -117,7 +117,7 @@ class Order
 			#puts "no specimen type has been provided, sending SERUM"
 		end
 
-		"O|#{self.sequence_number}|#{self.id}^01||^^^#{self.tests.join('`^^^')}|#{self.priority}||#{Time.now.strftime("%Y%m%d%H%M%S")}||||N||||#{self.specimen_type || 'SERUM'}\r"
+		"O|#{self.sequence_number}|#{self.id}|#{Time.now.to_i.to_s}|^^^#{self.tests.join('`^^^')}|#{self.priority}||#{Time.now.strftime("%Y%m%d%H%M%S")}||||N||||#{self.specimen_type || 'SERUM'}\r"
 	end	
 
 end

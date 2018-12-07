@@ -63,7 +63,7 @@ module LabInterface
       
       self.data_buffer ||= ''
 
-      #puts "incoming data bytes."
+      puts "incoming data bytes."
 
       concat = ""
       
@@ -95,12 +95,17 @@ module LabInterface
       
 
       if data.bytes.to_a[-1] == 4
-        puts self.data_buffer
+        #puts self.data_buffer
         process_text(self.data_buffer)
         self.data_buffer = ''
         send_data(ENQ)
       elsif data.bytes.to_a[0] == 6
-        self.headers[-1].build_responses.each do |response|
+        header_responses = self.headers[-1].build_one_response
+        header_responses.each_with_index {|response,key|
+          #puts "response is:"
+          #response.bytes.to_a.each do |b|
+          #  puts [b].pack('c*')
+          #end
           message_checksum = checksum(response + terminator + ETX)
           #puts "Calculated checksum is: #{message_checksum}"
           final_resp = STX + response + terminator + ETX + message_checksum + "\r" 
@@ -108,12 +113,16 @@ module LabInterface
           final_resp_arr << 10
           #puts final_resp_arr.to_s
           if (self.headers[-1].response_sent == false)
+            puts "sending the  data as follows----------------------------------------------"
+            puts "response sent is:"
+            puts self.headers[-1].response_sent
+            puts final_resp_arr.pack('c*').gsub(/\r/,'\n')
             send_data(final_resp_arr.pack('c*')) 
-            self.headers[-1].response_sent = true
+            self.headers[-1].response_sent = true if (key == (header_responses.size - 1))
           else
             send_data(EOT)
           end
-        end
+        }
       else
         ## send the header 
         #puts "--------- SENT ACK -----------"
