@@ -36,13 +36,13 @@ class Order
 
 	def set_id(args)
 		if line = args[:line]
-			if !line.fields[2].strip.blank?
+			if !line.fields[2].blank?
 				line.fields[2].strip.scan(/(?<specimen_id>[^\^]+)/) { |specimen_id|
-					self.id ||= specimen_id
+					self.id ||= specimen_id[0]
 				}
-			elsif !line.fields[3].strip.blank?
+			elsif !line.fields[3].blank?
 				## for the sysmex xn-550 this is the regex.
-				line.fields[3].strip.scan(/(?<tube_rack>\d+\^)+(?<patient_id>.+)\^/) { |tube_rack,patient_id|  self.id = patient_id.strip}
+				line.fields[3].strip.scan(/(?<tube_rack>\d+\^)+(?<patient_id>.+)\^/) { |tube_rack,patient_id|  self.id = patient_id.strip} 
 			end
 		else
 			self.id = args[:specimen_id]

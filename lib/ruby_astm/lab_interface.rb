@@ -10,13 +10,18 @@ module LabInterface
   ETX = "\x03"
   EOT = "\x04"
 
+
+
   mattr_accessor :headers
   mattr_accessor :ethernet_server
   mattr_accessor :server_ip
   mattr_accessor :server_port
   mattr_accessor :mapping
   mattr_accessor :respond_to_queries
-  
+
+  ## buffer of incoming data.
+  mattr_accessor :data_buffer
+    
 
   ## returns the root directory of the gem.
   def root
@@ -56,7 +61,9 @@ module LabInterface
 
 	def receive_data(data)
       
-      puts "incoming data bytes."
+      self.data_buffer ||= ''
+
+      #puts "incoming data bytes."
 
       concat = ""
       
@@ -77,10 +84,20 @@ module LabInterface
       end
       
       #puts "concat is:"
-      #puts concat.to_s
-      process_text(concat)      
       
-      if data.bytes.to_a[0] == 4
+      #puts concat.to_s
+      
+      self.data_buffer << concat
+
+      ## if the last byte is EOT, then call process text.
+      ## inside that split by line and process one at a time.
+      ##process_text(concat)      
+      
+
+      if data.bytes.to_a[-1] == 4
+        puts self.data_buffer
+        process_text(self.data_buffer)
+        self.data_buffer = ''
         send_data(ENQ)
       elsif data.bytes.to_a[0] == 6
         self.headers[-1].build_responses.each do |response|
@@ -99,7 +116,7 @@ module LabInterface
         end
       else
         ## send the header 
-        puts "--------- SENT ACK -----------"
+        #puts "--------- SENT ACK -----------"
         if self.headers.blank?
           send_data(ACK)
         else
@@ -123,8 +140,6 @@ module LabInterface
   end
 
   def process_text(text)
-      ## should replace carriage returns with new lines, before processing any file.
-      ## or text.
       text.split("\n").each do |l|
 		    line = Line.new({:text => l})
         process_type(line)

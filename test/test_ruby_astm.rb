@@ -11,6 +11,36 @@ class TestRubyAstm < Minitest::Test
   end
 =end
 
+=begin
+  def test_serial_server
+    $redis = Redis.new
+    $mappings = JSON.parse(IO.read(AstmServer.default_mappings))
+    EM.run do
+      serial = EventMachine.open_serial('/dev/ttyS0', 9600, 8,LabInterface)
+      puts "serial is:"
+      puts serial.to_s
+      #serial.on_data do |data|
+      #  puts data.bytes.to_a.pack('c*')
+      #  puts "sending ACK"
+      #  serial.send_data([6].pack('c*'))
+      #end
+    end
+  end
+=end
+
+  def test_roche_result
+    server = AstmServer.new("127.0.0.1",3000,nil)
+    $redis.del("patients")
+    root_path = File.dirname __dir__
+    roche_input_file_path = File.join root_path,'test','resources','roche_result.txt'
+    server.process_text_file(roche_input_file_path)
+    #server.headers[-1].commit
+    assert_equal 1, $redis.llen("patients")
+    patient = JSON.parse($redis.lrange("patients",0,0)[0])
+    assert_equal "pragya", patient["@orders"][0]["id"]
+  end
+
+
   def test_receives_siemens_results
     server = AstmServer.new("127.0.0.1",3000,nil)
     $redis.del("patients")
@@ -60,6 +90,8 @@ class TestRubyAstm < Minitest::Test
   	em200_input_file_path = File.join root_path,'test','resources','em_200_sample.txt'
   	server.process_text_file(em200_input_file_path)
   	assert_equal 2, $redis.llen("patients")
+    patient = JSON.parse($redis.lrange("patients",0,0)[0])
+    assert_equal "Asha Singh1", patient["@orders"][0]["id"]
   end
 
   def test_em_200_parses_query
@@ -140,12 +172,6 @@ class TestRubyAstm < Minitest::Test
     
   end
 
-=begin
-  ## kindly note, the credentials specified herein are no longer active ;)
-  def test_initialized_google_lab_interface
-    goog = Google_Lab_Interface.new(nil,"/home/bhargav/Desktop/credentials.json","/home/bhargav/Desktop/token.yaml","MNWKZC-L05-ufApJTSqaLq42yotVzKYhk")    
-  end 
-=end
 
   ## these two specs have to pass.
   def test_polls_for_requisitions_after_checkpoint
@@ -211,5 +237,12 @@ class TestRubyAstm < Minitest::Test
 
   end 
 
+
+=begin
+  ## kindly note, the credentials specified herein are no longer active ;)
+  def test_initialized_google_lab_interface
+    goog = Google_Lab_Interface.new(nil,"/home/bhargav/Desktop/credentials.json","/home/bhargav/Desktop/token.yaml","MNWKZC-L05-ufApJTSqaLq42yotVzKYhk")    
+  end 
+=end
 
 end
