@@ -46,10 +46,17 @@ class Header
 	end
 
 	def build_one_response
+		puts "building one response=========="
+		puts "queries are:"
+		puts self.queries.size.to_s
 		responses = []
 		self.queries.each do |query|
+			puts "doing query"
+			puts query.sample_ids
 			header_response = "1H|\`^&||||||||||P|E 1394-97|#{Time.now.strftime("%Y%m%d%H%M%S")}\r"
 			query.build_response.each do |qresponse|
+				puts "qresponse is:"
+				puts qresponse
 				header_response += qresponse
 				#responses << (header_response + qresponse)
 			end

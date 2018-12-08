@@ -4,12 +4,12 @@ require 'ruby_astm'
 
 class TestRubyAstm < Minitest::Test
 
-=begin
+
   def test_server
     server = AstmServer.new("192.168.1.7",3000,nil)
     server.start_server
   end
-=end
+
 
 =begin
   def test_serial_server
@@ -27,8 +27,7 @@ class TestRubyAstm < Minitest::Test
     end
   end
 =end
-
-
+=begin
   def test_roche_result
     server = AstmServer.new("127.0.0.1",3000,nil)
     $redis.del("patients")
@@ -237,7 +236,7 @@ class TestRubyAstm < Minitest::Test
     assert_equal 1, $redis.llen("patients")
 
   end 
-
+=end
 
 =begin
   ## kindly note, the credentials specified herein are no longer active ;)

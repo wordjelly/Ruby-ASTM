@@ -32,11 +32,14 @@ class Query
 
 		one_response = ''
 
-		self.sample_ids.each_with_index {|sid,key|
+		puts "sample ids are:"
+		puts self.sample_ids
 
+		self.sample_ids.each_with_index {|sid,key|
+			puts "doing sample id: #{sid}"
 			## tests are got from the requisitions hash.
 			tests = get_tests(sid)
-
+			puts "tests are: #{tests}"
 			## default sequence number is 0 (THIS MAY LEAD TO PROBLEMS.)
 			sequence_number = "#{key.to_s}"
 
@@ -51,7 +54,10 @@ class Query
 
 		}
 
-		return [one_response]
+		puts "responses are:"
+		puts responses.to_s
+
+		return responses
 		
 	end
 

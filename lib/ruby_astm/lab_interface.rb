@@ -63,11 +63,11 @@ module LabInterface
       
       self.data_buffer ||= ''
 
-      puts "incoming data bytes."
+      #puts "incoming data bytes."
 
       concat = ""
       
-      puts data.bytes.to_a.to_s
+      #puts data.bytes.to_a.to_s
 
       data.bytes.to_a.each do |byte|
         x = [byte].pack('c*').force_encoding('UTF-8')
@@ -95,49 +95,60 @@ module LabInterface
       
 
       if data.bytes.to_a[-1] == 4
-        #puts self.data_buffer
+        puts "GOT EOT --- PROCESSING BUFFER, AND CLEARING."
         process_text(self.data_buffer)
         self.data_buffer = ''
-        send_data(ENQ)
-      elsif data.bytes.to_a[0] == 6
-        header_responses = self.headers[-1].build_one_response
-        header_responses.each_with_index {|response,key|
-          #puts "response is:"
-          #response.bytes.to_a.each do |b|
-          #  puts [b].pack('c*')
-          #end
-          message_checksum = checksum(response + terminator + ETX)
-          #puts "Calculated checksum is: #{message_checksum}"
-          final_resp = STX + response + terminator + ETX + message_checksum + "\r" 
-          final_resp_arr = final_resp.bytes.to_a
-          final_resp_arr << 10
-          #puts final_resp_arr.to_s
-          if (self.headers[-1].response_sent == false)
-            puts "sending the  data as follows----------------------------------------------"
-            puts "response sent is:"
-            puts self.headers[-1].response_sent
-            puts final_resp_arr.pack('c*').gsub(/\r/,'\n')
-            send_data(final_resp_arr.pack('c*')) 
-            self.headers[-1].response_sent = true if (key == (header_responses.size - 1))
-          else
-            send_data(EOT)
-          end
-        }
-      else
-        ## send the header 
-        #puts "--------- SENT ACK -----------"
-        if self.headers.blank?
+        if self.headers[-1].queries.blank?
+          puts "no queries in header so sending ack after getting EOT and processing the buffer"
           send_data(ACK)
         else
-          if self.headers[-1].is_astm?
+          puts "sending ENQ"
+          send_data(ENQ)
+        end
+      elsif data.bytes.to_a[0] == 6
+        puts "GOT ACK --- GENERATING RESPONSE"
+        unless self.headers.blank?
+          header_responses = self.headers[-1].build_one_response
+          ## if no queries then, we have to send ack.
+          if header_responses.blank?
+            puts "sending ACK since there are queries in the header"
             send_data(ACK)
-          elsif self.headers[-1].is_hl7?
-            if self.headers.size > 0
-              ## commit should return the jsonified thing, if possible.
-              self.headers[-1].commit
-              send_data(self.headers[-1].generate_ack_success_response)
-            end
           end
+          header_responses.each_with_index {|response,key|
+            message_checksum = checksum(response + terminator + ETX)
+            final_resp = STX + response + terminator + ETX + message_checksum + "\r" 
+            final_resp_arr = final_resp.bytes.to_a
+            final_resp_arr << 10
+            if (self.headers[-1].response_sent == false)
+              puts "sending the  data as follows----------------------------------------------"
+              puts "response sent is:"
+              puts self.headers[-1].response_sent
+              puts final_resp_arr.pack('c*').gsub(/\r/,'\n')
+              send_data(final_resp_arr.pack('c*')) 
+              self.headers[-1].response_sent = true if (key == (header_responses.size - 1))
+            else
+              puts "sending EOT"
+              send_data(EOT)
+            end
+          }
+        else
+          puts "NO HEADERS PRESENT --- "
+        end
+      else
+        puts self.data_buffer.gsub(/\r/,'\n').to_s
+        ## send the header 
+        #puts "--------- SENT ACK -----------"
+        if self.data_buffer[1..3] == "MSH"
+          puts " -------------- HEADERS ARE BLANK WITH HL7, sending ack. ------------ "
+          process_text(self.data_buffer)
+          self.data_buffer = ''
+          if self.headers.size > 0
+            self.headers[-1].commit
+            send_data(self.headers[-1].generate_ack_success_response)
+          end
+        else
+          puts " -------------- HEADERS ARE BLANK NOT HL7, sending ack. ------------ "
+          send_data(ACK)
         end
       end
   end
