@@ -14,7 +14,7 @@ class Google_Lab_Interface < Poller
   #TOKEN_PATH = 'token.yaml'.freeze
   SCOPE = 'https://www.googleapis.com/auth/script.projects'.freeze
 
-  SCOPES = ["https://www.googleapis.com/auth/documents","https://www.googleapis.com/auth/drive","https://www.googleapis.com/auth/script.projects","https://www.googleapis.com/auth/spreadsheets"]
+  SCOPES = ["https://www.googleapis.com/auth/documents","https://www.googleapis.com/auth/drive","https://www.googleapis.com/auth/script.projects","https://www.googleapis.com/auth/spreadsheets","https://www.googleapis.com/auth/script.external_request"]
 
   $service = nil
 
@@ -135,8 +135,37 @@ class Google_Lab_Interface < Poller
 
   end
 
+  ## sends emails of report pdfs to patients 
+  def notify_patients
+    request = Google::Apis::ScriptV1::ExecutionRequest.new(
+      function: 'process_email_log'
+    )
+
+    begin
+      AstmServer.log("Processing Email Log")
+      AstmServer.log(request.parameters.to_s)
+      resp = $service.run_script(self.script_id, request)
+      if resp.error
+        AstmServer.log("Error Processing Email Log, message follows")
+        AstmServer.log("error: #{resp.error.message} : code: #{resp.error.code}")
+        false
+      else
+        AstmServer.log("Email log processing successfull")
+        true
+      end
+    rescue => e
+      AstmServer.log("Error processing email log, backtrace follows")
+      AstmServer.log(e.backtrace.to_s)
+      false
+    end
+  end
+
   def poll
-    super
+      pre_poll_LIS
+      poll_LIS_for_requisition
+      update_LIS
+      notify_patients
+      post_poll_LIS
   end
 
 end

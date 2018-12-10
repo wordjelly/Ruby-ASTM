@@ -59,15 +59,37 @@ module LabInterface
     strCksm.upcase
   end
 
+  def generate_response
+    header_responses = self.headers[-1].build_one_response
+    header_responses.each_with_index {|response,key|
+      message_checksum = checksum(response + terminator + ETX)
+      final_resp = STX + response + terminator + ETX + message_checksum + "\r" 
+      final_resp_arr = final_resp.bytes.to_a
+      final_resp_arr << 10
+      if (self.headers[-1].response_sent == false)
+        puts "sending the  data as follows----------------------------------------------"
+        puts "response sent is:"
+        puts self.headers[-1].response_sent
+        puts final_resp_arr.to_s
+        puts final_resp_arr.pack('c*').gsub(/\r/,'\n')
+        send_data(final_resp_arr.pack('c*')) 
+        self.headers[-1].response_sent = true if (key == (header_responses.size - 1))
+      else
+        puts "sending EOT"
+        send_data(EOT)
+      end
+    }
+  end
+
 	def receive_data(data)
       
       self.data_buffer ||= ''
 
-      #puts "incoming data bytes."
+      puts "incoming data bytes."
 
       concat = ""
       
-      #puts data.bytes.to_a.to_s
+      puts data.bytes.to_a.to_s
 
       data.bytes.to_a.each do |byte|
         x = [byte].pack('c*').force_encoding('UTF-8')
