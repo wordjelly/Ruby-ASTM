@@ -4,242 +4,301 @@
 	{
 		"LIS_CODE" : "TLCparam",
 		"TUBE" : "EDTA",
-		"TRANSFORM" : "(self.value.to_f*1000).to_i.to_s"
+		"TRANSFORM" : "(self.value.to_f*1000).to_i.to_s",
+		"REPORT_NAME" : "Hemogram"
 	},
 	"RBC" : 
 	{
 		"LIS_CODE" : "RBCparam",
-		"TUBE" : "EDTA"
+		"TUBE" : "EDTA",
+		"REPORT_NAME" : "Hemogram"
 	},
 	"HGB" : 
 	{
 		"LIS_CODE" : "HBparam",
-		"TUBE" : "EDTA"
+		"TUBE" : "EDTA",
+		"REPORT_NAME" : "Hemogram"
 	},
 	"HCT" : {
 		"LIS_CODE" : "HCTparam",
-		"TUBE" : "EDTA"
+		"TUBE" : "EDTA",
+		"REPORT_NAME" : "Hemogram"
 	},
 	"MCV" : 
 	{
 		"LIS_CODE" : "MCVparam",
-		 "TUBE" : "EDTA"
+		 "TUBE" : "EDTA",
+		"REPORT_NAME" : "Hemogram"
 	},
 	"MCH" : {
 		"LIS_CODE" : "MCHparam",
-		"TUBE" : "EDTA"
+		"TUBE" : "EDTA",
+		"REPORT_NAME" : "Hemogram"
 	},
 	"MCHC": {
 		"LIS_CODE" : "MCHCparam",
-		 "TUBE" : "EDTA"
+		 "TUBE" : "EDTA",
+		"REPORT_NAME" : "Hemogram"
 	},
 	"PLT" : {
 		"LIS_CODE" : "PCparam",
 		"TUBE" : "EDTA",
-		"TRANSFORM" : "(self.value.to_f*1000).to_i.to_s"
+		"TRANSFORM" : "(self.value.to_f*1000).to_i.to_s",
+		"REPORT_NAME" : "Hemogram"
 	},
 	"NEUT%": {
 		"LIS_CODE" : "Nparam",
-		"TUBE" : "EDTA"
+		"TUBE" : "EDTA",
+		"REPORT_NAME" : "Hemogram"
 	},
 	"LYMPH%": {
 		"LIS_CODE" : "Lparam",
-		"TUBE" : "EDTA"
+		"TUBE" : "EDTA",
+		"REPORT_NAME" : "Hemogram"
 	},
 	"MONO%": {
 		"LIS_CODE" : "Mparam",
-		"TUBE" : "EDTA"
+		"TUBE" : "EDTA",
+		"REPORT_NAME" : "Hemogram"
 	},
 	"EO%": {
 		"LIS_CODE" : "Eparam",
-		"TUBE" : "EDTA"
+		"TUBE" : "EDTA",
+		"REPORT_NAME" : "Hemogram"
 	},
 	"BASO%": {
 		"LIS_CODE" : "BASOparam",
-		"TUBE" : "EDTA"
+		"TUBE" : "EDTA",
+		"REPORT_NAME" : "Hemogram"
 	},
 	"NEUT#": {
 		"LIS_CODE" : "ANCparam",
-		"TUBE" : "EDTA"
+		"TUBE" : "EDTA",
+		"REPORT_NAME" : "Hemogram"
 	},
 	"LYMPH#": {
 		"LIS_CODE" : "ALCparam",
-		"TUBE" : "EDTA"
+		"TUBE" : "EDTA",
+		"REPORT_NAME" : "Hemogram"
 	},
 	"MONO#": {
 		"LIS_CODE" : "AMCparam",
-		"TUBE" : "EDTA"
+		"TUBE" : "EDTA",
+		"REPORT_NAME" : "Hemogram"
 	},
 	"EO#": {
 		"LIS_CODE" : "AECparam",
-		"TUBE" : "EDTA"
+		"TUBE" : "EDTA",
+		"REPORT_NAME" : "Hemogram"
 	},
 	"BASO#": {
 		"LIS_CODE" : "ABCparam",
-		"TUBE" : "EDTA"
+		"TUBE" : "EDTA",
+		"REPORT_NAME" : "Hemogram"
 	},
 	"RDW-CV": {
 		"LIS_CODE" : "RDWCVparam",
-		"TUBE" : "EDTA"
+		"TUBE" : "EDTA",
+		"REPORT_NAME" : "Hemogram"
 	},
 	"GLUR" : {
 		"LIS_CODE" : "GLUR",
-		"TUBE" : "FLUORIDE"
+		"TUBE" : "FLUORIDE",
+		"REPORT_NAME" : "Random Glucose"
 	},
 	"GLUPP" : {
 		"LIS_CODE" : "GLUPP",
-		"TUBE" : "FLUORIDE"
+		"TUBE" : "FLUORIDE",
+		"REPORT_NAME" : "Post Prandial Glucose"
 	},
 	"GLUF" : {
 		"LIS_CODE" : "GLUF",
-		"TUBE" : "FLUORIDE"
+		"TUBE" : "FLUORIDE",
+		"REPORT_NAME" : "Fasting Glucose"
 	},
 	"CHOL" : {
 		"LIS_CODE" : "CHOL",
-		"TUBE" : "SERUM"
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "Cholesterol"
 	},
 	"TRIG" : {
 		"LIS_CODE" : "TRIG",
-		"TUBE" : "SERUM"
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "Triglycerides"
 	},
 	"HDLC" : {
 		"LIS_CODE" : "HDLC",
-		"TUBE" : "SERUM"
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "HDLC"
 	},
 	"LDL" : {
 		"LIS_CODE" : "LDL",
-		"TUBE" : "SERUM"
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "LDL"
 	},
 	"VLDL" : {
 		"LIS_CODE" : "VLDL",
-		"TUBE" : "SERUM"
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "VLDL"
 	},
 	"CRE" : {
 		"LIS_CODE" : "CRE",
-		"TUBE" : "SERUM"
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "Creatinine"
 	},
 	"UREA" : {
 		"LIS_CODE" : "UREA",
-		"TUBE" : "SERUM"
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "Urea"
 	},
 	"BUN" : {
 		"LIS_CODE" : "BUN",
-		"TUBE" : "SERUM"
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "Blood Urea Nitrogen"
 	},
 	"ALB" : {
 		"LIS_CODE" : "ALB",
-		"TUBE" : "SERUM"
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "Albumin"
 	},
 	"GGT" : {
 		"LIS_CODE" : "GGT",
-		"TUBE" : "SERUM"
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "GGT"
 	},
 	"BID" : {
 		"LIS_CODE" : "BID",
-		"TUBE" : "SERUM"
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "Direct Bilirubin"
 	},
 	"BIT" : {
 		"LIS_CODE" : "BIT",
-		"TUBE" : "SERUM"
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "Total Bilirubin"
 	},
 	"ALPU" : {
 		"LIS_CODE" : "ALPU",
-		"TUBE" : "SERUM"
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "Alkaline Phosphatase"
 	},
 	"GOTHL" : {
 		"LIS_CODE" : "GOTHL",
-		"TUBE" : "SERUM"
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "SGOT"
 	},
 	"GPTHL" : {
 		"LIS_CODE" : "GPTHL",
-		"TUBE" : "SERUM"
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "SGPT"
 	},
 	"HOMOCY" : {
 		"LIS_CODE" : "HOMOCY",
-		"TUBE" : "SERUM"
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "Homocysteine"
 	},
 	"8" : {
 		"LIS_CODE" : "TSH",
-		"TUBE" : "SERUM"
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "TSH"
 	},
 	"7" : {
 		"LIS_CODE" : "T4",
-		"TUBE" : "SERUM"
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "T4"
 	},
 	"6" : {
 		"LIS_CODE" : "T3",
-		"TUBE" : "SERUM"
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "T3"
 	},
 	"5" : {
 		"LIS_CODE" : "HIV",
-		"TUBE" : "PLASMA"
+		"TUBE" : "PLASMA",
+		"REPORT_NAME" : "HIV Screening"
 	},
 	"4" : {
 		"LIS_CODE" : "HBS",
-		"TUBE" : "PLASMA"
+		"TUBE" : "PLASMA",
+		"REPORT_NAME" : "HBV Screening"
 	},
 	"3" : {
 		"LIS_CODE" : "VITD",
-		"TUBE" : "SERUM"
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "Vitamin D"
 	},
 	"2" : {
 		"LIS_CODE" : "HCV",
-		"TUBE" : "PLASMA"
+		"TUBE" : "PLASMA",
+		"REPORT_NAME" : "HCV Screening"
 	},
 	"1" : {
 		"LIS_CODE" : "B12",
-		"TUBE" : "SERUM"
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "Vitamin B12"
 	},
 	"ESR" : {
 		"LIS_CODE" : "ESR",
-		"TUBE" : "ESR"
+		"TUBE" : "ESR",
+		"REPORT_NAME" : "ESR"
 	},
 	"GLU" : {
 		"LIS_CODE" : "GLU",
-		"TUBE" : "URINE_CONTAINER"
+		"TUBE" : "URINE_CONTAINER",
+		"REPORT_NAME" : "Urine Routine"
 	},
 	"BIL" : {
 		"LIS_CODE" : "BIL",
-		"TUBE" : "URINE_CONTAINER"
+		"TUBE" : "URINE_CONTAINER",
+		"REPORT_NAME" : "Urine Routine"
 	},
 	"KET" : {
 		"LIS_CODE" : "KET",
-		"TUBE" : "URINE_CONTAINER"
+		"TUBE" : "URINE_CONTAINER",
+		"REPORT_NAME" : "Urine Routine"
 	},
 	"SG" : {
 		"LIS_CODE" : "SG",
-		"TUBE" : "URINE_CONTAINER"
+		"TUBE" : "URINE_CONTAINER",
+		"REPORT_NAME" : "Urine Routine"
 	},
 	"BLO" : {
 		"LIS_CODE" : "BLO",
-		"TUBE" : "URINE_CONTAINER"
+		"TUBE" : "URINE_CONTAINER",
+		"REPORT_NAME" : "Urine Routine"
 	},
 	"pH" : {
 		"LIS_CODE" : "pH",
-		"TUBE" : "URINE_CONTAINER"
+		"TUBE" : "URINE_CONTAINER",
+		"REPORT_NAME" : "Urine Routine"
 	},
 	"PRO" : {
 		"LIS_CODE" : "PRO",
-		"TUBE" : "URINE_CONTAINER"
+		"TUBE" : "URINE_CONTAINER",
+		"REPORT_NAME" : "Urine Routine"
 	},
 	"URO" : {
 		"LIS_CODE" : "URO",
-		"TUBE" : "URINE_CONTAINER"
+		"TUBE" : "URINE_CONTAINER",
+		"REPORT_NAME" : "Urine Routine"
 	},
 	"NIT" : {
 		"LIS_CODE" : "NIT",
-		"TUBE" : "URINE_CONTAINER"
+		"TUBE" : "URINE_CONTAINER",
+		"REPORT_NAME" : "Urine Routine"
 	},
 	"LEU" : {
 		"LIS_CODE" : "LEU",
-		"TUBE" : "URINE_CONTAINER"
+		"TUBE" : "URINE_CONTAINER",
+		"REPORT_NAME" : "Urine Routine"
 	},
 	"COL" : {
 		"LIS_CODE" : "COL",
-		"TUBE" : "URINE_CONTAINER"
+		"TUBE" : "URINE_CONTAINER",
+		"REPORT_NAME" : "Urine Routine"
 	},
 	"CLA" : {
 		"LIS_CODE" : "CLA",
-		"TUBE" : "URINE_CONTAINER"
+		"TUBE" : "URINE_CONTAINER",
+		"REPORT_NAME" : "Urine Routine"
 	}
 }

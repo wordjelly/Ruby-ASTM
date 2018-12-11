@@ -1,5 +1,6 @@
 class Result
 	attr_accessor :name
+	attr_accessor :report_name
 	attr_accessor :value
 	attr_accessor :units
 	attr_accessor :flags
@@ -11,6 +12,7 @@ class Result
 		if line = args[:line]
 			line.fields[2].scan(/\^+(?<name>[A-Za-z0-9\%\#\-\_\?\/]+)\^?(?<dilution>\d+)?/) { |name,dilution|  
 				self.name = lookup_mapping(name)
+				self.report_name = lookup_report_name(name)
 			}
 		end
 	end
@@ -60,6 +62,8 @@ class Result
 		end
 	end
 
+	
+
 	## here will call mappings and check the result correlation
 	def initialize(args)
 		set_name(args)
@@ -68,6 +72,7 @@ class Result
 		set_timestamp(args)
 		set_dilution(args)
 		set_units(args)
+
 =begin
 		if args[:line]
 			line = args[:line]
@@ -99,6 +104,10 @@ class Result
 
 	def lookup_transform(name)
 		$mappings[name] ? $mappings[name]["TRANSFORM"] : nil
+	end
+
+	def lookup_report_name(name)
+		$mappings[name] ? $mappings[name]["REPORT_NAME"] : name
 	end
 
 end

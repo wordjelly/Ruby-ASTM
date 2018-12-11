@@ -34,13 +34,13 @@ class TestRubyAstm < Minitest::Test
   end
 =end
 
-=begin
+
   def test_update
     p = Google_Lab_Interface.new(nil,"/home/root1/Downloads/credentials.json","/home/root1/Downloads/token.yaml","MNWKZC-L05-ufApJTSqaLq42yotVzKYhk")    
-    p.update(JSON.parse("{\"@sequence_number\":0,\"@patient_id\":null,\"@orders\":[{\"id\":\"test_document_10_december_2018\",\"priority\":null,\"sequence_number\":null,\"tests\":null,\"specimen_type\":null,\"date_time\":null,\"action_code\":null,\"results\":{\"GLUF\":{\"name\":\"GLUF\",\"flags\":\"H\",\"value\":\"115.4\",\"timestamp\":\"2018-12-10T10:35:54.000+05:30\",\"dilution\":null}}}]}"))
+    p.update(JSON.parse("{\"@sequence_number\":0,\"@patient_id\":null,\"@orders\":[{\"id\":\"test_document_10_december_2018\",\"priority\":null,\"sequence_number\":null,\"tests\":null,\"specimen_type\":null,\"date_time\":null,\"action_code\":null,\"results\":{\"GLUF\":{\"name\":\"GLUF\",\"report_name\":\"Fasting Glucose\",\"flags\":\"H\",\"value\":\"115.4\",\"timestamp\":\"2018-12-10T10:35:54.000+05:30\",\"dilution\":null}}}]}"))
   end
-=end
 
+=begin
   def test_roche_result
     server = AstmServer.new("127.0.0.1",3000,nil)
     $redis.del("patients")
@@ -249,7 +249,7 @@ class TestRubyAstm < Minitest::Test
     assert_equal 1, $redis.llen("patients")
 
   end 
-
+=end
 
 =begin
   ## kindly note, the credentials specified herein are no longer active ;)
