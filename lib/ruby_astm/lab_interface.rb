@@ -160,7 +160,7 @@ module LabInterface
         puts self.data_buffer.gsub(/\r/,'\n').to_s
         ## send the header 
         #puts "--------- SENT ACK -----------"
-        if self.data_buffer[1..3] == "MSH"
+        if self.data_buffer =~ /MSH\|/
           puts " -------------- HEADERS ARE BLANK WITH HL7, sending ack. ------------ "
           process_text(self.data_buffer)
           self.data_buffer = ''
