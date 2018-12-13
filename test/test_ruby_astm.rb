@@ -15,7 +15,7 @@ class TestRubyAstm < Minitest::Test
   end
 =end
 
-
+=begin
   def test_serial_server
     $redis = Redis.new
     $mappings = JSON.parse(IO.read(AstmServer.default_mappings))
@@ -27,12 +27,22 @@ class TestRubyAstm < Minitest::Test
       #serial.send_data([2, 49, 72, 124, 96, 94, 38, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 80, 124, 69, 32, 49, 51, 57, 52, 45, 57, 55, 124, 50, 48, 49, 56, 49, 50, 48, 56, 49, 55, 53, 57, 52, 55, 13, 80, 124, 48, 124, 97, 98, 99, 100, 101, 49, 53, 52, 52, 50, 55, 50, 49, 56, 55, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 13, 79, 124, 48, 124, 65, 66, 67, 45, 97, 98, 99, 45, 49, 50, 51, 52, 124, 49, 53, 52, 52, 50, 55, 50, 49, 56, 55, 124, 94, 94, 94, 49, 124, 82, 124, 124, 50, 48, 49, 56, 49, 50, 48, 56, 49, 55, 53, 57, 52, 55, 124, 124, 124, 124, 78, 124, 124, 124, 124, 83, 69, 82, 85, 77, 13, 76, 124, 49, 124, 78, 13, 3, 55, 66, 13, 10].pack('c*'))
       serial.on_data do |data|
         puts data.bytes.to_a.pack('c*')
-        puts "sending ACK"
+        #puts "sending ACK"
         #serial.send_data([6].pack('c*'))
       end
     end
   end
+=end
 
+
+  def test_roche_inquiry_is_parsed
+    server = AstmServer.new("127.0.0.1",3000,nil)
+    $redis.del("patients")
+    root_path = File.dirname __dir__
+    roche_input_file_path = File.join root_path,'test','resources','roche_enquiry.txt'
+    server.process_text_file(roche_input_file_path)
+    assert_equal "0000000387", server.headers[-1].queries[-1].sample_ids[0]
+  end
 
 =begin
   def test_update
@@ -40,7 +50,7 @@ class TestRubyAstm < Minitest::Test
     p.update(JSON.parse("{\"@sequence_number\":0,\"@patient_id\":null,\"@orders\":[{\"id\":\"test_document_10_december_2018\",\"priority\":null,\"sequence_number\":null,\"tests\":null,\"specimen_type\":null,\"date_time\":null,\"action_code\":null,\"results\":{\"GLUF\":{\"name\":\"GLUF\",\"report_name\":\"Fasting Glucose\",\"flags\":\"H\",\"value\":\"115.4\",\"timestamp\":\"2018-12-10T10:35:54.000+05:30\",\"dilution\":null}}}]}"))
   end
 =end
-=begin
+
   def test_roche_result
     server = AstmServer.new("127.0.0.1",3000,nil)
     $redis.del("patients")
@@ -249,7 +259,7 @@ class TestRubyAstm < Minitest::Test
     assert_equal 1, $redis.llen("patients")
 
   end 
-=end
+
 
 =begin
   ## kindly note, the credentials specified herein are no longer active ;)

@@ -204,13 +204,16 @@ module LabInterface
         hl7_order = Hl7Order.new({:line => line, :patient_id => self.headers[-1].patients[-1].patient_id})
         self.headers[-1].patients[-1].orders << hl7_order
       when "Header"
+        puts "got header"
         header = Header.new({:line => line})
         self.headers ||= []
         self.headers << header
       when "Query"
+        puts "got query"
         query = Query.new({:line => line})
         self.headers[-1].queries << query
       when "Patient"
+        puts "got patient."
         patient = Patient.new({:line => line})
         self.headers[-1].patients << patient
       when "Order"

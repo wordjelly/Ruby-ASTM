@@ -6,12 +6,20 @@ class Query
 
 	attr_accessor :sample_ids
 
+	def parse_field_for_sample_id(fields,index)
+		return false if fields[index].blank?
+		return false if fields[index].strip.blank?
+		self.sample_ids = fields[index].strip.split(/\'/)
+		return true
+	end
+
 	def initialize(args)
 		line = args[:line]
 		unless line.fields[2].empty?
 			fields = line.fields[2].split(/\^/)
-			sample_id = fields[1].strip
-			self.sample_ids = sample_id.split(/\`/)
+			if parse_field_for_sample_id(fields,1) == false
+				parse_field_for_sample_id(fields,2)
+			end
 		end
 	end
 
