@@ -130,10 +130,10 @@ module LabInterface
       elsif data.bytes.to_a[0] == 6
         puts "GOT ACK --- GENERATING RESPONSE"
         unless self.headers.blank?
-          header_responses = self.headers[-1].build_one_response
+          header_responses = self.headers[-1].build_one_response({machine_name: self.headers[-1].machine_name})
           ## if no queries then, we have to send ack.
           if header_responses.blank?
-            puts "sending ACK since there are queries in the header"
+            puts "sending ACK since there are no queries in the header"
             send_data(ACK)
           end
           header_responses.each_with_index {|response,key|
@@ -224,6 +224,7 @@ module LabInterface
         self.headers[-1].patients[-1].orders[-1].results[result.name] = result
       when "Terminator"
         ## it didn't terminate so there was no commit being called.
+        puts "got terminator."
         self.headers[-1].commit
       end
   end

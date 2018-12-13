@@ -24,8 +24,12 @@ class Patient
 	end
 
 	## patient id.
-	def build_response
-		"P|#{self.sequence_number}|#{self.patient_id}|||||||||||||||\r"
+	def build_response(options)
+		if (options[:machine_name] && (options[:machine_name] == "cobas-e411"))
+			"P|1\r"
+		else
+			"P|#{self.sequence_number}|#{self.patient_id}|||||||||||||||\r"
+		end
 	end
 
 	def to_json

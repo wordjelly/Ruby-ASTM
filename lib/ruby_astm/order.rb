@@ -106,7 +106,7 @@ class Order
 		self.results = {}
 	end
 
-	def build_response
+	def build_response(options)
 		
 		raise "provide a sequence number" if self.sequence_number.blank?
 		raise "provide a specimen id" if self.id.blank?
@@ -117,7 +117,19 @@ class Order
 			#puts "no specimen type has been provided, sending SERUM"
 		end
 
-		"O|#{self.sequence_number}|#{self.id}|#{Time.now.to_i.to_s}|^^^#{self.tests.join('`^^^')}|#{self.priority}||#{Time.now.strftime("%Y%m%d%H%M%S")}||||N||||#{self.specimen_type || 'SERUM'}\r"
+		if (options[:machine_name] && (options[:machine_name] == "cobas-e411"))
+			self.tests = self.tests.map{|c| c = "^^^" + c + "^1"}
+			# ^^0000000387^587^0^2^^S1^SC
+			id_string = options[:sequence_number] + "^" + options[:carrier_number] + "^" + options[:position_number] + "^^" + options[:sample_type] + "^" + options[:container_type]
+
+			"O|1|#{self.id.to_s}|#{id_string}|#{self.tests.join('\\')}|#{self.priority}||#{Time.now.strftime("%Y%m%d%H%M%S")}||||A||||1||||||||||O\r"
+
+		else
+
+			"O|#{self.sequence_number}|#{self.id}|#{Time.now.to_i.to_s}|^^^#{self.tests.join('`^^^')}|#{self.priority}||#{Time.now.strftime("%Y%m%d%H%M%S")}||||N||||#{self.specimen_type || 'SERUM'}\r"
+	
+		end
+
 	end	
 
 end

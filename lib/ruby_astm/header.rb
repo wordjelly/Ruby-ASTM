@@ -45,7 +45,17 @@ class Header
 		puts JSON.pretty_generate(JSON.parse(self.to_json))
 	end
 
-	def build_one_response
+	def get_header_response(options)
+		if (options[:machine_name] && (options[:machine_name] == "cobas-e411"))
+			"1H|\\^&|||host^1|||||cobas-e411|TSDWN^REPLY|P|1\r"
+		else
+			"1H|\`^&||||||||||P|E 1394-97|#{Time.now.strftime("%Y%m%d%H%M%S")}\r"
+		end
+	end
+
+	## depends on the machine code.
+	## if we have that or not.
+	def build_one_response(options)
 		puts "building one response=========="
 		puts "queries are:"
 		puts self.queries.size.to_s
@@ -53,12 +63,11 @@ class Header
 		self.queries.each do |query|
 			puts "doing query"
 			puts query.sample_ids
-			header_response = "1H|\`^&||||||||||P|E 1394-97|#{Time.now.strftime("%Y%m%d%H%M%S")}\r"
-			query.build_response.each do |qresponse|
+			header_response = get_header_response(options)
+			query.build_response(options).each do |qresponse|
 				puts "qresponse is:"
 				puts qresponse
 				header_response += qresponse
-				#responses << (header_response + qresponse)
 			end
 			responses << header_response
 		end
