@@ -10,16 +10,33 @@ class Result
 
 	def set_name(args)
 		if line = args[:line]
+			
 			line.fields[2].scan(/\^+(?<name>[A-Za-z0-9\%\#\-\_\?\/]+)\^?(?<dilution>\d+)?/) { |name,dilution|  
 				self.name = lookup_mapping(name)
+				
 				self.report_name = lookup_report_name(name)
+
 			}
+
+			self.name.scan(/(?<test_name>\d+)\/(?<dilution>\d+)\/(?<pre_dilution>[a-zA-Z0-9]+)/) { |test_name,dilution,pre_dilution|
+
+				self.name = lookup_mapping(test_name)
+
+				self.report_name = lookup_report_name(test_name)
+
+				self.dilution = dilution
+
+			}
+
 		end
 	end
 
 	def set_value(args)
 		if line = args[:line]
 			self.value = line.fields[3].strip
+			self.value.scan(/(?<flag>\d+)\^(?<value>\d?\.?\d+)/) {|flag,value|
+				self.value = value
+			}
 			line.fields[2].scan(/\^+(?<name>[A-Za-z0-9\%\#\-\_\?\/]+)\^?(?<dilution>\d+)?/) { |name,dilution|  
 				if transform_expression = lookup_transform(name)
 					self.value = eval(transform_expression)
@@ -57,7 +74,7 @@ class Result
 	def set_dilution(args)
 		if line = args[:line]
 			line.fields[2].scan(/\^+(?<name>[A-Za-z0-9\%\#\-\_\?\/]+)\^?(?<dilution>\d+)?/) { |name,dilution|  
-				self.dilution = dilution
+				self.dilution = dilution unless self.dilution
 			}
 		end
 	end

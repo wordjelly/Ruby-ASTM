@@ -19,28 +19,19 @@ class TestRubyAstm < Minitest::Test
   def test_serial_server
     $redis = Redis.new
     $mappings = JSON.parse(IO.read(AstmServer.default_mappings))
-    $redis.hset("requisitions_hash","0000000775",JSON.generate(["1","2"]))
+    $redis.hset("requisitions_hash","0000000775",JSON.generate(["6","7"]))
     EM.run do
       serial = EventMachine.open_serial('/dev/ttyS0', 9600, 8,LabInterface)
-      #puts "serial is:"
-      #puts serial.to_s
-      #puts "sending"
-      #serial.on_data do |data|
-        #puts data.bytes.to_a.pack('c*')
-        #puts "sending ACK"
-        #serial.send_data([6].pack('c*'))
-      #end
     end
   end
 
+
+
+
 =begin
-  def test_roche_inquiry_is_parsed
-    server = AstmServer.new("127.0.0.1",3000,nil)
-    $redis.del("patients")
-    root_path = File.dirname __dir__
-    roche_input_file_path = File.join root_path,'test','resources','roche_enquiry.txt'
-    server.process_text_file(roche_input_file_path)
-    assert_equal "0000000387", server.headers[-1].queries[-1].sample_ids[0]
+  def test_update
+    p = Google_Lab_Interface.new(nil,"/home/root1/Downloads/credentials.json","/home/root1/Downloads/token.yaml","MNWKZC-L05-ufApJTSqaLq42yotVzKYhk")    
+    p.update(JSON.parse("{\"@sequence_number\":0,\"@patient_id\":null,\"@orders\":[{\"id\":\"test_document_10_december_2018\",\"priority\":null,\"sequence_number\":null,\"tests\":null,\"specimen_type\":null,\"date_time\":null,\"action_code\":null,\"results\":{\"GLUF\":{\"name\":\"GLUF\",\"report_name\":\"Fasting Glucose\",\"flags\":\"H\",\"value\":\"115.4\",\"timestamp\":\"2018-12-10T10:35:54.000+05:30\",\"dilution\":null}}}]}"))
   end
 =end
 
@@ -53,15 +44,7 @@ class TestRubyAstm < Minitest::Test
     server.process_text_file(roche_input_file_path)
     $redis.hset("requisitions_hash","0000000387",JSON.generate(["1","2"]))
     header_responses = server.headers[-1].build_one_response({machine_name: "cobas-e411"})
-    puts JSON.generate(header_responses)
-  end
-=end
-
-
-=begin
-  def test_update
-    p = Google_Lab_Interface.new(nil,"/home/root1/Downloads/credentials.json","/home/root1/Downloads/token.yaml","MNWKZC-L05-ufApJTSqaLq42yotVzKYhk")    
-    p.update(JSON.parse("{\"@sequence_number\":0,\"@patient_id\":null,\"@orders\":[{\"id\":\"test_document_10_december_2018\",\"priority\":null,\"sequence_number\":null,\"tests\":null,\"specimen_type\":null,\"date_time\":null,\"action_code\":null,\"results\":{\"GLUF\":{\"name\":\"GLUF\",\"report_name\":\"Fasting Glucose\",\"flags\":\"H\",\"value\":\"115.4\",\"timestamp\":\"2018-12-10T10:35:54.000+05:30\",\"dilution\":null}}}]}"))
+    puts header_responses.to_s
   end
 =end
 
@@ -72,10 +55,21 @@ class TestRubyAstm < Minitest::Test
     root_path = File.dirname __dir__
     roche_input_file_path = File.join root_path,'test','resources','roche_result.txt'
     server.process_text_file(roche_input_file_path)
-    #server.headers[-1].commit
     assert_equal 1, $redis.llen("patients")
     patient = JSON.parse($redis.lrange("patients",0,0)[0])
     assert_equal "pragya", patient["@orders"][0]["id"]
+    assert_equal "0.325", patient["@orders"][0]["results"]["HIV"]["value"]
+    assert_equal "0.318", patient["@orders"][0]["results"]["HBS"]["value"]
+  end
+
+
+  def test_roche_inquiry_is_parsed
+    server = AstmServer.new("127.0.0.1",3000,nil)
+    $redis.del("patients")
+    root_path = File.dirname __dir__
+    roche_input_file_path = File.join root_path,'test','resources','roche_enquiry.txt'
+    server.process_text_file(roche_input_file_path)
+    assert_equal "0000000387", server.headers[-1].queries[-1].sample_ids[0]
   end
 
 
@@ -272,7 +266,6 @@ class TestRubyAstm < Minitest::Test
     end    
     ## it should be that this is still there in the patients.
     assert_equal 1, $redis.llen("patients")
-
   end 
 =end
 

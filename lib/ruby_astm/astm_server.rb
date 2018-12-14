@@ -39,6 +39,8 @@ class AstmServer
 
 	def start_server
 		EventMachine.run {
+			serial = EventMachine.open_serial('/dev/ttyS0', 9600, 8,LabInterface)
+			puts "RUNNING SERIAL ON dev/ttyS0 ------------ #{serial.to_s}"
 			self.ethernet_server = EventMachine::start_server self.server_ip, self.server_port, LabInterface
 			AstmServer.log("Running ETHERNET SERVER on #{server_port}")
 			#serial = EventMachine.open_serial('/dev/ttyUSB0', 9600, 8)

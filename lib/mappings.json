@@ -191,8 +191,8 @@
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "SGPT"
 	},
-	"HOMOCY" : {
-		"LIS_CODE" : "HOMOCY",
+	"HOMCY" : {
+		"LIS_CODE" : "HOMCY",
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "Homocysteine"
 	},
