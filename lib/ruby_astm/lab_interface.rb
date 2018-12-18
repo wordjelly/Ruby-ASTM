@@ -83,6 +83,8 @@ module LabInterface
 
 	def receive_data(data)
       
+    begin
+
       self.data_buffer ||= ''
 
       puts "incoming data bytes."
@@ -173,6 +175,9 @@ module LabInterface
           send_data(ACK)
         end
       end
+    rescue => e
+      AstmServer.log(e.backtrace.to_s)
+    end
   end
 
   def send_enq

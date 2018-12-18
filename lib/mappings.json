@@ -141,7 +141,7 @@
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "VLDL"
 	},
-	"CRE" : {
+	"CREAT" : {
 		"LIS_CODE" : "CRE",
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "Creatinine"
@@ -151,7 +151,7 @@
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "Urea"
 	},
-	"BUN" : {
+	"BUNC" : {
 		"LIS_CODE" : "BUN",
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "Blood Urea Nitrogen"
@@ -181,12 +181,12 @@
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "Alkaline Phosphatase"
 	},
-	"GOTHL" : {
+	"GOT" : {
 		"LIS_CODE" : "GOTHL",
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "SGOT"
 	},
-	"GPTHL" : {
+	"GPT" : {
 		"LIS_CODE" : "GPTHL",
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "SGPT"

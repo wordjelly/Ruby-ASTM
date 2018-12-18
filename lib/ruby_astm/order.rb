@@ -118,17 +118,30 @@ class Order
 		end
 
 		if (options[:machine_name] && (options[:machine_name] == "cobas-e411"))
+			
+
+			## remove all the non number tests, as these are not to be run on the roche system, and cause the roche machine to clam up totally if non recognized/alphabetic tests are sent to it in the response.
+
+
+			self.tests = self.tests.select{|c| c =~ /[0-9]+/}
+
 			self.tests = self.tests.map{|c| c = "^^^" + c + "^1"}
 			# ^^0000000387^587^0^2^^S1^SC
 			id_string = options[:sequence_number] + "^" + options[:carrier_number] + "^" + options[:position_number] + "^^" + options[:sample_type] + "^" + options[:container_type]
 
-			"O|1|#{self.id.to_s}|#{id_string}|#{self.tests.join('\\')}|#{self.priority}||#{Time.now.strftime("%Y%m%d%H%M%S")}||||A||||1||||||||||O\r"
+			
+			"O|1|#{self.id.to_s}|#{id_string}|#{tests.join('\\')}|#{self.priority}||#{Time.now.strftime("%Y%m%d%H%M%S")}||||A||||1||||||||||O\r"
 
 		else
 
-			"O|#{self.sequence_number}|#{self.id}|#{Time.now.to_i.to_s}|^^^#{self.tests.join('`^^^')}|#{self.priority}||#{Time.now.strftime("%Y%m%d%H%M%S")}||||N||||#{self.specimen_type || 'SERUM'}\r"
+			tests = self.tests.select{|c| c =~ /[A-Z]+/}
+
+			"O|#{self.sequence_number}|#{self.id}|#{Time.now.to_i.to_s}|^^^#{tests.join('`^^^')}|#{self.priority}||#{Time.now.strftime("%Y%m%d%H%M%S")}||||N||||#{self.specimen_type || 'SERUM'}\r"
 	
 		end
+
+		## for urine it does not get the report name.
+		## so let me do one entry for urine and hemogram.
 
 	end	
 

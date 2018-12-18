@@ -4,6 +4,7 @@ class Hl7Observation < Result
 	def set_name(args)
 		if line = args[:line]
 			self.name = lookup_mapping(line.fields[3].strip)
+			self.report_name = lookup_report_name(line.fields[3].strip)
 		end
 	end
 

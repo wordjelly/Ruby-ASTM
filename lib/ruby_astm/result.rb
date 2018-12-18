@@ -12,6 +12,7 @@ class Result
 		if line = args[:line]
 			
 			line.fields[2].scan(/\^+(?<name>[A-Za-z0-9\%\#\-\_\?\/]+)\^?(?<dilution>\d+)?/) { |name,dilution|  
+				
 				self.name = lookup_mapping(name)
 				
 				self.report_name = lookup_report_name(name)

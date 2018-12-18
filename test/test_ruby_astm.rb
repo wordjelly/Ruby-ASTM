@@ -8,14 +8,14 @@ class TestRubyAstm < Minitest::Test
 ## for this we create a remote file, and manually send the parameters
 
 
-=begin
+
   def test_server
     server = AstmServer.new("192.168.1.7",3000,nil)
     server.start_server
   end
-=end
 
 
+=begin
   def test_serial_server
     $redis = Redis.new
     $mappings = JSON.parse(IO.read(AstmServer.default_mappings))
@@ -24,7 +24,7 @@ class TestRubyAstm < Minitest::Test
       serial = EventMachine.open_serial('/dev/ttyS0', 9600, 8,LabInterface)
     end
   end
-
+=end
 
 
 
