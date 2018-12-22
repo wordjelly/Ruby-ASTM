@@ -83,7 +83,7 @@ module LabInterface
 
 	def receive_data(data)
       
-    begin
+    #begin
 
       self.data_buffer ||= ''
 
@@ -158,8 +158,12 @@ module LabInterface
         else
           puts "NO HEADERS PRESENT --- "
         end
+      elsif data.bytes.to_a[0] == 255
+        puts  " ----------- got 255 data -----------, not sending anything back. "
       else
-        puts self.data_buffer.gsub(/\r/,'\n').to_s
+        unless self.data_buffer.blank?
+          puts self.data_buffer.gsub(/\r/,'\n').to_s
+        end
         ## send the header 
         #puts "--------- SENT ACK -----------"
         if self.data_buffer =~ /MSH\|/
@@ -175,9 +179,11 @@ module LabInterface
           send_data(ACK)
         end
       end
-    rescue => e
-      AstmServer.log(e.backtrace.to_s)
-    end
+    #rescue => e
+    #  self.headers = []
+    #  AstmServer.log("data was: " + self.data_buffer + "error is:" + e.backtrace.to_s)
+    #  send_data(EOT)
+    #end
   end
 
   def send_enq
@@ -200,14 +206,20 @@ module LabInterface
         self.headers ||= []
         self.headers << hl7_header
       when "Hl7_Observation"
-        hl7_observation = Hl7Observation.new({:line => line})
-        self.headers[-1].patients[-1].orders[-1].results[hl7_observation.name] = hl7_observation
+        unless self.headers[-1].patients.blank?
+          unless self.headers[-1].patients[-1].orders[-1].blank?
+            hl7_observation = Hl7Observation.new({:line => line})
+            self.headers[-1].patients[-1].orders[-1].results[hl7_observation.name] ||= hl7_observation
+          end
+        end
       when "Hl7_Patient"
         hl7_patient = Hl7Patient.new({:line => line})
         self.headers[-1].patients << hl7_patient
       when "Hl7_Order"
-        hl7_order = Hl7Order.new({:line => line, :patient_id => self.headers[-1].patients[-1].patient_id})
-        self.headers[-1].patients[-1].orders << hl7_order
+        unless self.headers[-1].patients.blank?
+          hl7_order = Hl7Order.new({:line => line, :patient_id => self.headers[-1].patients[-1].patient_id})
+          self.headers[-1].patients[-1].orders << hl7_order
+        end
       when "Header"
         puts "got header"
         header = Header.new({:line => line})
@@ -226,7 +238,7 @@ module LabInterface
         self.headers[-1].patients[-1].orders << order
       when "Result"
         result = Result.new({:line => line})
-        self.headers[-1].patients[-1].orders[-1].results[result.name] = result
+        self.headers[-1].patients[-1].orders[-1].results[result.name] ||= result
       when "Terminator"
         ## it didn't terminate so there was no commit being called.
         puts "got terminator."

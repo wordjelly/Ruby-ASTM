@@ -10,7 +10,8 @@ class Result
 
 	def set_name(args)
 		if line = args[:line]
-			
+			puts line.to_s
+			puts line.fields[2].to_s
 			line.fields[2].scan(/\^+(?<name>[A-Za-z0-9\%\#\-\_\?\/]+)\^?(?<dilution>\d+)?/) { |name,dilution|  
 				
 				self.name = lookup_mapping(name)

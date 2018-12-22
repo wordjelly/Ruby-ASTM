@@ -1,0 +1,29 @@
+MSH|^~\&|Clinitek Status||||201812201058||ORU^R01|636808968480000001|P|2.4
+OBR|1||184|Multistix 10 SG|||||||||||ORH^^^^^^Q|||||004183|2019-07
+NTE|1|L|QCName:CHEKSTIX|G
+NTE|2|L|QCLevel:NEGATIVE|G
+NTE|3|L|QCLot:NO170078N|G
+NTE|4|L|QCExpiry:2019-11-20|G
+NTE|5|L|QCResult:PASS|G
+NTE|6|L|QCSuite:55|G
+OBX|1|ST|GLU||Negative||||||F||||||||201812201057
+NTE|1|L|QCRResult:P|G
+OBX|2|ST|BIL||Negative||||||F||||||||201812201057
+NTE|1|L|QCRResult:P|G
+OBX|3|ST|KET||Negative||||||F||||||||201812201057
+NTE|1|L|QCRResult:P|G
+OBX|4|ST|SG||1.015||||||F||||||||201812201057
+NTE|1|L|QCRResult:P|G
+OBX|5|ST|BLO||Negative||||||F||||||||201812201057
+NTE|1|L|QCRResult:P|G
+OBX|6|ST|pH||6.5||||||F||||||||201812201057
+NTE|1|L|QCRResult:P|G
+OBX|7|ST|PRO||Negative||||||F||||||||201812201057
+NTE|1|L|QCRResult:P|G
+OBX|8|ST|URO||3.2|umol/L|||||F||||||||201812201057
+NTE|1|L|QCRResult:P|G
+OBX|9|ST|NIT||Negative||||||F||||||||201812201057
+NTE|1|L|QCRResult:P|G
+OBX|10|ST|LEU||Negative||||||F||||||||201812201057
+NTE|1|L|QCRResult:P|G
+
