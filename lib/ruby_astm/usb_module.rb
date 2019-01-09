@@ -35,7 +35,7 @@ module UsbModule
 			self.usb_response_bytes.push(byte)
 		end
 		#puts "self usb response bytes:"
-		puts self.usb_response_bytes.to_s
+		#puts self.usb_response_bytes.to_s
 		if interpret?
 			#puts "interpret"
 			self.usb_response_bytes[13..-4].each_slice(32) do |patient_record|
