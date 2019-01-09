@@ -167,8 +167,13 @@ class Poller
 	        puts "tube is : #{tube}"
 	        puts "tests hash is:"
 	        puts tests_hash.to_s
-	        tube_key = tests_hash.keys.select{|c| c=~/#{tube}/ }[0] 
-	        tests_hash[tube_key] << machine_code   
+
+	        tube_key = nil
+	        unless tests_hash.keys.select{|c| c=~/#{tube}/ }.blank?
+	        	tube_key = tests_hash.keys.select{|c| c=~/#{tube}/ }[0] 
+	        	tests_hash[tube_key] << machine_code 
+	        end   
+
 	      else
 	        AstmServer.log("ERROR: Test: #{test} does not have an LIS code")
 	      end 

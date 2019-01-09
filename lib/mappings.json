@@ -175,6 +175,11 @@
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "Direct Bilirubin"
 	},
+	"CA" : {
+		"LIS_CODE" : "CA",
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "Serum Calcium"
+	},
 	"BIT" : {
 		"LIS_CODE" : "BIT",
 		"TUBE" : "SERUM",

@@ -83,7 +83,9 @@ module LabInterface
 
 	def receive_data(data)
       
-    #begin
+
+    begin
+
 
       self.data_buffer ||= ''
 
@@ -179,11 +181,13 @@ module LabInterface
           send_data(ACK)
         end
       end
-    #rescue => e
-    #  self.headers = []
-    #  AstmServer.log("data was: " + self.data_buffer + "error is:" + e.backtrace.to_s)
-    #  send_data(EOT)
-    #end
+
+    rescue => e
+      #self.headers = []
+      AstmServer.log("data was: " + self.data_buffer + "error is:" + e.backtrace.to_s)
+      #send_data(EOT)
+    end
+
   end
 
   def send_enq

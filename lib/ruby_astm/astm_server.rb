@@ -8,6 +8,7 @@ require "redis"
 class AstmServer
 
 	include LabInterface
+	include UsbModule
 
 	def self.log(message)
 		puts "" + message
@@ -43,12 +44,16 @@ class AstmServer
 			puts "RUNNING SERIAL ON dev/ttyS0 ------------ #{serial.to_s}"
 			self.ethernet_server = EventMachine::start_server self.server_ip, self.server_port, LabInterface
 			AstmServer.log("Running ETHERNET SERVER on #{server_port}")
-			#serial = EventMachine.open_serial('/dev/ttyUSB0', 9600, 8)
-			#serial.on_data do |data|
-			#  	puts "got some data"
-			#  	puts data.to_s
-			#    serial.send_data("\X06")
-			#end
+			usb = EventMachine.open_serial('/dev/ttyUSB0',19200,8)
+			self.usb_response_bytes = []
+			EM.add_periodic_timer(5) do
+				puts "running usb on ttyUSB0"
+				puts "sending machine data request #{request_results}"
+			   usb.send_data(request_results)
+			end
+			usb.on_data do |data|
+				parse_usb_response(data)
+			end
 		}
 	end	
 
