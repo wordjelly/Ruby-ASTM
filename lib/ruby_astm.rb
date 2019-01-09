@@ -1,3 +1,4 @@
+require "ruby_astm/usb_module"
 require "ruby_astm/query"
 require "ruby_astm/frame"
 require "ruby_astm/header"

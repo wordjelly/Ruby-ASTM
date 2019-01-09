@@ -11,11 +11,19 @@ module LabInterface
   EOT = "\x04"
 
 
-
-  mattr_accessor :headers
   mattr_accessor :ethernet_server
   mattr_accessor :server_ip
   mattr_accessor :server_port
+  mattr_accessor :serial_port
+  mattr_accessor :serial_baud
+  mattr_accessor :serial_parity
+  mattr_accessor :usb_port
+  mattr_accessor :usb_baud
+  mattr_accessor :usb_parity
+
+
+
+  mattr_accessor :headers
   mattr_accessor :mapping
   mattr_accessor :respond_to_queries
 

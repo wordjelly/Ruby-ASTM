@@ -10,10 +10,9 @@ class TestRubyAstm < Minitest::Test
 
 
   def test_server
-    server = AstmServer.new("192.168.1.7",3000,nil)
+    server = AstmServer.new("127.0.0.1",3000,nil)
     server.start_server
   end
-
 
 =begin
   def test_serial_server
@@ -46,9 +45,8 @@ class TestRubyAstm < Minitest::Test
     header_responses = server.headers[-1].build_one_response({machine_name: "cobas-e411"})
     puts header_responses.to_s
   end
-=end
 
-=begin
+
   def test_roche_result
     server = AstmServer.new("127.0.0.1",3000,nil)
     $redis.del("patients")
@@ -268,6 +266,7 @@ class TestRubyAstm < Minitest::Test
     assert_equal 1, $redis.llen("patients")
   end 
 =end
+
 
 =begin
   ## kindly note, the credentials specified herein are no longer active ;)
