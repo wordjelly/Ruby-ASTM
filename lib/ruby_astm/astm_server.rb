@@ -53,15 +53,20 @@ class AstmServer
 			puts "RUNNING SERIAL ON #{serial_port} ------------ #{serial.to_s}"
 			self.ethernet_server = EventMachine::start_server self.server_ip, self.server_port, LabInterface
 			AstmServer.log("Running ETHERNET SERVER on #{server_port}")
-			usb = EventMachine.open_serial(usb_port,usb_baud,usb_parity)
-			self.usb_response_bytes = []
-			EM.add_periodic_timer(5) do
-				puts "running usb on #{usb_port}"
-				puts "sending machine data request #{request_results}"
-			   usb.send_data(request_results)
-			end
-			usb.on_data do |data|
-				parse_usb_response(data)
+			begin
+				usb = EventMachine.open_serial(usb_port,usb_baud,usb_parity)
+				self.usb_response_bytes = []
+				EM.add_periodic_timer(5) do
+					puts "running usb on #{usb_port}"
+					puts "sending machine data request #{request_results}"
+				   usb.send_data(request_results)
+				end
+				usb.on_data do |data|
+					parse_usb_response(data)
+				end
+			rescue => e
+				puts "got usb error"
+				puts e.to_s
 			end
 		}
 	end	
