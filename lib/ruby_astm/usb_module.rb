@@ -38,32 +38,34 @@ module UsbModule
 		#puts self.usb_response_bytes.to_s
 		if interpret?
 			#puts "interpret"
-			self.usb_response_bytes[13..-4].each_slice(32) do |patient_record|
-				bar_code = nil
-				bar_code = patient_record[11..23].pack('c*').gsub(/\./,'')
-				#puts "bar code: #{bar_code}"
-				unless bar_code.strip.blank?
-					esr = patient_record[26]
-					patient = Patient.new(:orders => [Order.new(:results => [Result.new(:value => esr, :name => "ESR", :report_name => "ESR")])])
-					patient = Patient.new({})
-					patient.patient_id = bar_code
-					patient.orders = []
-					order = Order.new({})
-					result = Result.new({})
-					result.value = esr.to_s
-					result.name = "ESR"
-					result.report_name = "ESR"
-					order.id = bar_code
-					order.results = []
-					order.results << result
-					patient.orders << order
-					#puts patient.orders.size
-					#puts patient.orders.first.results.size
-					#puts patient.orders.first.results.first.to_s
-					#puts "patient to json is:"
-					puts patient.to_json
-					$redis.lpush("patients",patient.to_json)
-				end 
+			if kk = self.usb_response_bytes[13..-4]
+				kk.each_slice(32) do |patient_record|
+					bar_code = nil
+					bar_code = patient_record[11..23].pack('c*').gsub(/\./,'')
+					#puts "bar code: #{bar_code}"
+					unless bar_code.strip.blank?
+						esr = patient_record[26]
+						patient = Patient.new(:orders => [Order.new(:results => [Result.new(:value => esr, :name => "ESR", :report_name => "ESR")])])
+						patient = Patient.new({})
+						patient.patient_id = bar_code
+						patient.orders = []
+						order = Order.new({})
+						result = Result.new({})
+						result.value = esr.to_s
+						result.name = "ESR"
+						result.report_name = "ESR"
+						order.id = bar_code
+						order.results = []
+						order.results << result
+						patient.orders << order
+						#puts patient.orders.size
+						#puts patient.orders.first.results.size
+						#puts patient.orders.first.results.first.to_s
+						#puts "patient to json is:"
+						puts patient.to_json
+						$redis.lpush("patients",patient.to_json)
+					end 
+				end
 			end
 			self.usb_response_bytes = []	
 		else
