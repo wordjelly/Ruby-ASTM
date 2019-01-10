@@ -14,6 +14,7 @@ class TestRubyAstm < Minitest::Test
     server.start_server
   end
 =end
+
 =begin
   def test_serial_server
     $redis = Redis.new
@@ -33,6 +34,30 @@ class TestRubyAstm < Minitest::Test
     p.update(JSON.parse("{\"@sequence_number\":0,\"@patient_id\":null,\"@orders\":[{\"id\":\"test_document_10_december_2018\",\"priority\":null,\"sequence_number\":null,\"tests\":null,\"specimen_type\":null,\"date_time\":null,\"action_code\":null,\"results\":{\"GLUF\":{\"name\":\"GLUF\",\"report_name\":\"Fasting Glucose\",\"flags\":\"H\",\"value\":\"115.4\",\"timestamp\":\"2018-12-10T10:35:54.000+05:30\",\"dilution\":null}}}]}"))
   end
 =end
+  
+
+
+  def test_roche_multi_frame_bytes
+    server = AstmServer.new("127.0.0.1",3000,nil)
+    $redis.del("patients")
+    root_path = File.dirname __dir__
+    roche_input_file_path = File.join root_path,'test','resources','roche_multi_frame_bytes.txt'
+    byte_arr = eval(IO.read(roche_input_file_path))
+    db = ''
+    byte_arr.map{|c| db += server.pre_process_bytes(c,'')
+    }
+    server.process_text(db)
+    assert_equal 1, $redis.llen("patients")
+    patient = JSON.parse($redis.lrange("patients",0,0)[0])
+    #assert_equal "pragya", patient["@orders"][0]["id"]
+    assert_equal "141.3", patient["@orders"][0]["results"]["B12"]["value"]
+    assert_equal "<3.00", patient["@orders"][0]["results"]["VITD"]["value"]
+    assert_equal "1.95", patient["@orders"][0]["results"]["TSH"]["value"]
+    assert_equal "132.1", patient["@orders"][0]["results"]["T3"]["value"]
+    assert_equal "9.61", patient["@orders"][0]["results"]["T4"]["value"]
+    assert_equal "0.282", patient["@orders"][0]["results"]["HIV"]["value"]
+    assert_equal "0.707", patient["@orders"][0]["results"]["HBS"]["value"]
+  end
 
 
   def test_roche_response_is_generated

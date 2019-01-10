@@ -22,6 +22,9 @@ module LabInterface
   mattr_accessor :usb_parity
   mattr_accessor :mid_frame_end_detected
 
+  ## gather bytes to store for us to test.
+  mattr_accessor :test_data_bytes
+
 
 
   mattr_accessor :headers
@@ -48,6 +51,8 @@ module LabInterface
       end
     end
   end
+
+
 
 
   def terminator
@@ -91,49 +96,56 @@ module LabInterface
   end
 
   def is_mid_frame_end?(bytes_array)
+
+    ## if you get 13,10,2 anywhere, ignore that and the subsequent digit.
+    bytes_indices_to_delete = []
     unless bytes_array.blank?
-      if bytes_array.size >= 6
-        if bytes_array[-6..-1] == [23,65,52,13,10,2]
-          self.mid_frame_end_detected = true
-          return self.mid_frame_end_detected
+      bytes_array.each_with_index{|val,key|
+        if bytes_array.size >= (key + 2)
+          if bytes_array[key..(key+2)] == [13,10,2]
+            bytes_indices_to_delete.push(key - 3)
+            bytes_indices_to_delete.push(key - 2)
+            bytes_indices_to_delete.push(key - 1)
+            bytes_indices_to_delete.push(key)
+            bytes_indices_to_delete.push(key + 1)
+            bytes_indices_to_delete.push(key + 2)
+          end
         end
-      end
+      }
     end
-    return false
+    bytes_indices_to_delete
   end
 
-	def receive_data(data)
-      
+  def pre_process_bytes(byte_arr,concat)
 
-    begin
+      puts byte_arr.to_s
+      indices_to_delete = is_mid_frame_end?(byte_arr)
+      #puts "indices to delete"
+      #puts indices_to_delete.to_s
 
-
-      self.data_buffer ||= ''
-
-      #puts "incoming data bytes."
-
-      concat = ""
-      
-      #puts data.bytes.to_a.to_s
-
-
-      ## if the bytes end in 13,10,2
-      ## that means frame ends and restarts
-      ## ignore those three bytes
-      byte_arr = data.bytes.to_a
-      #puts "byte arr is:"
-      #puts byte_arr
-
-      if is_mid_frame_end?(byte_arr)
-        #puts "mid frame end is true---------------!!!!!!!!!!"
-        byte_arr = byte_arr[0..-7]
-        #puts "byte arr BECOMES mid frame end is true---------------!!!!!!!!!!"
-        #puts byte_arr.pack('c*')
-      elsif self.mid_frame_end_detected == true
-        ## we ignore the frame number.
+      if self.mid_frame_end_detected == true
+        #puts "deletected mid fram is true, so deleting first byte before delete"
+        #puts byte_arr.to_s
         byte_arr = byte_arr[1..-1]
+        #puts "after deleteing"
+        #puts byte_arr.to_s
         self.mid_frame_end_detected = false
       end
+
+      unless indices_to_delete.blank?
+        if byte_arr[(indices_to_delete[-1] + 1)]
+          #puts "before deleting frame number "
+          #puts byte_arr.to_s
+          byte_arr.delete_at((indices_to_delete[-1] + 1))
+          #puts "after deleting"
+          #puts byte_arr.to_s
+        else
+          self.mid_frame_end_detected = true
+        end
+      end
+      #puts "byte arr before reject"
+      byte_arr = byte_arr.reject.with_index{|c,i|  indices_to_delete.include? i}
+      
 
       byte_arr.each do |byte|
         x = [byte].pack('c*').force_encoding('UTF-8')
@@ -148,6 +160,31 @@ module LabInterface
           concat+=x
         end
       end
+
+      concat
+
+  end
+
+	def receive_data(data)
+      
+
+    begin
+
+
+      self.data_buffer ||= ''
+
+      #puts "incoming data bytes."
+
+      concat = ""
+      
+   
+      byte_arr = data.bytes.to_a
+      self.test_data_bytes ||= []
+      self.test_data_bytes.push(byte_arr)
+    
+      concat = pre_process_bytes(byte_arr,concat)
+
+     
       
       #puts "concat is:"
       
@@ -163,6 +200,10 @@ module LabInterface
       if data.bytes.to_a[-1] == 4
         #puts "GOT EOT --- PROCESSING BUFFER, AND CLEARING."
         process_text(self.data_buffer)
+        #root_path = File.dirname __dir
+        #puts "root path #{root_path}"
+        #IO.write((File.join root_path,'test','resources','roche_multi_frame_bytes.txt'),self.test_data_bytes.to_s)
+        #puts self.test_data_bytes.flatten.to_s
         self.data_buffer = ''
         if self.headers[-1].queries.blank?
           #puts "no queries in header so sending ack after getting EOT and processing the buffer"
@@ -240,6 +281,7 @@ module LabInterface
       puts "text is:"
       puts text
       text.split("\n").each do |l|
+        puts "doing line:#{l}" 
 		    line = Line.new({:text => l})
         process_type(line)
       end
