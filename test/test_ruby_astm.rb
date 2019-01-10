@@ -8,12 +8,12 @@ class TestRubyAstm < Minitest::Test
 ## for this we create a remote file, and manually send the parameters
 
 
-
+=begin
   def test_server
     server = AstmServer.new("127.0.0.1",3000,nil)
     server.start_server
   end
-
+=end
 =begin
   def test_serial_server
     $redis = Redis.new
@@ -34,7 +34,7 @@ class TestRubyAstm < Minitest::Test
   end
 =end
 
-=begin
+
   def test_roche_response_is_generated
     server = AstmServer.new("127.0.0.1",3000,nil)
     $redis.del("patients")
@@ -265,7 +265,7 @@ class TestRubyAstm < Minitest::Test
     ## it should be that this is still there in the patients.
     assert_equal 1, $redis.llen("patients")
   end 
-=end
+
 
 
 =begin

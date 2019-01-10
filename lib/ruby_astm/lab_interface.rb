@@ -20,6 +20,7 @@ module LabInterface
   mattr_accessor :usb_port
   mattr_accessor :usb_baud
   mattr_accessor :usb_parity
+  mattr_accessor :mid_frame_end_detected
 
 
 
@@ -89,6 +90,18 @@ module LabInterface
     }
   end
 
+  def is_mid_frame_end?(bytes_array)
+    unless bytes_array.blank?
+      if bytes_array.size >= 6
+        if bytes_array[-6..-1] == [23,65,52,13,10,2]
+          self.mid_frame_end_detected = true
+          return self.mid_frame_end_detected
+        end
+      end
+    end
+    return false
+  end
+
 	def receive_data(data)
       
 
@@ -97,13 +110,32 @@ module LabInterface
 
       self.data_buffer ||= ''
 
-      puts "incoming data bytes."
+      #puts "incoming data bytes."
 
       concat = ""
       
-      puts data.bytes.to_a.to_s
+      #puts data.bytes.to_a.to_s
 
-      data.bytes.to_a.each do |byte|
+
+      ## if the bytes end in 13,10,2
+      ## that means frame ends and restarts
+      ## ignore those three bytes
+      byte_arr = data.bytes.to_a
+      #puts "byte arr is:"
+      #puts byte_arr
+
+      if is_mid_frame_end?(byte_arr)
+        #puts "mid frame end is true---------------!!!!!!!!!!"
+        byte_arr = byte_arr[0..-7]
+        #puts "byte arr BECOMES mid frame end is true---------------!!!!!!!!!!"
+        #puts byte_arr.pack('c*')
+      elsif self.mid_frame_end_detected == true
+        ## we ignore the frame number.
+        byte_arr = byte_arr[1..-1]
+        self.mid_frame_end_detected = false
+      end
+
+      byte_arr.each do |byte|
         x = [byte].pack('c*').force_encoding('UTF-8')
         if x == "\r"
           concat+="\n"
@@ -129,23 +161,23 @@ module LabInterface
       
 
       if data.bytes.to_a[-1] == 4
-        puts "GOT EOT --- PROCESSING BUFFER, AND CLEARING."
+        #puts "GOT EOT --- PROCESSING BUFFER, AND CLEARING."
         process_text(self.data_buffer)
         self.data_buffer = ''
         if self.headers[-1].queries.blank?
-          puts "no queries in header so sending ack after getting EOT and processing the buffer"
+          #puts "no queries in header so sending ack after getting EOT and processing the buffer"
           send_data(ACK)
         else
-          puts "sending ENQ"
+          #puts "sending ENQ"
           send_data(ENQ)
         end
       elsif data.bytes.to_a[0] == 6
-        puts "GOT ACK --- GENERATING RESPONSE"
+        #puts "GOT ACK --- GENERATING RESPONSE"
         unless self.headers.blank?
           header_responses = self.headers[-1].build_one_response({machine_name: self.headers[-1].machine_name})
           ## if no queries then, we have to send ack.
           if header_responses.blank?
-            puts "sending ACK since there are no queries in the header"
+            #puts "sending ACK since there are no queries in the header"
             send_data(ACK)
           end
           header_responses.each_with_index {|response,key|
@@ -154,30 +186,30 @@ module LabInterface
             final_resp_arr = final_resp.bytes.to_a
             final_resp_arr << 10
             if (self.headers[-1].response_sent == false)
-              puts "sending the  data as follows----------------------------------------------"
-              puts "response sent is:"
-              puts self.headers[-1].response_sent
-              puts final_resp_arr.pack('c*').gsub(/\r/,'\n')
+              #puts "sending the  data as follows----------------------------------------------"
+              #puts "response sent is:"
+              #puts self.headers[-1].response_sent
+              #puts final_resp_arr.pack('c*').gsub(/\r/,'\n')
               send_data(final_resp_arr.pack('c*')) 
               self.headers[-1].response_sent = true if (key == (header_responses.size - 1))
             else
-              puts "sending EOT"
+              #puts "sending EOT"
               send_data(EOT)
             end
           }
         else
-          puts "NO HEADERS PRESENT --- "
+          #puts "NO HEADERS PRESENT --- "
         end
       elsif data.bytes.to_a[0] == 255
-        puts  " ----------- got 255 data -----------, not sending anything back. "
+        #puts  " ----------- got 255 data -----------, not sending anything back. "
       else
-        unless self.data_buffer.blank?
-          puts self.data_buffer.gsub(/\r/,'\n').to_s
-        end
+        #unless self.data_buffer.blank?
+        #  puts self.data_buffer.gsub(/\r/,'\n').to_s
+        #end
         ## send the header 
         #puts "--------- SENT ACK -----------"
         if self.data_buffer =~ /MSH\|/
-          puts " -------------- HEADERS ARE BLANK WITH HL7, sending ack. ------------ "
+          #puts " -------------- HEADERS ARE BLANK WITH HL7, sending ack. ------------ "
           process_text(self.data_buffer)
           self.data_buffer = ''
           if self.headers.size > 0
@@ -185,7 +217,7 @@ module LabInterface
             send_data(self.headers[-1].generate_ack_success_response)
           end
         else
-          puts " -------------- HEADERS ARE BLANK NOT HL7, sending ack. ------------ "
+          #puts " -------------- HEADERS ARE BLANK NOT HL7, sending ack. ------------ "
           send_data(ACK)
         end
       end
@@ -199,12 +231,14 @@ module LabInterface
   end
 
   def send_enq
-    puts "enq as bytes is:"
-    puts ENQ.unpack('c*')
+    #puts "enq as bytes is:"
+    #puts ENQ.unpack('c*')
     send_data(ENQ)
   end
 
   def process_text(text)
+      puts "text is:"
+      puts text
       text.split("\n").each do |l|
 		    line = Line.new({:text => l})
         process_type(line)
