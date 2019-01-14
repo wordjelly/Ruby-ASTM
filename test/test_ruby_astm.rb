@@ -8,12 +8,15 @@ class TestRubyAstm < Minitest::Test
 ## for this we create a remote file, and manually send the parameters
 
 
-=begin
+
   def test_server
-    server = AstmServer.new("127.0.0.1",3000,nil)
+    ethernet_connections = [{:server_ip => "127.0.0.1", :server_port => 3000}]
+    roche_serial_connection = {:port_address => '/dev/ttyS0', :baud_rate => 9600, :parity => 8}
+    d10_serial_connection = {:port_address => '/dev/ttyS5', :baud_rate => 9600, :parity => 8}
+    serial_connections = [roche_serial_connection,d10_serial_connection]
+    server = AstmServer.new(ethernet_connections,serial_connections)
     server.start_server
   end
-=end
 
 =begin
   def test_serial_server
@@ -36,9 +39,11 @@ class TestRubyAstm < Minitest::Test
 =end
   
 
-
+=begin
   def test_roche_multi_frame_bytes
-    server = AstmServer.new("127.0.0.1",3000,nil)
+    ethernet_connections = [{:server_ip => "127.0.0.1", :server_port => 3000}]
+    server = AstmServer.new(ethernet_connections,[])
+
     $redis.del("patients")
     root_path = File.dirname __dir__
     roche_input_file_path = File.join root_path,'test','resources','roche_multi_frame_bytes.txt'
@@ -60,8 +65,10 @@ class TestRubyAstm < Minitest::Test
   end
 
 
+
   def test_roche_response_is_generated
-    server = AstmServer.new("127.0.0.1",3000,nil)
+    ethernet_connections = [{:server_ip => "127.0.0.1", :server_port => 3000}]
+    server = AstmServer.new(ethernet_connections,[])
     $redis.del("patients")
     root_path = File.dirname __dir__
     roche_input_file_path = File.join root_path,'test','resources','roche_enquiry.txt'
@@ -73,7 +80,8 @@ class TestRubyAstm < Minitest::Test
 
 
   def test_roche_result
-    server = AstmServer.new("127.0.0.1",3000,nil)
+    ethernet_connections = [{:server_ip => "127.0.0.1", :server_port => 3000}]
+    server = AstmServer.new(ethernet_connections,[])
     $redis.del("patients")
     root_path = File.dirname __dir__
     roche_input_file_path = File.join root_path,'test','resources','roche_result.txt'
@@ -87,7 +95,8 @@ class TestRubyAstm < Minitest::Test
 
 
   def test_roche_inquiry_is_parsed
-    server = AstmServer.new("127.0.0.1",3000,nil)
+    ethernet_connections = [{:server_ip => "127.0.0.1", :server_port => 3000}]
+    server = AstmServer.new(ethernet_connections,[])
     $redis.del("patients")
     root_path = File.dirname __dir__
     roche_input_file_path = File.join root_path,'test','resources','roche_enquiry.txt'
@@ -97,7 +106,8 @@ class TestRubyAstm < Minitest::Test
 
 
   def test_receives_siemens_results
-    server = AstmServer.new("127.0.0.1",3000,nil)
+    ethernet_connections = [{:server_ip => "127.0.0.1", :server_port => 3000}]
+    server = AstmServer.new(ethernet_connections,[])
     $redis.del("patients")
     root_path = File.dirname __dir__
     siemens_input_file_path = File.join root_path,'test','resources','siemens_clinitek.txt'
@@ -113,7 +123,8 @@ class TestRubyAstm < Minitest::Test
 
 
   def test_generates_ack_message_for_hl7_protocol
-    server = AstmServer.new("127.0.0.1",3000,nil)
+    ethernet_connections = [{:server_ip => "127.0.0.1", :server_port => 3000}]
+    server = AstmServer.new(ethernet_connections,[])
     $redis.del("patients")
     root_path = File.dirname __dir__
     siemens_input_file_path = File.join root_path,'test','resources','siemens_clinitek.txt'
@@ -126,7 +137,8 @@ class TestRubyAstm < Minitest::Test
   
 
   def test_sysmex_550_receives_results
-  	server = AstmServer.new("127.0.0.1",3000,nil)
+  	ethernet_connections = [{:server_ip => "127.0.0.1", :server_port => 3000}]
+    server = AstmServer.new(ethernet_connections,[])
   	$redis.del("patients")
   	root_path = File.dirname __dir__
   	sysmex_input_file_path = File.join root_path,'test','resources','sysmex_550_sample.txt'
@@ -139,7 +151,8 @@ class TestRubyAstm < Minitest::Test
   end
 
   def test_em_200_receives_results
-  	server = AstmServer.new("127.0.0.1",3000,nil)
+  	ethernet_connections = [{:server_ip => "127.0.0.1", :server_port => 3000}]
+    server = AstmServer.new(ethernet_connections,[])
   	$redis.del("patients")
   	root_path = File.dirname __dir__
   	em200_input_file_path = File.join root_path,'test','resources','em_200_sample.txt'
@@ -150,7 +163,8 @@ class TestRubyAstm < Minitest::Test
   end
 
   def test_em_200_parses_query
-  	server = AstmServer.new("127.0.0.1",3000,nil)
+  	ethernet_connections = [{:server_ip => "127.0.0.1", :server_port => 3000}]
+    server = AstmServer.new(ethernet_connections,[])
   	$redis.del("patients")
   	root_path = File.dirname __dir__
   	em200_input_file_path = File.join root_path,'test','resources','em_200_query_sample.txt'
@@ -248,7 +262,8 @@ class TestRubyAstm < Minitest::Test
   end
 
   def test_query_uses_requisitions_hash_to_generate_response
-    server = AstmServer.new("127.0.0.1",3000,nil)
+    ethernet_connections = [{:server_ip => "127.0.0.1", :server_port => 3000}]
+    server = AstmServer.new(ethernet_connections,[])
     $redis.del("patients")
     root_path = File.dirname __dir__
     em200_input_file_path = File.join root_path,'test','resources','em_200_query_sample.txt'
@@ -263,7 +278,8 @@ class TestRubyAstm < Minitest::Test
   def test_calculates_checksum_correctly
     root_path = File.dirname __dir__
     e411_checksum_file_path = File.join root_path,'test','resources','e411_checksum.txt'
-    server = AstmServer.new("127.0.0.1",3000,nil)
+    ethernet_connections = [{:server_ip => "127.0.0.1", :server_port => 3000}]
+    server = AstmServer.new(ethernet_connections,[])
     assert_equal "D4", server.checksum(IO.read(e411_checksum_file_path))
   end
 
@@ -274,7 +290,8 @@ class TestRubyAstm < Minitest::Test
         false
       end
     end    
-    server = AstmServer.new("127.0.0.1",3000,nil)
+    ethernet_connections = [{:server_ip => "127.0.0.1", :server_port => 3000}]
+    server = AstmServer.new(ethernet_connections,[])
     $redis.del("patients")
     root_path = File.dirname __dir__
     sysmex_input_file_path = File.join root_path,'test','resources','sysmex_550_sample.txt'
@@ -290,7 +307,7 @@ class TestRubyAstm < Minitest::Test
     ## it should be that this is still there in the patients.
     assert_equal 1, $redis.llen("patients")
   end 
-
+=end
 
 
 =begin

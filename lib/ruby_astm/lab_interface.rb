@@ -11,6 +11,9 @@ module LabInterface
   EOT = "\x04"
 
 
+  mattr_accessor :ethernet_connections
+  mattr_accessor :serial_connections
+
   mattr_accessor :ethernet_server
   mattr_accessor :server_ip
   mattr_accessor :server_port
@@ -205,12 +208,16 @@ module LabInterface
         #IO.write((File.join root_path,'test','resources','roche_multi_frame_bytes.txt'),self.test_data_bytes.to_s)
         #puts self.test_data_bytes.flatten.to_s
         self.data_buffer = ''
-        if self.headers[-1].queries.blank?
-          #puts "no queries in header so sending ack after getting EOT and processing the buffer"
-          send_data(ACK)
+        unless self.headers.blank?
+          if self.headers[-1].queries.blank?
+            #puts "no queries in header so sending ack after getting EOT and processing the buffer"
+            send_data(ACK)
+          else
+            #puts "sending ENQ"
+            send_data(ENQ)
+          end
         else
-          #puts "sending ENQ"
-          send_data(ENQ)
+          #send_data(ACK)
         end
       elsif data.bytes.to_a[0] == 6
         #puts "GOT ACK --- GENERATING RESPONSE"
