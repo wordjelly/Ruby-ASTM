@@ -189,9 +189,9 @@ module LabInterface
 
      
       
-      #puts "concat is:"
+      puts "concat is:"
       
-      #puts concat.to_s
+      puts concat.to_s
       
       self.data_buffer << concat
 
@@ -201,7 +201,7 @@ module LabInterface
       
 
       if data.bytes.to_a[-1] == 4
-        #puts "GOT EOT --- PROCESSING BUFFER, AND CLEARING."
+        puts "GOT EOT --- PROCESSING BUFFER, AND CLEARING."
         process_text(self.data_buffer)
         #root_path = File.dirname __dir
         #puts "root path #{root_path}"
@@ -217,10 +217,11 @@ module LabInterface
             send_data(ENQ)
           end
         else
-          #send_data(ACK)
+          puts "sending catch all --------------- ACK --------------"
+          send_data(ACK)
         end
       elsif data.bytes.to_a[0] == 6
-        #puts "GOT ACK --- GENERATING RESPONSE"
+        puts "GOT ACK --- GENERATING RESPONSE"
         unless self.headers.blank?
           header_responses = self.headers[-1].build_one_response({machine_name: self.headers[-1].machine_name})
           ## if no queries then, we have to send ack.
@@ -249,7 +250,7 @@ module LabInterface
           #puts "NO HEADERS PRESENT --- "
         end
       elsif data.bytes.to_a[0] == 255
-        #puts  " ----------- got 255 data -----------, not sending anything back. "
+        puts  " ----------- got 255 data -----------, not sending anything back. "
       else
         #unless self.data_buffer.blank?
         #  puts self.data_buffer.gsub(/\r/,'\n').to_s
@@ -271,6 +272,7 @@ module LabInterface
       end
 
     rescue => e
+      
       #self.headers = []
       AstmServer.log("data was: " + self.data_buffer + "error is:" + e.backtrace.to_s)
       #send_data(EOT)

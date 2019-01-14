@@ -12,7 +12,7 @@ class TestRubyAstm < Minitest::Test
   def test_server
     ethernet_connections = [{:server_ip => "127.0.0.1", :server_port => 3000}]
     roche_serial_connection = {:port_address => '/dev/ttyS0', :baud_rate => 9600, :parity => 8}
-    d10_serial_connection = {:port_address => '/dev/ttyS5', :baud_rate => 9600, :parity => 8}
+    d10_serial_connection = {:port_address => '/dev/ttyS4', :baud_rate => 9600, :parity => 8}
     serial_connections = [roche_serial_connection,d10_serial_connection]
     server = AstmServer.new(ethernet_connections,serial_connections)
     server.start_server
