@@ -303,10 +303,12 @@ module LabInterface
         self.headers ||= []
         self.headers << hl7_header
       when "Hl7_Observation"
-        unless self.headers[-1].patients.blank?
-          unless self.headers[-1].patients[-1].orders[-1].blank?
-            hl7_observation = Hl7Observation.new({:line => line})
-            self.headers[-1].patients[-1].orders[-1].results[hl7_observation.name] ||= hl7_observation
+        unless self.headers.blank?
+          unless self.headers[-1].patients.blank?
+            unless self.headers[-1].patients[-1].orders[-1].blank?
+              hl7_observation = Hl7Observation.new({:line => line})
+              self.headers[-1].patients[-1].orders[-1].results[hl7_observation.name] ||= hl7_observation
+            end
           end
         end
       when "Hl7_Patient"
@@ -325,21 +327,37 @@ module LabInterface
       when "Query"
         puts "got query"
         query = Query.new({:line => line})
-        self.headers[-1].queries << query
+        unless self.headers.blank?
+          self.headers[-1].queries << query
+        end
       when "Patient"
         puts "got patient."
         patient = Patient.new({:line => line})
-        self.headers[-1].patients << patient
+        unless self.headers.blank?
+          self.headers[-1].patients << patient
+        end
       when "Order"
         order = Order.new({:line => line})
-        self.headers[-1].patients[-1].orders << order
+        unless self.headers.blank?
+          unless self.headers[-1].patients.blank?
+            self.headers[-1].patients[-1].orders << order
+          end
+        end
       when "Result"
         result = Result.new({:line => line})
-        self.headers[-1].patients[-1].orders[-1].results[result.name] ||= result
+        unless self.headers.blank?
+          unless self.headers[-1].patients.blank?
+            unless self.headers[-1].patients[-1].orders[-1].blank?
+              self.headers[-1].patients[-1].orders[-1].results[result.name] ||= result
+            end
+          end
+        end
       when "Terminator"
         ## it didn't terminate so there was no commit being called.
-        puts "got terminator."
-        self.headers[-1].commit
+        unless self.headers.blank?
+          puts "got terminator."
+          self.headers[-1].commit
+        end
       end
   end
 

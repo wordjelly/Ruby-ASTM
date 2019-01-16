@@ -6,9 +6,21 @@ class TestRubyAstm < Minitest::Test
 
 ## we want to send some data by the poller to the remote server, to check if it finds such a file and updates it.
 ## for this we create a remote file, and manually send the parameters
+  
+  
+  
 
-
-
+=begin
+  def test_print_errors
+    $redis = Redis.new
+    errors = $redis.zrange("ruby_astm_log",0 ,-1)
+    errors.each do |error|
+      puts error.to_s
+      puts "-----------------------------------"
+    end
+  end
+=end
+=begin
   def test_server
     ethernet_connections = [{:server_ip => "127.0.0.1", :server_port => 3000}]
     roche_serial_connection = {:port_address => '/dev/ttyS0', :baud_rate => 9600, :parity => 8}
@@ -17,7 +29,7 @@ class TestRubyAstm < Minitest::Test
     server = AstmServer.new(ethernet_connections,serial_connections)
     server.start_server
   end
-
+=end
 =begin
   def test_serial_server
     $redis = Redis.new
@@ -27,11 +39,10 @@ class TestRubyAstm < Minitest::Test
       serial = EventMachine.open_serial('/dev/ttyS0', 9600, 8,LabInterface)
     end
   end
-=end
 
 
 
-=begin
+
   def test_update
     p = Google_Lab_Interface.new(nil,"/home/root1/Downloads/credentials.json","/home/root1/Downloads/token.yaml","MNWKZC-L05-ufApJTSqaLq42yotVzKYhk")    
     p.update(JSON.parse("{\"@sequence_number\":0,\"@patient_id\":null,\"@orders\":[{\"id\":\"test_document_10_december_2018\",\"priority\":null,\"sequence_number\":null,\"tests\":null,\"specimen_type\":null,\"date_time\":null,\"action_code\":null,\"results\":{\"GLUF\":{\"name\":\"GLUF\",\"report_name\":\"Fasting Glucose\",\"flags\":\"H\",\"value\":\"115.4\",\"timestamp\":\"2018-12-10T10:35:54.000+05:30\",\"dilution\":null}}}]}"))
@@ -39,7 +50,18 @@ class TestRubyAstm < Minitest::Test
 =end
   
 
-=begin
+  def test_query_for_non_existent_sample
+    $redis = Redis.new
+    ethernet_connections = [{:server_ip => "127.0.0.1", :server_port => 3000}]
+    server = AstmServer.new(ethernet_connections,[])
+    root_path = File.dirname __dir__
+    roche_input_file_path = File.join root_path,'test','resources','roche_query_for_non_existent_sample.txt'
+    server.process_text_file(roche_input_file_path)
+    header_responses = server.headers[-1].build_one_response({machine_name: "cobas-e411"})
+    assert_equal header_responses[0], "1H|\\^&|||host^1|||||cobas-e411|TSDWN^REPLY|P|1\r"
+  end
+
+
   def test_roche_multi_frame_bytes
     ethernet_connections = [{:server_ip => "127.0.0.1", :server_port => 3000}]
     server = AstmServer.new(ethernet_connections,[])
@@ -103,6 +125,8 @@ class TestRubyAstm < Minitest::Test
     server.process_text_file(roche_input_file_path)
     assert_equal "0000000387", server.headers[-1].queries[-1].sample_ids[0]
   end
+  
+  
 
 
   def test_receives_siemens_results
@@ -307,7 +331,7 @@ class TestRubyAstm < Minitest::Test
     ## it should be that this is still there in the patients.
     assert_equal 1, $redis.llen("patients")
   end 
-=end
+
 
 
 =begin

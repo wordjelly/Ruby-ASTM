@@ -89,6 +89,8 @@ class Query
 		puts "sample ids are:"
 		puts self.sample_ids
 
+		return responses unless sample_ids
+
 		self.sample_ids.each_with_index {|sid,key|
 			puts "doing sample id: #{sid}"
 			## tests are got from the requisitions hash.
