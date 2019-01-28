@@ -9,7 +9,6 @@ class TestRubyAstm < Minitest::Test
   
   
   
-
 =begin
   def test_print_errors
     $redis = Redis.new

@@ -258,7 +258,7 @@ module LabInterface
         ## send the header 
         #puts "--------- SENT ACK -----------"
         ## strip non utf 8 characters from it.
-        self.data_buffer.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
+        self.data_buffer.encode!('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
         if self.data_buffer =~ /MSH\|/
           #puts " -------------- HEADERS ARE BLANK WITH HL7, sending ack. ------------ "
           process_text(self.data_buffer)
