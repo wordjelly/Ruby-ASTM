@@ -48,7 +48,15 @@ class TestRubyAstm < Minitest::Test
   end
 =end
   
+  def test_get_mapping_keys
+    root_path = File.dirname __dir__
+    roche_input_file_path = File.join root_path,'test','resources','test_mappings.json'
+    byte_arr = JSON.parse(IO.read(roche_input_file_path))
+    puts byte_arr.keys.to_s
+    exit(1)
+  end
 
+=begin
   def test_query_for_non_existent_sample
     $redis = Redis.new
     ethernet_connections = [{:server_ip => "127.0.0.1", :server_port => 3000}]
@@ -330,7 +338,7 @@ class TestRubyAstm < Minitest::Test
     ## it should be that this is still there in the patients.
     assert_equal 1, $redis.llen("patients")
   end 
-
+=end
 
 
 =begin

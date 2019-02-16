@@ -379,31 +379,6 @@
 		"LIS_CODE" : "full_body_package",
 		"TUBE" : "",
 		"REPORT_NAME" : "full body package",
-		"PACKAGE_COMPONENTS" : ["A1c", "WBC", "RBC", "HGB", "HCT", "MCV", "MCH", "MCHC", "PLT", "NEUT%", "LYMPH%", "MONO%", "EO%", "BASO%", "NEUT#", "LYMPH#", "MONO#", "EO#", "BASO#", "RDW-CV", "GLUPP", "GLUF", "CHOL", "TRIG", "HDLC", "LDL", "VLDL", "CREAT", "UREA", "BUNC", "ALB", "GGT", "BIDDY", "CA", "BITDY", "INBILDY", "ALPU", "GOT", "GPT", "HOMCY", "SIRON", "STIBC", "SURIC", "SPHOS", "SMAG", "SNATRIUM", "SPOTASSIUM", "SCHLORIDE", "11", "10", "9", "8", "7", "6", "3", "1", "ESR", "GLU", "BIL", "KET", "SG", "BLO", "pH", "PRO", "URO", "NIT", "LEU", "COL", "CLA"]
-	},
-	"PRE_OP_PACKAGE" : {
-		"LIS_CODE" : "pre_op_package",
-		"TUBE" : "",
-		"REPORT_NAME" : "pre_op_package",
-		"PACKAGE_COMPONENTS" : ["A1c", "WBC", "RBC", "HGB", "HCT", "MCV", "MCH", "MCHC", "PLT", "NEUT%", "LYMPH%", "MONO%", "EO%", "BASO%", "NEUT#", "LYMPH#", "MONO#", "EO#", "BASO#", "RDW-CV", "GLUR", "4", "5", "ESR", "GLU", "BIL", "KET", "SG", "BLO", "pH", "PRO", "URO", "NIT", "LEU", "COL", "CLA"]
-	},
-	"LIPID_PROFILE" : {
-		"LIS_CODE" : "lipid_profile",
-		"TUBE" : "",
-		"REPORT_NAME" : "lipid profile",
-		"PACKAGE_COMPONENTS" : ["CHOL", "TRIG", "HDLC", "LDL", "VLDL"]
-	},
-	"LIVER_FUNCTION_TESTS" : {
-		"LIS_CODE" : "liver_function_tests",
-		"TUBE" : "",
-		"REPORT_NAME" : "liver function tests",
-		"PACKAGE_COMPONENTS" : ["ALB", "GGT", "BIDDY", "CA", "BITDY", "INBILDY", "ALPU", "GOT", "GPT"]
-	},
-	"KIDNEY_FUNCTION_TESTS" : {
-		"LIS_CODE" : "kidney_function_tests",
-		"TUBE" : "",
-		"REPORT_NAME" : "kidney_function_tests",
-		"PACKAGE_COMPONENTS" : ["CREAT", "UREA", "BUNC"]
-	},
-
+		"PACKAGE_COMPONENTS" : ["1","2","3","4","5","6","7"]
+	}
 }

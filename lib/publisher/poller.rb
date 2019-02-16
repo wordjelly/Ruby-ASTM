@@ -105,6 +105,8 @@ class Poller
 
   	end	
 
+  	## first we have to test the packages.
+
   	def build_tests_hash(record)
   		#puts "Record is ---------------------------------------------"
   		#puts record
@@ -152,27 +154,41 @@ class Poller
 
 	    tests = record[7].split(",").compact
 
-	    puts "tests are:"
-	    puts tests.to_s
+	    ## over here we have to get this to work.
+	    ## if this is full_body_package
+	    ## if this is something else, whatever.
+	    ## if it includes full_body_package
+
+	   
 	    return tests_hash if tests_hash.empty?
+
 	    tests.each do |test|
 	      ## use the inverted mappings to 
 	      if machine_code = $inverted_mappings[test]
 	        ## now get its tube type
 	        ## mappings have to match the tubes defined in this file.
-	        tube = $mappings[machine_code]["TUBE"]
-	        ## now find the tests_hash which has this tube.
-	        ## and the machine code to its array.
-	        ## so how to find this.
-	        puts "tube is : #{tube}"
-	        puts "tests hash is:"
-	        puts tests_hash.to_s
+	        
+	        if package_components = $mappings[machine_code]["PACKAGE_COMPONENTS"]
 
-	        tube_key = nil
-	        unless tests_hash.keys.select{|c| c=~/#{tube}/ }.blank?
-	        	tube_key = tests_hash.keys.select{|c| c=~/#{tube}/ }[0] 
-	        	tests_hash[tube_key] << machine_code 
-	        end   
+	        	package_components.each do |component|
+	        		tube = $mappings[component]["TUBE"]
+			        tube_key = nil
+			        unless tests_hash.keys.select{|c| c=~/#{tube}/ }.blank?
+			        	tube_key = tests_hash.keys.select{|c| c=~/#{tube}/ }[0] 
+			        	tests_hash[tube_key] << component 
+			        end   
+	        	end
+
+	        else
+	        	tube = $mappings[machine_code]["TUBE"]
+		        tube_key = nil
+		        unless tests_hash.keys.select{|c| c=~/#{tube}/ }.blank?
+		        	tube_key = tests_hash.keys.select{|c| c=~/#{tube}/ }[0] 
+		        	tests_hash[tube_key] << machine_code 
+		        end   
+	        end
+	       
+	        
 
 	      else
 	        AstmServer.log("ERROR: Test: #{test} does not have an LIS code")
