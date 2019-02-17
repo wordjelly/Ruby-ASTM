@@ -47,7 +47,8 @@ class TestRubyAstm < Minitest::Test
     p.update(JSON.parse("{\"@sequence_number\":0,\"@patient_id\":null,\"@orders\":[{\"id\":\"test_document_10_december_2018\",\"priority\":null,\"sequence_number\":null,\"tests\":null,\"specimen_type\":null,\"date_time\":null,\"action_code\":null,\"results\":{\"GLUF\":{\"name\":\"GLUF\",\"report_name\":\"Fasting Glucose\",\"flags\":\"H\",\"value\":\"115.4\",\"timestamp\":\"2018-12-10T10:35:54.000+05:30\",\"dilution\":null}}}]}"))
   end
 =end
-  
+
+=begin
   def test_get_mapping_keys
     root_path = File.dirname __dir__
     roche_input_file_path = File.join root_path,'test','resources','test_mappings.json'
@@ -55,6 +56,173 @@ class TestRubyAstm < Minitest::Test
     puts byte_arr.keys.to_s
     exit(1)
   end
+=end
+
+
+  def test_assigns_tubes_for_pre_op_package
+    p = Poller.new
+
+    record = []
+    
+    29.times do |i|
+      if i == 7
+        record[i] = "pre_op_package"
+      elsif i == 24
+        record[i] = "edta1234"
+      elsif i == 25
+        record[i] = "serum1234"
+      elsif i == 26
+        record[i] = "plasma1234"
+      elsif i == 27
+        record[i] = "fluoride1234"
+      elsif i == 28
+        record[i] = "urine1234"
+      elsif i == 29
+        record[i] = "esr1234"
+      else
+        record[i] = ""
+      end
+    end
+
+    tests_hash = p.build_tests_hash(record)
+
+    assert_equal tests_hash.deep_symbolize_keys, {:"EDTA:edta1234"=>["WBC", "RBC", "HGB", "HCT", "MCV", "MCH", "MCHC", "PLT", "NEUT%", "LYMPH%", "MONO%", "EO%", "BASO%", "NEUT#", "LYMPH#", "MONO#", "EO#", "BASO#", "RDW-CV"], :"SERUM:serum1234"=>[], :"PLASMA:plasma1234"=>[], :"FLUORIDE:fluoride1234"=>["GLUR"], :"URINE_CONTAINER:urine1234"=>["GLU", "BIL", "KET", "SG", "BLO", "pH", "PRO", "URO", "NIT", "LEU", "COL", "CLA"]}.deep_symbolize_keys
+  end
+
+  def test_assigns_tubes_for_lipid_profile
+
+    p = Poller.new
+
+    record = []
+    
+    29.times do |i|
+      if i == 7
+        record[i] = "lipid_profile"
+      elsif i == 24
+        record[i] = "edta1234"
+      elsif i == 25
+        record[i] = "serum1234"
+      elsif i == 26
+        record[i] = "plasma1234"
+      elsif i == 27
+        record[i] = "fluoride1234"
+      elsif i == 28
+        record[i] = "urine1234"
+      elsif i == 29
+        record[i] = "esr1234"
+      else
+        record[i] = ""
+      end
+    end
+
+    tests_hash = p.build_tests_hash(record)
+
+    assert_equal tests_hash.deep_symbolize_keys, {"EDTA:edta1234":[],"SERUM:serum1234":["CHOL","TRIG","HDLC","LDL","VLDL"],"PLASMA:plasma1234":[],"FLUORIDE:fluoride1234":[],"URINE_CONTAINER:urine1234":[]}.deep_symbolize_keys
+
+  end
+
+  def test_assigns_tubes_for_liver_function_tests
+
+    p = Poller.new
+
+    record = []
+    
+    29.times do |i|
+      if i == 7
+        record[i] = "liver_function_tests"
+      elsif i == 24
+        record[i] = "edta1234"
+      elsif i == 25
+        record[i] = "serum1234"
+      elsif i == 26
+        record[i] = "plasma1234"
+      elsif i == 27
+        record[i] = "fluoride1234"
+      elsif i == 28
+        record[i] = "urine1234"
+      elsif i == 29
+        record[i] = "esr1234"
+      else
+        record[i] = ""
+      end
+    end
+
+    tests_hash = p.build_tests_hash(record)
+   
+
+    assert_equal tests_hash.deep_symbolize_keys,
+{"EDTA:edta1234":[],"SERUM:serum1234":["ALB","GGT","BIDDY","CA","BITDY","INBILDY","ALPU","GOT","GPT"],"PLASMA:plasma1234":[],"FLUORIDE:fluoride1234":[],"URINE_CONTAINER:urine1234":[]}.deep_symbolize_keys
+
+  end
+
+
+  def test_assigns_tubes_for_kidney_function_tests
+    p = Poller.new
+
+    record = []
+    
+    29.times do |i|
+      if i == 7
+        record[i] = "kidney_function_tests"
+      elsif i == 24
+        record[i] = "edta1234"
+      elsif i == 25
+        record[i] = "serum1234"
+      elsif i == 26
+        record[i] = "plasma1234"
+      elsif i == 27
+        record[i] = "fluoride1234"
+      elsif i == 28
+        record[i] = "urine1234"
+      elsif i == 29
+        record[i] = "esr1234"
+      else
+        record[i] = ""
+      end
+    end
+
+    tests_hash = p.build_tests_hash(record)
+
+    puts tests_hash.to_s
+
+    assert_equal tests_hash.deep_symbolize_keys, {"EDTA:edta1234"=>[], "SERUM:serum1234"=>["CREAT", "UREA", "BUNC"], "PLASMA:plasma1234"=>[], "FLUORIDE:fluoride1234"=>[], "URINE_CONTAINER:urine1234"=>[]}.deep_symbolize_keys
+
+  end
+
+
+  def test_assigns_tubes_for_full_body_package
+
+    p = Poller.new
+
+    record = []
+    
+    29.times do |i|
+      if i == 7
+        record[i] = "full_body_package"
+      elsif i == 24
+        record[i] = "edta1234"
+      elsif i == 25
+        record[i] = "serum1234"
+      elsif i == 26
+        record[i] = "plasma1234"
+      elsif i == 27
+        record[i] = "fluoride1234"
+      elsif i == 28
+        record[i] = "urine1234"
+      elsif i == 29
+        record[i] = "esr1234"
+      else
+        record[i] = ""
+      end
+    end
+
+    tests_hash = p.build_tests_hash(record)
+
+   
+    assert_equal tests_hash.deep_symbolize_keys,{:"EDTA:edta1234"=>["A1c", "WBC", "RBC", "HGB", "HCT", "MCV", "MCH", "MCHC", "PLT", "NEUT%", "LYMPH%", "MONO%", "EO%", "BASO%", "NEUT#", "LYMPH#", "MONO#", "EO#", "BASO#", "RDW-CV"], :"SERUM:serum1234"=>["CHOL", "TRIG", "HDLC", "LDL", "VLDL", "CREAT", "UREA", "BUNC", "ALB", "GGT", "BIDDY", "CA", "BITDY", "INBILDY", "ALPU", "GOT", "GPT", "HOMCY", "SIRON", "SUIBC", "STIBC", "UA", "PHOS", "MG", "SNATRIUM", "SPOTASSIUM", "SCHLORIDE", "11", "10", "9", "8", "7", "6", "3", "1"], :"PLASMA:plasma1234"=>["5", "4", "2"], :"FLUORIDE:fluoride1234"=>["GLUR", "GLUPP", "GLUF"], :"URINE_CONTAINER:urine1234"=>["GLU", "BIL", "KET", "SG", "BLO", "pH", "PRO", "URO", "NIT", "LEU", "COL", "CLA"]}.deep_symbolize_keys
+
+  end
+
 
 =begin
   def test_query_for_non_existent_sample

@@ -111,7 +111,6 @@ class Poller
   		#puts "Record is ---------------------------------------------"
   		#puts record
 	    tests_hash = {}
-
 	    ## key -> TUBE_NAME : eg: EDTA
 	    ## value -> its barcode id.
 	    tube_ids = {}
@@ -154,32 +153,46 @@ class Poller
 
 	    tests = record[7].split(",").compact
 
-	    ## over here we have to get this to work.
-	    ## if this is full_body_package
-	    ## if this is something else, whatever.
-	    ## if it includes full_body_package
+	    ## these test names are whatever are coming 
+	    ## from 
 
 	   
 	    return tests_hash if tests_hash.empty?
 
+	    #puts "inverted mappings are:"
+	    #puts $inverted_mappings.keys.to_s
+	    #exit(1)
+	    #exit(1)
+
 	    tests.each do |test|
 	      ## use the inverted mappings to 
 	      if machine_code = $inverted_mappings[test]
+	      	puts "machine code is: #{machine_code}"
 	        ## now get its tube type
 	        ## mappings have to match the tubes defined in this file.
 	        
 	        if package_components = $mappings[machine_code]["PACKAGE_COMPONENTS"]
 
+	        	puts package_components.to_s
+
 	        	package_components.each do |component|
-	        		tube = $mappings[component]["TUBE"]
+	        		puts "doing component: #{component}"
+	        		## these are the machine codes.
+	        		## so to get the tube, you have to get it from the inverted mappings.
+	        		## cant get directly like this.
+	        		component_machine_code = $inverted_mappings[component]
+	        		puts "component machine code: #{component_machine_code}"
+
+	        		tube = $mappings[component_machine_code]["TUBE"]
 			        tube_key = nil
 			        unless tests_hash.keys.select{|c| c=~/#{tube}/ }.blank?
 			        	tube_key = tests_hash.keys.select{|c| c=~/#{tube}/ }[0] 
-			        	tests_hash[tube_key] << component 
+			        	tests_hash[tube_key] << component_machine_code 
 			        end   
 	        	end
 
 	        else
+	        	## here also it is the same problem.
 	        	tube = $mappings[machine_code]["TUBE"]
 		        tube_key = nil
 		        unless tests_hash.keys.select{|c| c=~/#{tube}/ }.blank?

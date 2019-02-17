@@ -375,17 +375,32 @@
 		"TUBE" : "URINE_CONTAINER",
 		"REPORT_NAME" : "Urine Routine"
 	},
+	"UA" : {
+		"LIS_CODE" : "SURIC",
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "Serum Uric Acid"	
+	},
+	"PHOS" : {
+		"LIS_CODE" : "SPHOS",
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "Serum Phosphorous"
+	},
+	"MG" : {
+		"LIS_CODE" : "SMAG",
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "Serum Magnesium"
+	},
 	"FULL_BODY_PACKAGE" : {
 		"LIS_CODE" : "full_body_package",
 		"TUBE" : "",
 		"REPORT_NAME" : "full body package",
-		"PACKAGE_COMPONENTS" : ["A1c", "WBC", "RBC", "HGB", "HCT", "MCV", "MCH", "MCHC", "PLT", "NEUT%", "LYMPH%", "MONO%", "EO%", "BASO%", "NEUT#", "LYMPH#", "MONO#", "EO#", "BASO#", "RDW-CV", "GLUPP", "GLUF", "CHOL", "TRIG", "HDLC", "LDL", "VLDL", "CREAT", "UREA", "BUNC", "ALB", "GGT", "BIDDY", "CA", "BITDY", "INBILDY", "ALPU", "GOT", "GPT", "HOMCY", "SIRON", "STIBC", "SURIC", "SPHOS", "SMAG", "SNATRIUM", "SPOTASSIUM", "SCHLORIDE", "11", "10", "9", "8", "7", "6", "3", "1", "ESR", "GLU", "BIL", "KET", "SG", "BLO", "pH", "PRO", "URO", "NIT", "LEU", "COL", "CLA"]
+		"PACKAGE_COMPONENTS" : ["HBA1C", "TLCparam", "RBCparam", "HBparam", "HCTparam", "MCVparam", "MCHparam", "MCHCparam", "PCparam", "Nparam", "Lparam", "Mparam", "Eparam", "BASOparam", "ANCparam", "ALCparam", "AMCparam", "AECparam", "ABCparam", "RDWCVparam", "GLUR", "GLUPP", "GLUF", "CHOL", "TRIG", "HDLC", "LDL", "VLDL", "CRE", "UREA", "BUN", "ALB", "GGT", "BID", "CA", "BIT", "BII", "ALPU", "GOTHL", "GPTHL", "HOMCY", "SIRON", "SUIBC", "STIBC", "SURIC", "SPHOS", "SMAG", "SNATRIUM", "SPOTASSIUM", "SCHLORIDE", "SIGE", "SPSA", "SFER", "TSH", "T4", "T3", "HIV", "HBS", "VITD", "HCV", "B12", "ESR", "GLU", "BIL", "KET", "SG", "BLO", "pH", "PRO", "URO", "NIT", "LEU", "COL", "CLA"]
 	},
 	"PRE_OP_PACKAGE" : {
 		"LIS_CODE" : "pre_op_package",
 		"TUBE" : "",
 		"REPORT_NAME" : "pre_op_package",
-		"PACKAGE_COMPONENTS" : ["A1c", "WBC", "RBC", "HGB", "HCT", "MCV", "MCH", "MCHC", "PLT", "NEUT%", "LYMPH%", "MONO%", "EO%", "BASO%", "NEUT#", "LYMPH#", "MONO#", "EO#", "BASO#", "RDW-CV", "GLUR", "4", "5", "ESR", "GLU", "BIL", "KET", "SG", "BLO", "pH", "PRO", "URO", "NIT", "LEU", "COL", "CLA"]
+		"PACKAGE_COMPONENTS" : ["TLCparam", "RBCparam", "HBparam", "HCTparam", "MCVparam", "MCHparam", "MCHCparam", "PCparam", "Nparam", "Lparam", "Mparam", "Eparam", "BASOparam", "ANCparam", "ALCparam", "AMCparam", "AECparam", "ABCparam", "RDWCVparam", "GLUR","ESR", "GLU", "BIL", "KET", "SG", "BLO", "pH", "PRO", "URO", "NIT", "LEU", "COL", "CLA"]
 	},
 	"LIPID_PROFILE" : {
 		"LIS_CODE" : "lipid_profile",
@@ -397,13 +412,13 @@
 		"LIS_CODE" : "liver_function_tests",
 		"TUBE" : "",
 		"REPORT_NAME" : "liver function tests",
-		"PACKAGE_COMPONENTS" : ["ALB", "GGT", "BIDDY", "CA", "BITDY", "INBILDY", "ALPU", "GOT", "GPT"]
+		"PACKAGE_COMPONENTS" : ["ALB", "GGT", "BID", "CA", "BIT", "BII", "ALPU", "GOTHL", "GPTHL"]
 	},
 	"KIDNEY_FUNCTION_TESTS" : {
 		"LIS_CODE" : "kidney_function_tests",
 		"TUBE" : "",
 		"REPORT_NAME" : "kidney_function_tests",
-		"PACKAGE_COMPONENTS" : ["CREAT", "UREA", "BUNC"]
-	},
+		"PACKAGE_COMPONENTS" : ["CRE", "UREA", "BUN"]
+	}
 
 }
