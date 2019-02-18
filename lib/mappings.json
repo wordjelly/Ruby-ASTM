@@ -394,13 +394,13 @@
 		"LIS_CODE" : "full_body_package",
 		"TUBE" : "",
 		"REPORT_NAME" : "full body package",
-		"PACKAGE_COMPONENTS" : ["HBA1C", "TLCparam", "RBCparam", "HBparam", "HCTparam", "MCVparam", "MCHparam", "MCHCparam", "PCparam", "Nparam", "Lparam", "Mparam", "Eparam", "BASOparam", "ANCparam", "ALCparam", "AMCparam", "AECparam", "ABCparam", "RDWCVparam", "GLUR", "GLUPP", "GLUF", "CHOL", "TRIG", "HDLC", "LDL", "VLDL", "CRE", "UREA", "BUN", "ALB", "GGT", "BID", "CA", "BIT", "BII", "ALPU", "GOTHL", "GPTHL", "HOMCY", "SIRON", "SUIBC", "STIBC", "SURIC", "SPHOS", "SMAG", "SNATRIUM", "SPOTASSIUM", "SCHLORIDE", "SIGE", "SPSA", "SFER", "TSH", "T4", "T3", "HIV", "HBS", "VITD", "HCV", "B12", "ESR", "GLU", "BIL", "KET", "SG", "BLO", "pH", "PRO", "URO", "NIT", "LEU", "COL", "CLA"]
+		"PACKAGE_COMPONENTS" : ["HBA1C", "TLCparam", "RBCparam", "HBparam", "HCTparam", "MCVparam", "MCHparam", "MCHCparam", "PCparam", "Nparam", "Lparam", "Mparam", "Eparam", "BASOparam", "ANCparam", "ALCparam", "AMCparam", "AECparam", "ABCparam", "RDWCVparam", "GLUR", "GLUPP", "GLUF", "CHOL", "TRIG", "HDLC", "LDL", "VLDL", "CRE", "UREA", "BUN", "ALB", "GGT", "BID", "CA", "BIT", "BII", "ALPU", "GOTHL", "GPTHL", "HOMCY", "SIRON", "SUIBC", "STIBC", "SURIC", "SPHOS", "SMAG", "SNATRIUM", "SPOTASSIUM", "SCHLORIDE", "SIGE", "SPSA", "SFER", "TSH", "T4", "T3", "VITD", "HCV", "B12", "ESR", "GLU", "BIL", "KET", "SG", "BLO", "pH", "PRO", "URO", "NIT", "LEU", "COL", "CLA"]
 	},
 	"PRE_OP_PACKAGE" : {
 		"LIS_CODE" : "pre_op_package",
 		"TUBE" : "",
 		"REPORT_NAME" : "pre_op_package",
-		"PACKAGE_COMPONENTS" : ["TLCparam", "RBCparam", "HBparam", "HCTparam", "MCVparam", "MCHparam", "MCHCparam", "PCparam", "Nparam", "Lparam", "Mparam", "Eparam", "BASOparam", "ANCparam", "ALCparam", "AMCparam", "AECparam", "ABCparam", "RDWCVparam", "GLUR","ESR", "GLU", "BIL", "KET", "SG", "BLO", "pH", "PRO", "URO", "NIT", "LEU", "COL", "CLA"]
+		"PACKAGE_COMPONENTS" : ["TLCparam", "RBCparam", "HBparam", "HCTparam", "MCVparam", "MCHparam", "MCHCparam", "PCparam", "Nparam", "Lparam", "Mparam", "Eparam", "BASOparam", "ANCparam", "ALCparam", "AMCparam", "AECparam", "ABCparam", "RDWCVparam", "GLUR","ESR", "GLU", "BIL", "KET", "SG", "BLO", "pH", "PRO", "URO", "NIT", "LEU", "COL", "CLA", "HIV", "HBS"]
 	},
 	"LIPID_PROFILE" : {
 		"LIS_CODE" : "lipid_profile",
