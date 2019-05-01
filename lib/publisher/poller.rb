@@ -53,6 +53,7 @@ class Poller
 	      last_request_status = previous_requisition_request_status[LAST_REQUEST_STATUS]  
 	    end
 
+
 	    running_time = Time.now.to_i
 
 	    $redis.watch(POLL_STATUS_KEY) do

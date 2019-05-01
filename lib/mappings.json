@@ -125,7 +125,7 @@
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "Cholesterol"
 	},
-	"TRIG" : {
+	"TRIGO" : {
 		"LIS_CODE" : "TRIG",
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "Triglycerides"
@@ -140,7 +140,7 @@
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "LDL"
 	},
-	"VLDL" : {
+	"VLDLC" : {
 		"LIS_CODE" : "VLDL",
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "VLDL"
@@ -165,7 +165,7 @@
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "Albumin"
 	},
-	"GGT" : {
+	"GGTP" : {
 		"LIS_CODE" : "GGT",
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "GGT"
@@ -175,7 +175,7 @@
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "Direct Bilirubin"
 	},
-	"CA" : {
+	"CAA" : {
 		"LIS_CODE" : "CA",
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "Serum Calcium"
@@ -185,12 +185,12 @@
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "Total Bilirubin"
 	},
-	"INBILDY" : {
+	"INBDY" : {
 		"LIS_CODE" : "BII",
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "Indirect Bilirubin"
 	},
-	"ALPU" : {
+	"ALPE" : {
 		"LIS_CODE" : "ALPU",
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "Alkaline Phosphatase"
@@ -224,16 +224,6 @@
 		"LIS_CODE" : "STIBC",
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "Serum TIBC"
-	},
-	"SURIC" : {
-		"LIS_CODE" : "SURIC",
-		"TUBE" : "SERUM",
-		"REPORT_NAME" : "Serum Uric Acid"
-	},
-	"SPHOS" : {
-		"LIS_CODE" : "SPHOS",
-		"TUBE" : "SERUM",
-		"REPORT_NAME" : "Serum Phosphorous"
 	},
 	"SMAG" : {
 		"LIS_CODE" : "SMAG",

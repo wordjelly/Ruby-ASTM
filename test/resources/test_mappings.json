@@ -140,7 +140,7 @@
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "LDL"
 	},
-	"VLDL" : {
+	"VLDLC" : {
 		"LIS_CODE" : "VLDL",
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "VLDL"
@@ -175,7 +175,7 @@
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "Direct Bilirubin"
 	},
-	"CA" : {
+	"CAA" : {
 		"LIS_CODE" : "CA",
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "Serum Calcium"
@@ -185,12 +185,12 @@
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "Total Bilirubin"
 	},
-	"INBILDY" : {
+	"INBDY" : {
 		"LIS_CODE" : "BII",
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "Indirect Bilirubin"
 	},
-	"ALPU" : {
+	"ALPE" : {
 		"LIS_CODE" : "ALPU",
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "Alkaline Phosphatase"
