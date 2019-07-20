@@ -141,7 +141,7 @@
 		"REPORT_NAME" : "LDL"
 	},
 	"VLDL" : {
-		"LIS_CODE" : "VLDL",
+		"LIS_CODE" : "VLDLC",
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "VLDL"
 	},
