@@ -12,7 +12,7 @@ class Pf_Lab_Interface < Poller
 	DEFAULT_LOOK_BACK_IN_SECONDS = 12*3600
 	## the last request that was made and what it said.
 	POLL_URL_PATH = BASE_URL + "interfaces"
-	PUT_URL_PATH = BASE_URL + "interface"
+	PUT_URL_PATH = BASE_URL + "lis_update_orders"
 	LAST_REQUEST = "last_request"
 	FROM_EPOCH = "from_epoch"
 	TO_EPOCH = "to_epoch"
@@ -87,8 +87,16 @@ class Pf_Lab_Interface < Poller
 	## value (array of tests registered on that barcode, the names of the tests are the machine codes, and not the lis_codes)
 	## this key is generated originally in add_barcode
 	def get_barcode(barcode)	
-		if barcode_hash = $redis.get(BARCODES,barcode)
-			JSON.parse(barcode_hash)
+		if barcode_hash = $redis.hget(BARCODES,barcode)
+			JSON.parse(barcode_hash).deep_symbolize_keys
+		else
+			nil
+		end
+	end
+
+	def get_order(order_id)
+		if order_string = $redis.hget(ORDERS,order_id)
+			JSON.parse(order_string).deep_symbolize_keys
 		else
 			nil
 		end
@@ -147,26 +155,17 @@ class Pf_Lab_Interface < Poller
 	## $MAPPINGS -> [MACHINE_CODE => LIS_CODE]
 	## $INVERTED_MAPPINGS -> [LIS_CODE => MACHINE_CODE]
 	def add_test_result(order,res)
-		order[REPORTS].each do |report|
-			report[TESTS].each do |test|
-				test_lis_code = test[LIS_CODE]
-				matching_tests = res.select{|c|
-					unless $mappings[c[:name]].blank?
-						$mappings[c[:name]] == test_lis_code
-					else
-						## the machine code is not found in our mappings.
-						AstmServer.log(c[:name] + " : this machine code is not found in our mappings ")
-						false
-					end
-				}
-				matching_tests.each do |mt|
-					test[RESULT_RAW] = mt[:value] 
+		order[REPORTS.to_sym].each do |report|
+			report[TESTS.to_sym].each_with_index{|t,k|
+				if t[LIS_CODE.to_sym] == $mappings[res[:name]]
+					t[RESULT_RAW.to_sym] = res[:value]
 				end
-			end
+			}
 		end
 	end
 
 	def queue_order_for_update(order)
+		puts "queue order for update."
 		$redis.lpush(UPDATE_QUEUE,order[ID])
 	end
 
@@ -371,6 +370,7 @@ data = [
 =end
 
 	def process_update_queue
+		#puts "came to process update queue."
 		order_ids = []
 		ORDERS_TO_UPDATE_PER_CYCLE.times do |n|
 			order_ids << $redis.rpop(UPDATE_QUEUE)
@@ -378,12 +378,11 @@ data = [
 		orders = order_ids.map{|c|
 			get_order(c)
 		}.compact
-		## let it send back a success message.
-		## or something.
-		## like lis_update_result.
-		## this is an accessor.
-		## if successfull its done.
-		## otherwise fails.
+
+		req = Typhoeus::Request.new(PUT_URL_PATH, method: :put, body: {orders: [orders[0]]}.to_json, params: {lis_security_key: self.lis_security_key}, headers: {Accept: 'application/json', "Content-Type".to_sym => 'application/json'})
+
+		req.run
+
 	end
 
 	def update(data)
@@ -403,6 +402,7 @@ data = [
 							## and then 
 						end
 					end
+					puts "came to queue order for update"
 					queue_order_for_update(order)
 				end
 			else

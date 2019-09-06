@@ -75,6 +75,7 @@ class TestPfInterface < Minitest::Test
 
 	#end	
 
+=begin
 	def test_adds_polled_orders_to_redis
 
 		k = Pf_Lab_Interface.new(nil,"pathofast")
@@ -82,7 +83,7 @@ class TestPfInterface < Minitest::Test
 		k.poll
 
 	end
-
+=end
 	#def test_adds_polled_order_barcoes_to_redis
 
 	#end
@@ -107,6 +108,25 @@ class TestPfInterface < Minitest::Test
 	##
 	##
 	###################################################################
+
+	def test_updates_results_to_server
+		data = [
+			{
+				:id => "1234",
+				:results => [
+					{
+						:name => "UREA",
+						:value => 10
+					}
+				]
+			}
+		]
+
+		k = Pf_Lab_Interface.new(nil,"pathofast")
+
+		k.update(data)
+
+	end
 	#def test_lis_code_clash_between_two_outsourced_organization_reports
 
 	#end
