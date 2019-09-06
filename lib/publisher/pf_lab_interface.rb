@@ -6,7 +6,7 @@ class Pf_Lab_Interface < Poller
 	ORDERS = "orders"
 	BARCODES = "barcodes"
 	BARCODE = "barcode"
-	BASE_URL = "https://www.pathofast.com/"
+	BASE_URL = "http://localhost:3000/"
 	UPDATE_QUEUE = "update_queue"
 	## will look back 12 hours if no previous request is found.
 	DEFAULT_LOOK_BACK_IN_SECONDS = 12*3600
@@ -18,7 +18,7 @@ class Pf_Lab_Interface < Poller
 	TO_EPOCH = "to_epoch"
 	SIZE = "size"
 	SKIP = "skip"
-	ID = "_id"
+	ID = "id"
 	REPORTS = "reports"
 	TESTS = "tests"
 	RESULT_RAW = "result_raw"
@@ -184,12 +184,14 @@ class Pf_Lab_Interface < Poller
 	end
 =end
 	def all_hits_downloaded?(last_request)
-		last_request[FROM] == last_request[SIZE]
+		last_request[FROM_EPOCH] == last_request[SIZE]
 	end
 	
 	def fresh_request_params(from_epoch=nil)
+		params = {}
 		params[TO_EPOCH] = Time.now.to_i
 		params[FROM_EPOCH] = from_epoch || (params[TO_EPOCH] - DEFAULT_LOOK_BACK_IN_SECONDS)
+		params[SKIP] = 0
 		params
 	end
 
@@ -205,6 +207,7 @@ class Pf_Lab_Interface < Poller
 				params = last_request
 			end 
 		end
+		params.merge!(lis_security_key: self.lis_security_key)
 		Typhoeus::Request.new(POLL_URL_PATH,params: params)
 	end
 
@@ -215,10 +218,10 @@ class Pf_Lab_Interface < Poller
 	## b -> from_epoch : from which epoch it was queried.
 	## c -> to_epoch : to which epoch it was queried.
 	def commit_request_params_to_redis(response_hash)
-		$redis.hset(LAST_REQUEST,FROM,response_hash[SKIP] + response_hash[ORDERS].size)
-		$redis.hset(LAST_REQUEST,SIZE,response_hash[SIZE])
-		$redis.hset(LAST_REQUEST,FROM_EPOCH,response_hash[FROM_EPOCH])
-		$redis.hset(LAST_REQUEST,TO_EPOCH,response_hash[TO_EPOCH])
+		$redis.hset(LAST_REQUEST,SKIP,response_hash[SKIP].to_i + response_hash[ORDERS].size.to_i)
+		$redis.hset(LAST_REQUEST,SIZE,response_hash[SIZE].to_i)
+		$redis.hset(LAST_REQUEST,FROM_EPOCH,response_hash[FROM_EPOCH].to_i)
+		$redis.hset(LAST_REQUEST,TO_EPOCH,response_hash[TO_EPOCH].to_i)
 	end
 
 	# since we request only a certain set of orders per request
@@ -252,6 +255,7 @@ class Pf_Lab_Interface < Poller
 	end
 
 	def poll_LIS_for_requisition
+		AstmServer.log("Polling LIS at url:#{BASE_URL}")
 		request = build_request
 		request.on_complete do |response|
 		  if response.success?
@@ -267,7 +271,7 @@ class Pf_Lab_Interface < Poller
 		    AstmServer.log("Polling time out")
 		  elsif response.code == 0
 		    # Could not get an http response, something's wrong.
-		    log(response.return_message)
+		    AstmServer.log(response.return_message)
 		  else
 		    # Received a non-successful http response.
 		    AstmServer.log("HTTP request failed: " + response.code.to_s)
