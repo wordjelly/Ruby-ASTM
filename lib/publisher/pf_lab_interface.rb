@@ -165,8 +165,8 @@ class Pf_Lab_Interface < Poller
 	end
 
 	def queue_order_for_update(order)
-		puts "queue order for update."
-		$redis.lpush(UPDATE_QUEUE,order[ID])
+		
+		$redis.lpush(UPDATE_QUEUE,order[ID.to_sym])
 	end
 
 	def add_barcode(code,order_id)
@@ -368,21 +368,43 @@ data = [
       }
     ]
 =end
-
+	
 	def process_update_queue
 		#puts "came to process update queue."
 		order_ids = []
 		ORDERS_TO_UPDATE_PER_CYCLE.times do |n|
 			order_ids << $redis.rpop(UPDATE_QUEUE)
 		end
+		puts "order ids popped"
+		puts order_ids.to_s
 		orders = order_ids.map{|c|
 			get_order(c)
 		}.compact
 
-		req = Typhoeus::Request.new(PUT_URL_PATH, method: :put, body: {orders: [orders[0]]}.to_json, params: {lis_security_key: self.lis_security_key}, headers: {Accept: 'application/json', "Content-Type".to_sym => 'application/json'})
+		puts "orders are:"
+		puts orders.to_s
+
+		req = Typhoeus::Request.new(PUT_URL_PATH, method: :put, body: {orders: orders}.to_json, params: {lis_security_key: self.lis_security_key}, headers: {Accept: 'application/json', "Content-Type".to_sym => 'application/json'})
+
+
+		req.on_complete do |response|
+			if response.success?
+			    response_body = response.body
+			    orders = JSON.parse(response.body)["orders"]
+			    orders.each do |order|
+			    	
+			    end
+			elsif response.timed_out?
+			    AstmServer.log("got a time out")
+			elsif response.code == 0
+			    AstmServer.log(response.return_message)
+			else
+			    AstmServer.log("HTTP request failed: " + response.code.to_s)
+			end
+		end
 
 		req.run
-
+	
 	end
 
 	def update(data)
@@ -392,6 +414,8 @@ data = [
 			if barcode_hash = get_barcode(barcode)
 				if order = get_order(barcode_hash[:order_id])
 					## update the test results, and add the order to the final update hash.
+					puts "order got from barcode is:"
+					puts order
 					machine_codes = barcode_hash[:machine_codes]
 					## it has to be registered on this.
 					results.each do |res|
