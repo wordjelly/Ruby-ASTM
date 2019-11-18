@@ -49,8 +49,8 @@ class Google_Lab_Interface < Poller
   ## @param[String] mpg : path to mappings file. Defaults to nil.
   ## @param[String] credentials_path : the path to look for the credentials.json file, defaults to nil ,and will raise an error unless provided
   ## @param[String] token_path : the path where the oauth token will be stored, also defaults to the path of the gem : eg. ./token.yaml - be careful with write permissions, because token.yaml gets written to this path after the first authorization.
-  def initialize(mpg=nil,credentials_path,token_path,script_id)
-    super(mpg)
+  def initialize(mpg=nil,credentials_path,token_path,script_id,real_time_db)
+    super(mpg,real_time_db)
     self.credentials_path = credentials_path
     self.token_path = token_path
     self.script_id = script_id

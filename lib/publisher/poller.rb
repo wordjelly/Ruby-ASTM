@@ -24,8 +24,9 @@ class Poller
 	RUNNING = "running"
 	COMPLETED = "completed"
 
-	def initialize(mpg=nil)
+	def initialize(mpg=nil,real_time_db=nil)
 		$redis = Redis.new
+		$real_time_db = real_time_db
 		## this mapping is from MACHINE CODE AS THE KEY
 	    $mappings = JSON.parse(IO.read(mpg || AstmServer.default_mappings))
 	    ## INVERTING THE MAPPINGS, GIVES US THE LIS CODE AS THE KEY.
@@ -215,6 +216,8 @@ class Poller
 
 	## @param[Integer] epoch : the epoch at which these tests were requested.
 	## @param[Hash] tests : {"EDTA:barcode" => [MCV,MCH,MCHC...]}
+	## the test codes here are the lis_codes
+	## so we need the inverted mappings for this
 	def merge_with_requisitions_hash(epoch,tests)
 	    ## so we basically now add this to the epoch ?
 	    ## or a sorted set ?

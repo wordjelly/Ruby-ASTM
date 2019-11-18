@@ -2,383 +2,482 @@
 	"_comment" : "key -> code sent by analyzer, eg sysmex sends WBC count under the code 'WBC'. value -> object. Object structure: 'LIS_CODE': in the google lab interface, this code is present in two places on google drive. one) in the name of the file, two) inside the file, where the test result value should be added. For eg in the hemogram report, TLCparam, is present in the name of the file, as well as inside the file, so the google script will update it with the relevant value. 'TUBE' stands for the type of tube in which this test has to be performed. This should match the constants in the Google Lab Interface.rb file. Now there is another problem that we have to deal with here. When going bidirectional, in some machines like Roche Cobas e411, the test codes come in as numbers, and not letters, so the keys here in this file are numbers, for those tests. Because Roche is a bitch basically.",
 	"A1c" : {
         "LIS_CODE" : "HBA1C",
-        "REPORT_NAME" : "Glycosylated Hemoglobin"
+        "REPORT_NAME" : "Glycosylated Hemoglobin",
+        "TYPE" : "HEMAT"
     },
 	"WBC" : 
 	{
 		"LIS_CODE" : "TLCparam",
 		"TUBE" : "EDTA",
 		"TRANSFORM" : "(self.value.to_f*1000).to_i.to_s",
-		"REPORT_NAME" : "Hemogram"
+		"REPORT_NAME" : "Hemogram",
+        "TYPE" : "HEMAT"
 	},
 	"RBC" : 
 	{
 		"LIS_CODE" : "RBCparam",
 		"TUBE" : "EDTA",
-		"REPORT_NAME" : "Hemogram"
+		"REPORT_NAME" : "Hemogram",
+        "TYPE" : "HEMAT"
 	},
 	"HGB" : 
 	{
 		"LIS_CODE" : "HBparam",
 		"TUBE" : "EDTA",
-		"REPORT_NAME" : "Hemogram"
+		"REPORT_NAME" : "Hemogram",
+        "TYPE" : "HEMAT"
 	},
 	"HCT" : {
 		"LIS_CODE" : "HCTparam",
 		"TUBE" : "EDTA",
-		"REPORT_NAME" : "Hemogram"
+		"REPORT_NAME" : "Hemogram",
+        "TYPE" : "HEMAT"
 	},
 	"MCV" : 
 	{
 		"LIS_CODE" : "MCVparam",
 		 "TUBE" : "EDTA",
-		"REPORT_NAME" : "Hemogram"
+		"REPORT_NAME" : "Hemogram",
+        "TYPE" : "HEMAT"
 	},
 	"MCH" : {
 		"LIS_CODE" : "MCHparam",
 		"TUBE" : "EDTA",
-		"REPORT_NAME" : "Hemogram"
+		"REPORT_NAME" : "Hemogram",
+        "TYPE" : "HEMAT"
 	},
 	"MCHC": {
 		"LIS_CODE" : "MCHCparam",
 		 "TUBE" : "EDTA",
-		"REPORT_NAME" : "Hemogram"
+		"REPORT_NAME" : "Hemogram",
+        "TYPE" : "HEMAT"
 	},
 	"PLT" : {
 		"LIS_CODE" : "PCparam",
 		"TUBE" : "EDTA",
 		"TRANSFORM" : "(self.value.to_f*1000).to_i.to_s",
-		"REPORT_NAME" : "Hemogram"
+		"REPORT_NAME" : "Hemogram",
+        "TYPE" : "HEMAT"
 	},
 	"NEUT%": {
 		"LIS_CODE" : "Nparam",
 		"TUBE" : "EDTA",
-		"REPORT_NAME" : "Hemogram"
+		"REPORT_NAME" : "Hemogram",
+        "TYPE" : "HEMAT"
 	},
 	"LYMPH%": {
 		"LIS_CODE" : "Lparam",
 		"TUBE" : "EDTA",
-		"REPORT_NAME" : "Hemogram"
+		"REPORT_NAME" : "Hemogram",
+        "TYPE" : "HEMAT"
 	},
 	"MONO%": {
 		"LIS_CODE" : "Mparam",
 		"TUBE" : "EDTA",
-		"REPORT_NAME" : "Hemogram"
+		"REPORT_NAME" : "Hemogram",
+        "TYPE" : "HEMAT"
 	},
 	"EO%": {
 		"LIS_CODE" : "Eparam",
 		"TUBE" : "EDTA",
-		"REPORT_NAME" : "Hemogram"
+		"REPORT_NAME" : "Hemogram",
+        "TYPE" : "HEMAT"
 	},
 	"BASO%": {
 		"LIS_CODE" : "BASOparam",
 		"TUBE" : "EDTA",
-		"REPORT_NAME" : "Hemogram"
+		"REPORT_NAME" : "Hemogram",
+        "TYPE" : "HEMAT"
 	},
 	"NEUT#": {
 		"LIS_CODE" : "ANCparam",
 		"TUBE" : "EDTA",
-		"REPORT_NAME" : "Hemogram"
+		"REPORT_NAME" : "Hemogram",
+        "TYPE" : "HEMAT"
 	},
 	"LYMPH#": {
 		"LIS_CODE" : "ALCparam",
 		"TUBE" : "EDTA",
-		"REPORT_NAME" : "Hemogram"
+		"REPORT_NAME" : "Hemogram",
+        "TYPE" : "HEMAT"
 	},
 	"MONO#": {
 		"LIS_CODE" : "AMCparam",
 		"TUBE" : "EDTA",
-		"REPORT_NAME" : "Hemogram"
+		"REPORT_NAME" : "Hemogram",
+        "TYPE" : "HEMAT"
 	},
 	"EO#": {
 		"LIS_CODE" : "AECparam",
 		"TUBE" : "EDTA",
-		"REPORT_NAME" : "Hemogram"
+		"REPORT_NAME" : "Hemogram",
+        "TYPE" : "HEMAT"
 	},
 	"BASO#": {
 		"LIS_CODE" : "ABCparam",
 		"TUBE" : "EDTA",
-		"REPORT_NAME" : "Hemogram"
+		"REPORT_NAME" : "Hemogram",
+        "TYPE" : "HEMAT"
 	},
 	"RDW-CV": {
 		"LIS_CODE" : "RDWCVparam",
 		"TUBE" : "EDTA",
-		"REPORT_NAME" : "Hemogram"
+		"REPORT_NAME" : "Hemogram",
+        "TYPE" : "HEMAT"
 	},
 	"GLUR" : {
 		"LIS_CODE" : "GLUR",
 		"TUBE" : "FLUORIDE",
-		"REPORT_NAME" : "Random Glucose"
+		"REPORT_NAME" : "Random Glucose",
+        "TYPE" : "BIOCHEM"
 	},
 	"GLUPP" : {
 		"LIS_CODE" : "GLUPP",
 		"TUBE" : "FLUORIDE",
-		"REPORT_NAME" : "Post Prandial Glucose"
+		"REPORT_NAME" : "Post Prandial Glucose",
+        "TYPE" : "BIOCHEM"
 	},
 	"GLUF" : {
 		"LIS_CODE" : "GLUF",
 		"TUBE" : "FLUORIDE",
-		"REPORT_NAME" : "Fasting Glucose"
+		"REPORT_NAME" : "Fasting Glucose",
+        "TYPE" : "BIOCHEM"
 	},
 	"CHOL" : {
 		"LIS_CODE" : "CHOL",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "Cholesterol"
+		"REPORT_NAME" : "Cholesterol",
+        "TYPE" : "BIOCHEM"
 	},
 	"TRIGO" : {
 		"LIS_CODE" : "TRIG",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "Triglycerides"
+		"REPORT_NAME" : "Triglycerides",
+        "TYPE" : "BIOCHEM"
 	},
 	"HDLC" : {
 		"LIS_CODE" : "HDLC",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "HDLC"
+		"REPORT_NAME" : "HDLC",
+        "TYPE" : "BIOCHEM"
 	},
 	"LDL" : {
 		"LIS_CODE" : "LDL",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "LDL"
+		"REPORT_NAME" : "LDL",
+        "TYPE" : "BIOCHEM"
 	},
 	"VLDL" : {
 		"LIS_CODE" : "VLDLC",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "VLDL"
+		"REPORT_NAME" : "VLDL",
+        "TYPE" : "BIOCHEM"
 	},
 	"CREAT" : {
 		"LIS_CODE" : "CRE",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "Creatinine"
+		"REPORT_NAME" : "Creatinine",
+        "TYPE" : "BIOCHEM"
 	},
 	"UREA" : {
 		"LIS_CODE" : "UREA",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "Urea"
+		"REPORT_NAME" : "Urea",
+        "TYPE" : "BIOCHEM"
 	},
 	"BUNC" : {
 		"LIS_CODE" : "BUN",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "Blood Urea Nitrogen"
+		"REPORT_NAME" : "Blood Urea Nitrogen",
+        "TYPE" : "BIOCHEM"
 	},
 	"ALB" : {
 		"LIS_CODE" : "ALB",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "Albumin"
+		"REPORT_NAME" : "Albumin",
+        "TYPE" : "BIOCHEM"
 	},
 	"GGTP" : {
 		"LIS_CODE" : "GGT",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "GGT"
+		"REPORT_NAME" : "GGT",
+        "TYPE" : "BIOCHEM"
 	},
 	"BIDDY" : {
 		"LIS_CODE" : "BID",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "Direct Bilirubin"
+		"REPORT_NAME" : "Direct Bilirubin",
+        "TYPE" : "BIOCHEM"
 	},
 	"CAA" : {
 		"LIS_CODE" : "CA",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "Serum Calcium"
+		"REPORT_NAME" : "Serum Calcium",
+        "TYPE" : "BIOCHEM"
 	},
 	"BITDY" : {
 		"LIS_CODE" : "BIT",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "Total Bilirubin"
+		"REPORT_NAME" : "Total Bilirubin",
+        "TYPE" : "BIOCHEM"
 	},
 	"INBDY" : {
 		"LIS_CODE" : "BII",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "Indirect Bilirubin"
+		"REPORT_NAME" : "Indirect Bilirubin",
+        "TYPE" : "BIOCHEM"
 	},
 	"ALPE" : {
 		"LIS_CODE" : "ALPU",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "Alkaline Phosphatase"
+		"REPORT_NAME" : "Alkaline Phosphatase",
+        "TYPE" : "BIOCHEM"
 	},
 	"GOT" : {
 		"LIS_CODE" : "GOTHL",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "SGOT"
+		"REPORT_NAME" : "SGOT",
+        "TYPE" : "BIOCHEM"
 	},
 	"GPT" : {
 		"LIS_CODE" : "GPTHL",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "SGPT"
+		"REPORT_NAME" : "SGPT",
+        "TYPE" : "BIOCHEM"
 	},
 	"HOMCY" : {
 		"LIS_CODE" : "HOMCY",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "Homocysteine"
+		"REPORT_NAME" : "Homocysteine",
+        "TYPE" : "BIOCHEM"
 	},
 	"SIRON" : {
 		"LIS_CODE" : "SIRON",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "Serum Iron"
+		"REPORT_NAME" : "Serum Iron",
+        "TYPE" : "BIOCHEM-EXL"
 	},
 	"SUIBC" : {
 		"LIS_CODE" : "SUIBC",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "Serum UIBC"
+		"REPORT_NAME" : "Serum UIBC",
+        "TYPE" : "BIOCHEM-EXL"
 	},
 	"STIBC" : {
 		"LIS_CODE" : "STIBC",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "Serum TIBC"
+		"REPORT_NAME" : "Serum TIBC",
+        "TYPE" : "BIOCHEM-EXL"
 	},
 	"SMAG" : {
 		"LIS_CODE" : "SMAG",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "Serum Magnesium"
+		"REPORT_NAME" : "Serum Magnesium",
+        "TYPE" : "BIOCHEM-EXL"
 	},
 	"SNATRIUM" : {
 		"LIS_CODE" : "SNATRIUM",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "Sodium"
+		"REPORT_NAME" : "Sodium",
+        "TYPE" : "BIOCHEM-ELECTROLYTE"
 	},
 	"SPOTASSIUM" : {
 		"LIS_CODE" : "SPOTASSIUM",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "Potassium"
+		"REPORT_NAME" : "Potassium",
+        "TYPE" : "BIOCHEM-ELECTROLYTE"
 	},
 	"SCHLORIDE" : {
 		"LIS_CODE" : "SCHLORIDE",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "Chloride"
+		"REPORT_NAME" : "Chloride",
+        "TYPE" : "BIOCHEM-ELECTROLYTE"
+	},
+	"15" : {
+		"LIS_CODE" : "SPRL",
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "Serum PRL",
+        "TYPE" : "IMMUNO"
+	},
+	"14" : {
+		"LIS_CODE" : "SLH",
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "Serum LH",
+        "TYPE" : "IMMUNO"
+	},
+	"13" : {
+		"LIS_CODE" : "SFSH",
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "Serum FSH",
+        "TYPE" : "IMMUNO"
+	},
+	"12" : {
+		"LIS_CODE" : "SBHCG",
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "Serum BHCG",
+        "TYPE" : "IMMUNO"
 	},
 	"11" : {
 		"LIS_CODE" : "SIGE",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "Serum IgE"
+		"REPORT_NAME" : "Serum IgE",
+        "TYPE" : "IMMUNO"
 	},
 	"10" : {
 		"LIS_CODE" : "SPSA",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "Prostate Specific Antigen"
+		"REPORT_NAME" : "Prostate Specific Antigen",
+        "TYPE" : "IMMUNO"
 	},
 	"9" : {
 		"LIS_CODE" : "SFER",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "Serum Ferretin"
+		"REPORT_NAME" : "Serum Ferretin",
+        "TYPE" : "IMMUNO"
 	},
 	"8" : {
 		"LIS_CODE" : "TSH",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "TSH"
+		"REPORT_NAME" : "TSH",
+        "TYPE" : "IMMUNO"
 	},
 	"7" : {
 		"LIS_CODE" : "T4",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "T4"
+		"REPORT_NAME" : "T4",
+        "TYPE" : "IMMUNO"
 	},
 	"6" : {
 		"LIS_CODE" : "T3",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "T3"
+		"REPORT_NAME" : "T3",
+        "TYPE" : "IMMUNO"
 	},
 	"5" : {
 		"LIS_CODE" : "HIV",
 		"TUBE" : "PLASMA",
-		"REPORT_NAME" : "HIV Screening"
+		"REPORT_NAME" : "HIV Screening",
+        "TYPE" : "IMMUNO"
 	},
 	"4" : {
 		"LIS_CODE" : "HBS",
 		"TUBE" : "PLASMA",
-		"REPORT_NAME" : "HBV Screening"
+		"REPORT_NAME" : "HBV Screening",
+        "TYPE" : "IMMUNO"
 	},
 	"3" : {
 		"LIS_CODE" : "VITD",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "Vitamin D"
+		"REPORT_NAME" : "Vitamin D",
+        "TYPE" : "IMMUNO"
 	},
 	"2" : {
 		"LIS_CODE" : "HCV",
 		"TUBE" : "PLASMA",
-		"REPORT_NAME" : "HCV Screening"
+		"REPORT_NAME" : "HCV Screening",
+        "TYPE" : "IMMUNO"
 	},
 	"1" : {
 		"LIS_CODE" : "B12",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "Vitamin B12"
+		"REPORT_NAME" : "Vitamin B12",
+        "TYPE" : "IMMUNO"
 	},
 	"ESR" : {
 		"LIS_CODE" : "ESR",
 		"TUBE" : "ESR",
-		"REPORT_NAME" : "ESR"
+		"REPORT_NAME" : "ESR",
+        "TYPE" : "OUTSOURCE"
 	},
 	"GLU" : {
 		"LIS_CODE" : "GLU",
 		"TUBE" : "URINE_CONTAINER",
-		"REPORT_NAME" : "Urine Routine"
+		"REPORT_NAME" : "Urine Routine",
+        "TYPE" : "URINE"
 	},
 	"BIL" : {
 		"LIS_CODE" : "BIL",
 		"TUBE" : "URINE_CONTAINER",
-		"REPORT_NAME" : "Urine Routine"
+		"REPORT_NAME" : "Urine Routine",
+        "TYPE" : "URINE"
 	},
 	"KET" : {
 		"LIS_CODE" : "KET",
 		"TUBE" : "URINE_CONTAINER",
-		"REPORT_NAME" : "Urine Routine"
+		"REPORT_NAME" : "Urine Routine",
+        "TYPE" : "URINE"
 	},
 	"SG" : {
 		"LIS_CODE" : "SG",
 		"TUBE" : "URINE_CONTAINER",
-		"REPORT_NAME" : "Urine Routine"
+		"REPORT_NAME" : "Urine Routine",
+        "TYPE" : "URINE"
 	},
 	"BLO" : {
 		"LIS_CODE" : "BLO",
 		"TUBE" : "URINE_CONTAINER",
-		"REPORT_NAME" : "Urine Routine"
+		"REPORT_NAME" : "Urine Routine",
+        "TYPE" : "URINE"
 	},
 	"pH" : {
 		"LIS_CODE" : "pH",
 		"TUBE" : "URINE_CONTAINER",
-		"REPORT_NAME" : "Urine Routine"
+		"REPORT_NAME" : "Urine Routine",
+        "TYPE" : "URINE"
 	},
 	"PRO" : {
 		"LIS_CODE" : "PRO",
 		"TUBE" : "URINE_CONTAINER",
-		"REPORT_NAME" : "Urine Routine"
+		"REPORT_NAME" : "Urine Routine",
+        "TYPE" : "URINE"
 	},
 	"URO" : {
 		"LIS_CODE" : "URO",
 		"TUBE" : "URINE_CONTAINER",
-		"REPORT_NAME" : "Urine Routine"
+		"REPORT_NAME" : "Urine Routine",
+        "TYPE" : "URINE"
 	},
 	"NIT" : {
 		"LIS_CODE" : "NIT",
 		"TUBE" : "URINE_CONTAINER",
-		"REPORT_NAME" : "Urine Routine"
+		"REPORT_NAME" : "Urine Routine",
+        "TYPE" : "URINE"
 	},
 	"LEU" : {
 		"LIS_CODE" : "LEU",
 		"TUBE" : "URINE_CONTAINER",
-		"REPORT_NAME" : "Urine Routine"
+		"REPORT_NAME" : "Urine Routine",
+        "TYPE" : "URINE"
 	},
 	"COL" : {
 		"LIS_CODE" : "COL",
 		"TUBE" : "URINE_CONTAINER",
-		"REPORT_NAME" : "Urine Routine"
+		"REPORT_NAME" : "Urine Routine",
+        "TYPE" : "URINE"
 	},
 	"CLA" : {
 		"LIS_CODE" : "CLA",
 		"TUBE" : "URINE_CONTAINER",
-		"REPORT_NAME" : "Urine Routine"
+		"REPORT_NAME" : "Urine Routine",
+        "TYPE" : "URINE"
 	},
 	"UA" : {
 		"LIS_CODE" : "SURIC",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "Serum Uric Acid"	
+		"REPORT_NAME" : "Serum Uric Acid",
+        "TYPE" : "BIOCHEM"	
 	},
 	"PHOS" : {
 		"LIS_CODE" : "SPHOS",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "Serum Phosphorous"
+		"REPORT_NAME" : "Serum Phosphorous",
+        "TYPE" : "BIOCHEM"	
 	},
 	"MG" : {
 		"LIS_CODE" : "SMAG",
 		"TUBE" : "SERUM",
-		"REPORT_NAME" : "Serum Magnesium"
+		"REPORT_NAME" : "Serum Magnesium",
+        "TYPE" : "BIOCHEM-EXL"	
 	},
 	"FULL_BODY_PACKAGE" : {
 		"LIS_CODE" : "full_body_package",
@@ -396,19 +495,22 @@
 		"LIS_CODE" : "lipid_profile",
 		"TUBE" : "",
 		"REPORT_NAME" : "lipid profile",
-		"PACKAGE_COMPONENTS" : ["CHOL", "TRIG", "HDLC", "LDL", "VLDL"]
+		"PACKAGE_COMPONENTS" : ["CHOL", "TRIG", "HDLC", "LDL", "VLDL"],
+        "TYPE" : "BIOCHEM"	
 	},
 	"LIVER_FUNCTION_TESTS" : {
 		"LIS_CODE" : "liver_function_tests",
 		"TUBE" : "",
 		"REPORT_NAME" : "liver function tests",
-		"PACKAGE_COMPONENTS" : ["ALB", "GGT", "BID", "CA", "BIT", "BII", "ALPU", "GOTHL", "GPTHL"]
+		"PACKAGE_COMPONENTS" : ["ALB", "GGT", "BID", "CA", "BIT", "BII", "ALPU", "GOTHL", "GPTHL"],
+        "TYPE" : "BIOCHEM"	
 	},
 	"KIDNEY_FUNCTION_TESTS" : {
 		"LIS_CODE" : "kidney_function_tests",
 		"TUBE" : "",
 		"REPORT_NAME" : "kidney_function_tests",
-		"PACKAGE_COMPONENTS" : ["CRE", "UREA", "BUN"]
+		"PACKAGE_COMPONENTS" : ["CRE", "UREA", "BUN"],
+        "TYPE" : "BIOCHEM"	
 	}
 
 }

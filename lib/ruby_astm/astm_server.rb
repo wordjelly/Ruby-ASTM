@@ -4,6 +4,7 @@ require 'em-rubyserial'
 require "active_support/all"
 require "json"
 require "redis"
+require "rest-firebase"
 
 class AstmServer
 
