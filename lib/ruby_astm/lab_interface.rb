@@ -9,6 +9,8 @@ module LabInterface
   CR = "\x13"
   ETX = "\x03"
   EOT = "\x04"
+  SIEMENS_ELECTROLYTE_END = [10,10,10,10]
+  ELECTROLYTE_START = [45, 45, 45, 32]
 
 
   mattr_accessor :ethernet_connections
@@ -28,6 +30,8 @@ module LabInterface
   ## gather bytes to store for us to test.
   mattr_accessor :test_data_bytes
 
+  ## just an array of byte arrays, cleared on calling process text
+  mattr_accessor :data_bytes
 
 
   mattr_accessor :headers
@@ -166,6 +170,58 @@ module LabInterface
 
       concat
 
+
+
+  end
+
+  def write_bytes_to_file(bytes)
+
+  end
+
+  ## @param[Array] : 
+  ## [[bytes],[bytes]....]
+  def process_electrolytes(data_bytes)
+    puts "came to process electrolytes_plain_text"
+    byte_arr = data_bytes.flatten
+    puts "the end part of the arr is"
+    return if byte_arr[-4..-1] != SIEMENS_ELECTROLYTE_END
+    self.data_bytes = []
+    concat = ""
+    byte_arr.each do |byte|
+        x = [byte].pack('c*').force_encoding('UTF-8')
+        if x == "\r"
+          concat+="\n"
+        elsif x == "\n"
+          #puts "new line found --- "
+          concat+=x
+          #puts "last thing in concat."
+          #puts concat[-1].to_s
+        else
+          concat+=x
+        end
+    end
+    ## nwo write concat to file
+    ## File.open("electrolytes_plain_text.txt", 'a+') { |file| file.write(concat) }
+    ## Header
+    ## Patient
+    ## Order
+    ## Result
+    ## Terminator
+    start_measure = false
+    
+    concat.split(/\n/).each do |line|
+      if line =~ /348\-D718/
+        header = Header.new({:line => line})
+        self.headers ||= []
+        self.headers << header
+      elsif line =~ /\-{32}/
+      elsif line =~ /Patient\s+ID/
+      elsif line =~ /Measured/
+      elsif line =~ /outside ref/
+      else
+      end
+    end
+
   end
 
 	def receive_data(data)
@@ -182,13 +238,18 @@ module LabInterface
       
    
       byte_arr = data.bytes.to_a
+      
       self.test_data_bytes ||= []
+      
+      self.data_bytes ||= []
+
       self.test_data_bytes.push(byte_arr)
+
+      self.data_bytes.push(byte_arr)
+
     
       concat = pre_process_bytes(byte_arr,concat)
-
-     
-      
+ 
       puts "concat is:"
       
       puts concat.to_s
@@ -197,8 +258,13 @@ module LabInterface
 
       ## if the last byte is EOT, then call process text.
       ## inside that split by line and process one at a time.
-      ##process_text(concat)      
-      
+      ##process_text(concat)   
+      puts "data bytes -1: #{self.data_bytes[-1]}"
+      puts "data bytes 0: #{self.data_bytes[0]}"   
+      #if self.data_bytes[0] == ELECTROLYTE_START
+        self.process_electrolytes(self.data_bytes)
+        
+      #end
 
       if data.bytes.to_a[-1] == 4
         puts "GOT EOT --- PROCESSING BUFFER, AND CLEARING."

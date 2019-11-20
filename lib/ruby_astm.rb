@@ -16,3 +16,4 @@ require_relative "ruby_astm/HL7/hl7_header"
 require_relative "ruby_astm/HL7/hl7_patient"
 require_relative "ruby_astm/HL7/hl7_order"
 require_relative "ruby_astm/HL7/hl7_observation"
+

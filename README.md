@@ -65,6 +65,12 @@ The gem, basically parses incoming data, and dumps each patient order into redis
 
 ```
 
+## TO RUN THE TESTS
+
+```
+## run from project root
+rake test test/test_ruby_astm.rb
+```
 
 ## TESTED WITH INSTRUMENTS
 

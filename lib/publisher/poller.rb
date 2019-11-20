@@ -185,6 +185,10 @@ class Poller
 	        		component_machine_code = $inverted_mappings[component]
 	        		puts "component machine code: #{component_machine_code}"
 
+	        		## for eg plasma tube can do all the tests
+	        		## so can serum
+	        		## but we use the plasma tube only for some.
+
 	        		tube = $mappings[component_machine_code]["TUBE"]
 			        tube_key = nil
 			        unless tests_hash.keys.select{|c| c=~/#{tube}/ }.blank?

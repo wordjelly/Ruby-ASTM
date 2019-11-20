@@ -58,7 +58,7 @@ class TestRubyAstm < Minitest::Test
   end
 =end
 
-
+=begin
   def test_assigns_tubes_for_pre_op_package
     p = Poller.new
 
@@ -222,7 +222,7 @@ class TestRubyAstm < Minitest::Test
     assert_equal tests_hash.deep_symbolize_keys,{:"EDTA:edta1234"=>["A1c", "WBC", "RBC", "HGB", "HCT", "MCV", "MCH", "MCHC", "PLT", "NEUT%", "LYMPH%", "MONO%", "EO%", "BASO%", "NEUT#", "LYMPH#", "MONO#", "EO#", "BASO#", "RDW-CV"], :"SERUM:serum1234"=>["CHOL", "TRIG", "HDLC", "LDL", "VLDL", "CREAT", "UREA", "BUNC", "ALB", "GGT", "BIDDY", "CA", "BITDY", "INBILDY", "ALPU", "GOT", "GPT", "HOMCY", "SIRON", "SUIBC", "STIBC", "UA", "PHOS", "MG", "SNATRIUM", "SPOTASSIUM", "SCHLORIDE", "11", "10", "9", "8", "7", "6", "3", "1"], :"PLASMA:plasma1234"=>["5", "4", "2"], :"FLUORIDE:fluoride1234"=>["GLUR", "GLUPP", "GLUF"], :"URINE_CONTAINER:urine1234"=>["GLU", "BIL", "KET", "SG", "BLO", "pH", "PRO", "URO", "NIT", "LEU", "COL", "CLA"]}.deep_symbolize_keys
 
   end
-
+=end
 
 =begin
   def test_query_for_non_existent_sample
