@@ -1,0 +1,183 @@
+--- Siemens Diagnostics  348 ---
+
+Blood Gas Report
+
+348-D718  12:58    20 Nov 2019
+
+Sample No.   1386      Syringe
+
+Operator ID    
+
+Patient  ID    000008233
+
+
+
+Measured      37 'C
+
+  pH          7.973^     
+
+  pCO2          8.9v   mmHg
+
+  pO2         145.4^   mmHg
+
+  Na+           134    mmol/L
+
+  K+           3.38v   mmol/L
+
+  Cl-            94v   mmol/L
+
+^ ,v  = outside ref. range
+
+
+
+Reference Ranges
+
+  pH          7.350 - 7.450
+
+  pCO2         32.0 -  45.0
+
+  pO2          75.0 - 100.0
+
+  K+           3.40 -  4.50
+
+  Cl-            96 -   108
+
+
+
+Calculated Data
+
+  HCO3act      20.1    mmol/L
+
+  HCO3std      33.3    mmol/L
+
+  BE(ecf)       4.6    mmol/L
+
+  BE(B)         9.5    mmol/L
+
+  ctCO2        20.4    mmol/L
+
+  Ca++(7.4)
+
+  AnGap        22.6    mmol/L
+
+  O2SAT        99.6    %
+
+  O2CT
+
+  ctHb(est)
+
+  pO2/FIO2
+
+  pO2(A-a)   
+
+  pO2(a/A)   
+
+
+
+
+
+--------------------------------
+
+
+
+
+
+
+--- Siemens Diagnostics  348 ---
+
+Blood Gas Report
+
+348-D718  17:01    20 Nov 2019
+
+Short sample
+
+
+
+--------------------------------
+
+
+
+
+
+
+--- Siemens Diagnostics  348 ---
+
+Blood Gas Report
+
+348-D718  17:02    20 Nov 2019
+
+Sample No.   1387      Syringe
+
+Operator ID    
+
+Patient  ID    000009601
+
+
+
+Measured      37 'C
+
+  pH          7.536^     
+
+  pCO2         29.8v   mmHg
+
+  pO2         106.2^   mmHg
+
+  Na+           135    mmol/L
+
+  K+           4.49    mmol/L
+
+  Cl-           103    mmol/L
+
+^ ,v  = outside ref. range
+
+
+
+Reference Ranges
+
+  pH          7.350 - 7.450
+
+  pCO2         32.0 -  45.0
+
+  pO2          75.0 - 100.0
+
+
+
+Calculated Data
+
+  HCO3act      24.6    mmol/L
+
+  HCO3std      27.2    mmol/L
+
+  BE(ecf)       2.1    mmol/L
+
+  BE(B)         3.0    mmol/L
+
+  ctCO2        25.6    mmol/L
+
+  Ca++(7.4)
+
+  AnGap        11.9    mmol/L
+
+  O2SAT        98.4    %
+
+  O2CT
+
+  ctHb(est)
+
+  pO2/FIO2
+
+  pO2(A-a)   
+
+  pO2(a/A)   
+
+
+
+
+
+--------------------------------
+
+
+
+
+
+
