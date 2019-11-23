@@ -7,8 +7,23 @@ class TestRubyAstm < Minitest::Test
 ## we want to send some data by the poller to the remote server, to check if it finds such a file and updates it.
 ## for this we create a remote file, and manually send the parameters
   
-  
-  
+  def test_electrolyte_regex
+    root_path = File.dirname __dir__
+    electrolyte_file_path = File.join root_path,'electrolytes_plain_text.txt'
+    j = IO.read(electrolyte_file_path)
+
+    j.scan(/pCO2\s+(?<pco>(\d+)(\.\d)*)(\^|v)?\s+mmHg/) do |k|
+      n = Regexp.last_match
+      puts ("CO2:" + n[:pco].to_s)
+    end
+
+    j.scan(/pO2\s+(?<po>(\d+)(\.\d)*)(\^|v)?\s+mmHg/) do |k|
+      n = Regexp.last_match
+      puts ("O2:" + n[:po].to_s)
+    end
+
+  end
+
 =begin
   def test_print_errors
     $redis = Redis.new
@@ -18,8 +33,7 @@ class TestRubyAstm < Minitest::Test
       puts "-----------------------------------"
     end
   end
-=end
-=begin
+
   def test_server
     ethernet_connections = [{:server_ip => "127.0.0.1", :server_port => 3000}]
     roche_serial_connection = {:port_address => '/dev/ttyS0', :baud_rate => 9600, :parity => 8}

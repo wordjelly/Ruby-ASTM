@@ -1,15 +1,20 @@
 require 'fileutils'
 require 'publisher/poller'
+require 'typhoeus'
 
 class Pf_Lab_Interface < Poller
 
 	ORDERS = "orders"
+	ORDERS_SORTED_SET = "orders_sorted_set"
 	BARCODES = "barcodes"
 	BARCODE = "barcode"
 	BASE_URL = "http://localhost:3000/"
 	UPDATE_QUEUE = "update_queue"
 	## will look back 12 hours if no previous request is found.
 	DEFAULT_LOOK_BACK_IN_SECONDS = 12*3600
+	## time to keep old orders in memory
+	## 48 hours, expressed as seconds.
+	DEFAULT_STORAGE_TIME_FOR_ORDERS_IN_SECONDS = 48*3600 
 	## the last request that was made and what it said.
 	POLL_URL_PATH = BASE_URL + "interfaces"
 	PUT_URL_PATH = BASE_URL + "lis_update_orders"
@@ -74,12 +79,21 @@ class Pf_Lab_Interface < Poller
 	##
 	##
 	###################################################################
-	def remove_order
-
+	def remove_order(order_id)
+		order = get_order(order_id)
+		order["reports"].each do |report|
+			report["tests"].each do |test|
+				remove_barcode(test["barcode"])
+				remove_barcode(test["code"])
+			end			
+		end
+		$redis.hdel(ORDERS,order[ID])
+		$redis.zrem(ORDERS_SORTED_SET,order[ID])
 	end
 
-	def remove_barcode
-
+	def remove_barcode(barcode)
+		return if barcode.blank?
+		$redis.hdel(BARCODES,barcode)
 	end
 
 	## @return[Hash] the entry at the barcode, or nil.
@@ -142,7 +156,10 @@ class Pf_Lab_Interface < Poller
 			end
 		end
 		$redis.hset(ORDERS,order[ID],JSON.generate(order))
+		$redis.zadd(ORDERS_SORTED_SET,Time.now.to_i,order[ID])
 	end
+
+	## start work on simple.
 
 	def update_order(order)
 		$redis.hset(ORDERS,order[ID],JSON.generate(order))
@@ -165,7 +182,6 @@ class Pf_Lab_Interface < Poller
 	end
 
 	def queue_order_for_update(order)
-		
 		$redis.lpush(UPDATE_QUEUE,order[ID.to_sym])
 	end
 
@@ -375,14 +391,15 @@ data = [
 		ORDERS_TO_UPDATE_PER_CYCLE.times do |n|
 			order_ids << $redis.rpop(UPDATE_QUEUE)
 		end
-		puts "order ids popped"
-		puts order_ids.to_s
+		#puts "order ids popped"
+		#puts order_ids.to_s
 		orders = order_ids.map{|c|
 			get_order(c)
 		}.compact
 
-		puts "orders are:"
-		puts orders.to_s
+		
+		#puts "orders are:"
+		#puts orders.to_s
 
 		req = Typhoeus::Request.new(PUT_URL_PATH, method: :put, body: {orders: orders}.to_json, params: {lis_security_key: self.lis_security_key}, headers: {Accept: 'application/json', "Content-Type".to_sym => 'application/json'})
 
@@ -392,7 +409,11 @@ data = [
 			    response_body = response.body
 			    orders = JSON.parse(response.body)["orders"]
 			    orders.each do |order|
-			    	
+			    	if order["errors"].blank?
+			    	else
+			    		puts "got an error for the order."
+			    		## how many total error attempts to manage.
+			    	end
 			    end
 			elsif response.timed_out?
 			    AstmServer.log("got a time out")
@@ -405,6 +426,18 @@ data = [
 
 		req.run
 	
+	end
+
+	## removes any orders that start from
+	## now - 4 days ago
+	## now - 2 days ago
+	def remove_old_orders
+		stale_order_ids = $redis.zrangebyscore(ORDERS_SORTED_SET,(Time.now.to_i - DEFAULT_STORAGE_TIME_FOR_ORDERS_IN_SECONDS*2).to_s, (Time.now.to_i - DEFAULT_STORAGE_TIME_FOR_ORDERS_IN_SECONDS))
+		$redis.pipelined do 
+			stale_order_ids.each do |order_id|
+				remove_order(order_id)
+			end
+		end
 	end
 
 	def update(data)
@@ -436,6 +469,7 @@ data = [
 		end 
 
 		process_update_queue
+		remove_old_orders
 	
 	end
 
@@ -446,6 +480,5 @@ data = [
       	post_poll_LIS
   	end
 
-  	
-
+  
 end

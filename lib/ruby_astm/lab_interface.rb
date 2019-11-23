@@ -181,9 +181,9 @@ module LabInterface
   ## @param[Array] : 
   ## [[bytes],[bytes]....]
   def process_electrolytes(data_bytes)
-    puts "came to process electrolytes_plain_text"
+    #puts "came to process electrolytes_plain_text"
     byte_arr = data_bytes.flatten
-    puts "the end part of the arr is"
+    #puts "the end part of the arr is"
     return if byte_arr[-4..-1] != SIEMENS_ELECTROLYTE_END
     self.data_bytes = []
     concat = ""
@@ -207,6 +207,31 @@ module LabInterface
     ## Order
     ## Result
     ## Terminator
+
+    ## GET PO2
+    concat.scan(/pCO2\s+(?<pco>(\d+)(\.\d)*)(\^|v)?\s+mmHg/) do |k|
+      n = Regexp.last_match
+      puts n[:pco].to_s
+    end
+
+    ## GET PCO2
+    concat.scan(/pO2\s+(?<po>(\d+)(\.\d)*)(\^|v)?\s+mmHg/) do |k|
+      n = Regexp.last_match
+      puts n[:po].to_s
+    end
+
+    ## GET PH
+
+    ## GET NA+
+
+    ## GET K+
+
+    ## GET CL-
+
+    ## GET PATIENT_ID
+
+    ## GET DATE AND TIME
+
     start_measure = false
     
     concat.split(/\n/).each do |line|
@@ -259,11 +284,10 @@ module LabInterface
       ## if the last byte is EOT, then call process text.
       ## inside that split by line and process one at a time.
       ##process_text(concat)   
-      puts "data bytes -1: #{self.data_bytes[-1]}"
-      puts "data bytes 0: #{self.data_bytes[0]}"   
+      #puts "data bytes -1: #{self.data_bytes[-1]}"
+      #puts "data bytes 0: #{self.data_bytes[0]}"   
       #if self.data_bytes[0] == ELECTROLYTE_START
-        self.process_electrolytes(self.data_bytes)
-        
+      #self.process_electrolytes(self.data_bytes) 
       #end
 
       if data.bytes.to_a[-1] == 4

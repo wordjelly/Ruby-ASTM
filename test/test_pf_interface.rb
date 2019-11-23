@@ -108,7 +108,7 @@ class TestPfInterface < Minitest::Test
 	##
 	##
 	###################################################################
-
+=begin
 	def test_updates_results_to_server
 		data = [
 			{
@@ -125,11 +125,13 @@ class TestPfInterface < Minitest::Test
 		k = Pf_Lab_Interface.new(nil,"pathofast")
 
 		k.update(data)
-
-		
 			
 	end
 
+	def returns_no_error_if_result_already_verified
+		
+	end
+=end
 	#def test_lis_code_clash_between_two_outsourced_organization_reports
 
 	#end
