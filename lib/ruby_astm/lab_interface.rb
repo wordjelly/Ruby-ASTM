@@ -2,6 +2,10 @@ require "active_support/all"
 
 module LabInterface
 
+  def self.included base
+    base.extend ClassMethods
+  end
+
 	ACK = "\x06"
   ENQ = "\x05"
   STX = "\x02"
@@ -13,7 +17,6 @@ module LabInterface
 
   attr_accessor :ethernet_connections
   attr_accessor :serial_connections
-
   attr_accessor :ethernet_server
   attr_accessor :server_ip
   attr_accessor :server_port
@@ -38,7 +41,37 @@ module LabInterface
 
   ## buffer of incoming data.
   attr_accessor :data_buffer
+
+  $ENQ = "[5]"
+  $start_text = "[2]"
+  $end_text = "[3]"
+  $record_end = "[13]"
+  $frame_end = "[10]"
+
     
+  #######################################################
+  ##
+  ##
+  ##
+  ## CLASS METHODS
+  ##
+  ##
+  ##
+  #######################################################
+  module ClassMethods
+    def log(message)
+      puts "" + message
+      $redis.zadd("ruby_astm_log",Time.now.to_i,message)
+    end
+
+    def root_path
+      File.dirname __dir__
+    end
+
+    def default_mappings
+      File.join root_path,"mappings.json"
+    end
+  end
 
   ## returns the root directory of the gem.
   def root

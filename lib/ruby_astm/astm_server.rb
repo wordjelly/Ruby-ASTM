@@ -9,27 +9,6 @@ require "rest-firebase"
 class AstmServer
 
 	include LabInterface
-	
-
-	def self.log(message)
-		puts "" + message
-    	$redis.zadd("ruby_astm_log",Time.now.to_i,message)
-  	end
-
-  	def self.root_path
-  		File.dirname __dir__
-  	end
-
-  	def self.default_mappings
-  		File.join AstmServer.root_path,"mappings.json"
-  	end
-
-	$ENQ = "[5]"
-	$start_text = "[2]"
-	$end_text = "[3]"
-	$record_end = "[13]"
-	$frame_end = "[10]"
-
 
 	## DEFAULT SERIAL PORT : /dev/ttyS0
 	## DEFAULT USB PORT : /dev/ttyUSB0
@@ -38,7 +17,7 @@ class AstmServer
 	#def initialize(server_ip=nil,server_port=nil,mpg=nil,respond_to_queries=false,serial_port='/dev/ttyS0',usb_port='/dev/ttyUSB0',serial_baud=9600,serial_parity=8,usb_baud=19200,usb_parity=8)
 	def initialize(ethernet_connections,serial_connections,mpg=nil,respond_to_queries=nil)
 		$redis = Redis.new
-		AstmServer.log("Initializing AstmServer")
+		self.class.log("Initializing AstmServer")
 		self.ethernet_connections = ethernet_connections
 		self.serial_connections = serial_connections
 		self.server_ip = server_ip || "127.0.0.1"
@@ -50,7 +29,7 @@ class AstmServer
 		self.usb_port = usb_port
 		self.usb_baud = usb_baud
 		self.usb_parity = usb_parity
-		$mappings = JSON.parse(IO.read(mpg || AstmServer.default_mappings))
+		$mappings = JSON.parse(IO.read(mpg || self.class.default_mappings))
 	end
 
 	def start_server
@@ -59,7 +38,7 @@ class AstmServer
 				raise "please provide a valid ethernet configuration with ip address" unless econn[:server_ip]
 				raise "please provide a valid ethernet configuration with port" unless econn[:server_port]
 				EventMachine::start_server econn[:server_ip], econn[:server_port], LabInterface	
-				AstmServer.log("Running ETHERNET  with configuration #{econn}")
+				self.class.log("Running ETHERNET  with configuration #{econn}")
 			end
 			self.serial_connections.each do |sconn|
 				raise "please provide a valid serial configuration with port address" unless sconn[:port_address]
