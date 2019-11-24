@@ -293,6 +293,24 @@
 		"REPORT_NAME" : "Chloride",
         "TYPE" : "BIOCHEM-ELECTROLYTE"
 	},
+	"pH" : {
+		"LIS_CODE" : "pH",
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "pH",
+        "TYPE" : "BIOCHEM-ELECTROLYTE"
+	},
+	"po2" : {
+		"LIS_CODE" : "po2",
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "po2",
+        "TYPE" : "BIOCHEM-ELECTROLYTE"
+	},
+	"pco2" : {
+		"LIS_CODE" : "pco2",
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "pco2",
+        "TYPE" : "BIOCHEM-ELECTROLYTE"
+	},
 	"15" : {
 		"LIS_CODE" : "SPRL",
 		"TUBE" : "SERUM",

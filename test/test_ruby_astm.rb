@@ -21,9 +21,9 @@ class TestRubyAstm < Minitest::Test
     assert_equal server.headers[-1].patients[0].orders[0].results["po2"].value, "145.4"
     assert_equal server.headers[-1].patients[0].orders[0].results["pco2"].value, "8.9"
     assert_equal server.headers[-1].patients[0].orders[0].results["pH"].value, "7.973"
-    assert_equal server.headers[-1].patients[0].orders[0].results["Na"].value, "134"
-    assert_equal server.headers[-1].patients[0].orders[0].results["K"].value, "3.38"
-    assert_equal server.headers[-1].patients[0].orders[0].results["Cl"].value, "94"
+    assert_equal server.headers[-1].patients[0].orders[0].results["SNATRIUM"].value, "134"
+    assert_equal server.headers[-1].patients[0].orders[0].results["SPOTASSIUM"].value, "3.38"
+    assert_equal server.headers[-1].patients[0].orders[0].results["SCHLORIDE"].value, "94"
   end
 
 

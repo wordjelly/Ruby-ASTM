@@ -120,32 +120,32 @@ class SiemensAbgElectrolyteServer < AstmServer
 	    		o.results ||= {}
 	    		if sodium = get_na
 	    			r = Result.new
-	    			r.name = "Na"
+	    			r.name = "SNATRIUM"
 	    			r.report_name = "Serum Electrolytes"
 	    			r.value = sodium
 	    			r.units = "mmol/L"
 	    			r.timestamp = Time.now.to_i
-	    			o.results["Na"] = r
+	    			o.results["SNATRIUM"] = r
 	    		end
 
 	    		if potassium = get_k
 	    			r = Result.new
-	    			r.name = "K"
+	    			r.name = "SPOTASSIUM"
 	    			r.report_name = "Serum Electrolytes"
 	    			r.value = potassium
 	    			r.units = "mmol/L"
 	    			r.timestamp = Time.now.to_i
-	    			o.results["K"] = r
+	    			o.results["SPOTASSIUM"] = r
 	    		end
 
 	    		if chloride = get_cl
 	    			r = Result.new
-	    			r.name = "Cl"
+	    			r.name = "SCHLORIDE"
 	    			r.report_name = "Serum Electrolytes"
 	    			r.value = chloride
 	    			r.units = "mmol/L"
 	    			r.timestamp = Time.now.to_i
-	    			o.results["Cl"] = r
+	    			o.results["SCHLORIDE"] = r
 	    		end
 	    		
 	    		if ph = get_ph
