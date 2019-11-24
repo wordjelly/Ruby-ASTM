@@ -16,9 +16,6 @@ class RealTimeDb
 		"OUTSOURCE" => ""
 	}
 
-	## first i email myself the site and secret
-	## then we proceed.
-
 	## @param[Hash] work_allotment_hash :
 	## key => one of the work types
 	## value => name of a worker
@@ -50,12 +47,11 @@ class RealTimeDb
 
 
 	## we pass the real_time_data instance into the 
-
 	def assign_test(barcode,tests,mappings)
 		## so do we get the name of the worker.
 		inverted_mappings = {}
 		mappings.keys.each do |machine_code|
-			lis_code = mappings[machine_code][LIS_CODE]
+			lis_code = mappings[machine_code]["LIS_CODE"]
 			inverted_mappings[lis_code] = mappings[machine_code]
 		end
 		worker_hash = {}
@@ -68,6 +64,8 @@ class RealTimeDb
 			worker_hash[worker_name] ||= []
 			worker_hash[worker_name] << lis_code
 		end
+		puts "this is the workers hash"
+		puts worker_hash.to_s
 		worker_hash.keys.each do |worker_name|
 			#self.connection.post("lab/work/#{worker_name}", :tests => worker_hash[worker_name], :barcode => barcode, :timestamp => Time.now.to_i)
 		end

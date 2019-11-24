@@ -237,6 +237,7 @@ class Poller
 	      	## and not prefixed by the tube type like FLUORIDE etc.
 	      	tube_barcode.scan(/:(?<barcode>.*)$/) { |barcode|  
 	      		$redis.hset REQUISITIONS_HASH, barcode, JSON.generate(tests[tube_barcode])
+	      		$real_time_db.assign_test(barcode,tests[tube_barcode],$mappings)
 	      	}
 	      end  
 	    end

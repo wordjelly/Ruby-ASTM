@@ -124,6 +124,7 @@ module SiemensAbgElectrolyteModule
 	    		p.patient_id = patient_id
 	    		p.orders ||= []
 	    		o = Order.new
+	    		o.id = patient_id
 	    		o.results ||= {}
 	    		if sodium = get_na
 	    			r = Result.new
@@ -190,11 +191,23 @@ module SiemensAbgElectrolyteModule
 	    	end
 	    end
 
+	    if self.headers.size > 0
+            self.headers[-1].commit
+            clear
+            #send_data(self.headers[-1].generate_ack_success_response)
+        end
+
 	end
 
 	def process_text_file(full_file_path)
 		k = IO.read(full_file_path)
 		process_electrolytes(k.bytes)
+	end
+
+	def clear
+		self.data_buffer = ''
+		self.test_data_bytes = []
+		self.data_bytes = []
 	end
 
 
