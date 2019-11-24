@@ -96,7 +96,7 @@ class Header
 		responses
 	end
 
-	def to_json
+	def to_json(args={})
         hash = {}
         self.instance_variables.each do |x|
             hash[x] = self.instance_variable_get x

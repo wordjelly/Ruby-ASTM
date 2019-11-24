@@ -178,12 +178,14 @@ class Poller
 	        	puts package_components.to_s
 
 	        	package_components.each do |component|
-	        		puts "doing component: #{component}"
+	        		#puts "doing component: #{component}"
 	        		## these are the machine codes.
 	        		## so to get the tube, you have to get it from the inverted mappings.
 	        		## cant get directly like this.
+	        		#puts "inverted mappings"
+	        		#puts $inverted_mappings
 	        		component_machine_code = $inverted_mappings[component]
-	        		puts "component machine code: #{component_machine_code}"
+	        		#puts "component machine code: #{component_machine_code}"
 
 	        		## for eg plasma tube can do all the tests
 	        		## so can serum

@@ -6,7 +6,8 @@ class TestRubyAstm < Minitest::Test
 
 ## we want to send some data by the poller to the remote server, to check if it finds such a file and updates it.
 ## for this we create a remote file, and manually send the parameters
-  
+
+
   def test_siemens_electrolyte
     $redis = Redis.new
     #ethernet_connections = [{:server_ip => "127.0.0.1", :server_port => 3000}]
@@ -15,7 +16,7 @@ class TestRubyAstm < Minitest::Test
     root_path = File.dirname __dir__
     electrolyte_input_file_path = File.join root_path,'electrolytes_plain_text.txt'
     server.process_text_file(electrolyte_input_file_path)
-    puts server.headers[-1].to_json
+    puts JSON.pretty_generate(JSON.parse(server.headers[-1].to_json))
     assert_equal server.headers[-1].patients.size, 2
     assert_equal server.headers[-1].patients[0].orders[0].results["po2"].value, "145.4"
     assert_equal server.headers[-1].patients[0].orders[0].results["pco2"].value, "8.9"
@@ -25,7 +26,7 @@ class TestRubyAstm < Minitest::Test
     assert_equal server.headers[-1].patients[0].orders[0].results["Cl"].value, "94"
   end
 
-=begin
+
   def test_print_errors
     $redis = Redis.new
     errors = $redis.zrange("ruby_astm_log",0 ,-1)
@@ -35,45 +36,7 @@ class TestRubyAstm < Minitest::Test
     end
   end
 
-  def test_server
-    ethernet_connections = [{:server_ip => "127.0.0.1", :server_port => 3000}]
-    roche_serial_connection = {:port_address => '/dev/ttyS0', :baud_rate => 9600, :parity => 8}
-    d10_serial_connection = {:port_address => '/dev/ttyS4', :baud_rate => 9600, :parity => 8}
-    serial_connections = [roche_serial_connection,d10_serial_connection]
-    server = AstmServer.new(ethernet_connections,serial_connections)
-    server.start_server
-  end
-=end
-=begin
-  def test_serial_server
-    $redis = Redis.new
-    $mappings = JSON.parse(IO.read(AstmServer.default_mappings))
-    $redis.hset("requisitions_hash","0000000775",JSON.generate(["6","7"]))
-    EM.run do
-      serial = EventMachine.open_serial('/dev/ttyS0', 9600, 8,LabInterface)
-    end
-  end
 
-
-
-
-  def test_update
-    p = Google_Lab_Interface.new(nil,"/home/root1/Downloads/credentials.json","/home/root1/Downloads/token.yaml","MNWKZC-L05-ufApJTSqaLq42yotVzKYhk")    
-    p.update(JSON.parse("{\"@sequence_number\":0,\"@patient_id\":null,\"@orders\":[{\"id\":\"test_document_10_december_2018\",\"priority\":null,\"sequence_number\":null,\"tests\":null,\"specimen_type\":null,\"date_time\":null,\"action_code\":null,\"results\":{\"GLUF\":{\"name\":\"GLUF\",\"report_name\":\"Fasting Glucose\",\"flags\":\"H\",\"value\":\"115.4\",\"timestamp\":\"2018-12-10T10:35:54.000+05:30\",\"dilution\":null}}}]}"))
-  end
-=end
-
-=begin
-  def test_get_mapping_keys
-    root_path = File.dirname __dir__
-    roche_input_file_path = File.join root_path,'test','resources','test_mappings.json'
-    byte_arr = JSON.parse(IO.read(roche_input_file_path))
-    puts byte_arr.keys.to_s
-    exit(1)
-  end
-=end
-
-=begin
   def test_assigns_tubes_for_pre_op_package
     p = Poller.new
 
@@ -101,8 +64,9 @@ class TestRubyAstm < Minitest::Test
 
     tests_hash = p.build_tests_hash(record)
 
-    assert_equal tests_hash.deep_symbolize_keys, {:"EDTA:edta1234"=>["WBC", "RBC", "HGB", "HCT", "MCV", "MCH", "MCHC", "PLT", "NEUT%", "LYMPH%", "MONO%", "EO%", "BASO%", "NEUT#", "LYMPH#", "MONO#", "EO#", "BASO#", "RDW-CV"], :"SERUM:serum1234"=>[], :"PLASMA:plasma1234"=>[], :"FLUORIDE:fluoride1234"=>["GLUR"], :"URINE_CONTAINER:urine1234"=>["GLU", "BIL", "KET", "SG", "BLO", "pH", "PRO", "URO", "NIT", "LEU", "COL", "CLA"]}.deep_symbolize_keys
+    assert_equal tests_hash.deep_symbolize_keys, {:"EDTA:edta1234"=>["WBC", "RBC", "HGB", "HCT", "MCV", "MCH", "MCHC", "PLT", "NEUT%", "LYMPH%", "MONO%", "EO%", "BASO%", "NEUT#", "LYMPH#", "MONO#", "EO#", "BASO#", "RDW-CV"], :"SERUM:serum1234"=>[], :"PLASMA:plasma1234"=>["5", "4"], :"FLUORIDE:fluoride1234"=>["GLUR"], :"URINE_CONTAINER:urine1234"=>["GLU", "BIL", "KET", "SG", "BLO", "pH", "PRO", "URO", "NIT", "LEU", "COL", "CLA"]}.deep_symbolize_keys
   end
+
 
   def test_assigns_tubes_for_lipid_profile
 
@@ -132,9 +96,10 @@ class TestRubyAstm < Minitest::Test
 
     tests_hash = p.build_tests_hash(record)
 
-    assert_equal tests_hash.deep_symbolize_keys, {"EDTA:edta1234":[],"SERUM:serum1234":["CHOL","TRIG","HDLC","LDL","VLDL"],"PLASMA:plasma1234":[],"FLUORIDE:fluoride1234":[],"URINE_CONTAINER:urine1234":[]}.deep_symbolize_keys
+    assert_equal tests_hash.deep_symbolize_keys, {"EDTA:edta1234":[],"SERUM:serum1234":["CHOL","TRIGO","HDLC","LDL","VLDL"],"PLASMA:plasma1234":[],"FLUORIDE:fluoride1234":[],"URINE_CONTAINER:urine1234":[]}.deep_symbolize_keys
 
   end
+
 
   def test_assigns_tubes_for_liver_function_tests
 
@@ -166,7 +131,7 @@ class TestRubyAstm < Minitest::Test
    
 
     assert_equal tests_hash.deep_symbolize_keys,
-{"EDTA:edta1234":[],"SERUM:serum1234":["ALB","GGT","BIDDY","CA","BITDY","INBILDY","ALPU","GOT","GPT"],"PLASMA:plasma1234":[],"FLUORIDE:fluoride1234":[],"URINE_CONTAINER:urine1234":[]}.deep_symbolize_keys
+{"EDTA:edta1234":[],"SERUM:serum1234":["ALB","GGTP","BIDDY","CAA","BITDY","INBDY","ALPE","GOT","GPT"],"PLASMA:plasma1234":[],"FLUORIDE:fluoride1234":[],"URINE_CONTAINER:urine1234":[]}.deep_symbolize_keys
 
   end
 
@@ -204,7 +169,6 @@ class TestRubyAstm < Minitest::Test
 
   end
 
-
   def test_assigns_tubes_for_full_body_package
 
     p = Poller.new
@@ -234,12 +198,11 @@ class TestRubyAstm < Minitest::Test
     tests_hash = p.build_tests_hash(record)
 
    
-    assert_equal tests_hash.deep_symbolize_keys,{:"EDTA:edta1234"=>["A1c", "WBC", "RBC", "HGB", "HCT", "MCV", "MCH", "MCHC", "PLT", "NEUT%", "LYMPH%", "MONO%", "EO%", "BASO%", "NEUT#", "LYMPH#", "MONO#", "EO#", "BASO#", "RDW-CV"], :"SERUM:serum1234"=>["CHOL", "TRIG", "HDLC", "LDL", "VLDL", "CREAT", "UREA", "BUNC", "ALB", "GGT", "BIDDY", "CA", "BITDY", "INBILDY", "ALPU", "GOT", "GPT", "HOMCY", "SIRON", "SUIBC", "STIBC", "UA", "PHOS", "MG", "SNATRIUM", "SPOTASSIUM", "SCHLORIDE", "11", "10", "9", "8", "7", "6", "3", "1"], :"PLASMA:plasma1234"=>["5", "4", "2"], :"FLUORIDE:fluoride1234"=>["GLUR", "GLUPP", "GLUF"], :"URINE_CONTAINER:urine1234"=>["GLU", "BIL", "KET", "SG", "BLO", "pH", "PRO", "URO", "NIT", "LEU", "COL", "CLA"]}.deep_symbolize_keys
+    assert_equal tests_hash.deep_symbolize_keys,{:"EDTA:edta1234"=>["A1c", "WBC", "RBC", "HGB", "HCT", "MCV", "MCH", "MCHC", "PLT", "NEUT%", "LYMPH%", "MONO%", "EO%", "BASO%", "NEUT#", "LYMPH#", "MONO#", "EO#", "BASO#", "RDW-CV"], :"SERUM:serum1234"=>["CHOL", "TRIGO", "HDLC", "LDL", "VLDL", "CREAT", "UREA", "BUNC", "ALB", "GGTP", "BIDDY", "CAA", "BITDY", "INBDY", "ALPE", "GOT", "GPT", "HOMCY", "SIRON", "SUIBC", "STIBC", "UA", "PHOS", "MG", "SNATRIUM", "SPOTASSIUM", "SCHLORIDE", "11", "10", "9", "8", "7", "6", "3", "1"], :"PLASMA:plasma1234"=>["2"], :"FLUORIDE:fluoride1234"=>["GLUR", "GLUPP", "GLUF"], :"URINE_CONTAINER:urine1234"=>["GLU", "BIL", "KET", "SG", "BLO", "pH", "PRO", "URO", "NIT", "LEU", "COL", "CLA"]}.deep_symbolize_keys
 
   end
-=end
 
-=begin
+
   def test_query_for_non_existent_sample
     $redis = Redis.new
     ethernet_connections = [{:server_ip => "127.0.0.1", :server_port => 3000}]
@@ -521,14 +484,5 @@ class TestRubyAstm < Minitest::Test
     ## it should be that this is still there in the patients.
     assert_equal 1, $redis.llen("patients")
   end 
-=end
-
-
-=begin
-  ## kindly note, the credentials specified herein are no longer active ;)
-  def test_initialized_google_lab_interface
-    goog = Google_Lab_Interface.new(nil,"/home/bhargav/Desktop/credentials.json","/home/bhargav/Desktop/token.yaml","MNWKZC-L05-ufApJTSqaLq42yotVzKYhk")    
-  end 
-=end
 
 end

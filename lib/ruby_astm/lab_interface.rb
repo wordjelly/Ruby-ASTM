@@ -11,33 +11,33 @@ module LabInterface
   EOT = "\x04"
   
 
-  mattr_accessor :ethernet_connections
-  mattr_accessor :serial_connections
+  attr_accessor :ethernet_connections
+  attr_accessor :serial_connections
 
-  mattr_accessor :ethernet_server
-  mattr_accessor :server_ip
-  mattr_accessor :server_port
-  mattr_accessor :serial_port
-  mattr_accessor :serial_baud
-  mattr_accessor :serial_parity
-  mattr_accessor :usb_port
-  mattr_accessor :usb_baud
-  mattr_accessor :usb_parity
-  mattr_accessor :mid_frame_end_detected
+  attr_accessor :ethernet_server
+  attr_accessor :server_ip
+  attr_accessor :server_port
+  attr_accessor :serial_port
+  attr_accessor :serial_baud
+  attr_accessor :serial_parity
+  attr_accessor :usb_port
+  attr_accessor :usb_baud
+  attr_accessor :usb_parity
+  attr_accessor :mid_frame_end_detected
 
   ## gather bytes to store for us to test.
-  mattr_accessor :test_data_bytes
+  attr_accessor :test_data_bytes
 
   ## just an array of byte arrays, cleared on calling process text
-  mattr_accessor :data_bytes
+  attr_accessor :data_bytes
 
 
-  mattr_accessor :headers
-  mattr_accessor :mapping
-  mattr_accessor :respond_to_queries
+  attr_accessor :headers
+  attr_accessor :mapping
+  attr_accessor :respond_to_queries
 
   ## buffer of incoming data.
-  mattr_accessor :data_buffer
+  attr_accessor :data_buffer
     
 
   ## returns the root directory of the gem.
