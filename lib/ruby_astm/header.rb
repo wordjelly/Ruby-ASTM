@@ -18,15 +18,13 @@ class Header
 		self.protocol = "ASTM"
 	end	
 
-	def initialize(args)
+	def initialize(args={})
 		self.patients = []
 		self.queries = []
 		self.response_sent = false
 		if line = args[:line]
 			set_machine_name(args)
 			set_protocol(args)
-		else
-			super
 		end
 	end
 

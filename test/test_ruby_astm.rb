@@ -7,21 +7,22 @@ class TestRubyAstm < Minitest::Test
 ## we want to send some data by the poller to the remote server, to check if it finds such a file and updates it.
 ## for this we create a remote file, and manually send the parameters
   
-  def test_electrolyte_regex
+  def test_siemens_electrolyte
+    $redis = Redis.new
+    #ethernet_connections = [{:server_ip => "127.0.0.1", :server_port => 3000}]
+    roche_serial_connection = {:port_address => '/dev/ttyS4', :baud_rate => 9600, :parity => 8}
+    server = SiemensAbgElectrolyteServer.new([],[])
     root_path = File.dirname __dir__
-    electrolyte_file_path = File.join root_path,'electrolytes_plain_text.txt'
-    j = IO.read(electrolyte_file_path)
-
-    j.scan(/pCO2\s+(?<pco>(\d+)(\.\d)*)(\^|v)?\s+mmHg/) do |k|
-      n = Regexp.last_match
-      puts ("CO2:" + n[:pco].to_s)
-    end
-
-    j.scan(/pO2\s+(?<po>(\d+)(\.\d)*)(\^|v)?\s+mmHg/) do |k|
-      n = Regexp.last_match
-      puts ("O2:" + n[:po].to_s)
-    end
-
+    electrolyte_input_file_path = File.join root_path,'electrolytes_plain_text.txt'
+    server.process_text_file(electrolyte_input_file_path)
+    puts server.headers[-1].to_json
+    assert_equal server.headers[-1].patients.size, 2
+    assert_equal server.headers[-1].patients[0].orders[0].results["po2"].value, "145.4"
+    assert_equal server.headers[-1].patients[0].orders[0].results["pco2"].value, "8.9"
+    assert_equal server.headers[-1].patients[0].orders[0].results["pH"].value, "7.973"
+    assert_equal server.headers[-1].patients[0].orders[0].results["Na"].value, "134"
+    assert_equal server.headers[-1].patients[0].orders[0].results["K"].value, "3.38"
+    assert_equal server.headers[-1].patients[0].orders[0].results["Cl"].value, "94"
   end
 
 =begin

@@ -17,7 +17,7 @@ class Patient
 		self.patient_id = args[:patient_id]
 	end
 
-	def initialize(args)
+	def initialize(args={})
 		set_sequence_number(args)
 		set_patient_id(args)
 		self.orders = []

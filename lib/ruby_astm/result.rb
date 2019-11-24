@@ -106,7 +106,7 @@ class Result
 	
 
 	## here will call mappings and check the result correlation
-	def initialize(args)
+	def initialize(args={})
 		set_name(args)
 		set_flags(args)
 		set_value(args)

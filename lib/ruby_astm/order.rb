@@ -73,7 +73,7 @@ class Order
 		self.action_code = args[:args]
 	end
 
-	def initialize(args)
+	def initialize(args={})
 		set_id(args)
 		set_priority(args)
 		set_sequence_number(args)

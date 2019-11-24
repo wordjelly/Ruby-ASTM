@@ -1,32 +1,86 @@
 class SiemensAbgElectrolyteServer < AstmServer
 
-	def get_po2
+	SIEMENS_ELECTROLYTE_END = [10,10,10,10]
+	ELECTROLYTE_START = [45, 45, 45, 32]
+	attr_accessor :current_text_segment
 
+	def get_po2
+		m = []
+		self.current_text_segment.scan(/pO2\s+(?<k>(\d+)(\.\d)*)(\^|v)?\s+mmHg/) do |l|
+	      n = Regexp.last_match
+	      m << n[:k].to_s
+	    end
+	    raise "more than one result #{m.to_s}" if (m.size > 1)
+	    return m[0] if m.size == 1
+	    return nil
 	end
 
 	def get_pco2
-
+		m = []
+		self.current_text_segment.scan(/pCO2\s+(?<k>(\d+)(\.\d)*)(\^|v)?\s+mmHg/) do |l|
+	      n = Regexp.last_match
+	      m << n[:k].to_s
+	    end
+	    raise "more than one result #{m.to_s}" if (m.size > 1)
+	    return m[0] if m.size == 1
+	    return nil
 	end
 
 	def get_ph
-
+		m = []
+		self.current_text_segment.scan(/pH\s+(?<k>(\d+)[\.\d]*)(\^|v)?\s+$/) do |l|
+	      n = Regexp.last_match
+	      m << n[:k].to_s
+	    end
+	    raise "more than one result #{m.to_s}" if (m.size > 1)
+	    return m[0] if m.size == 1
+	    return nil
 	end
 
 	def get_na
-
+		m = []
+		self.current_text_segment.scan(/Na\+\s+(?<k>(\d+)[\.\d]*)(\^|v)?\s+mmol\/L/) do |l|
+	      n = Regexp.last_match
+	      m << n[:k].to_s
+	    end
+	    raise "more than one result #{m.to_s}" if (m.size > 1)
+	    return m[0] if m.size == 1
+	    return nil
 	end
 
 	def get_k
-
+		m = []
+		self.current_text_segment.scan(/K\+\s+(?<k>(\d+)[\.\d]*)(\^|v)?\s+mmol\/L/) do |l|
+	      n = Regexp.last_match
+	      m << n[:k].to_s
+	    end
+	    raise "more than one result #{m.to_s}" if (m.size > 1)
+	    return m[0] if m.size == 1
+	    return nil
 	end
 
 	def get_cl
-
+		m = []
+		self.current_text_segment.scan(/Cl\-\s+(?<k>(\d+)[\.\d]*)(\^|v)?\s+mmol\/L/) do |l|
+	      n = Regexp.last_match
+	      m << n[:k].to_s
+	    end
+	    raise "more than one result #{m.to_s}" if (m.size > 1)
+	    return m[0] if m.size == 1
+	    return nil
 	end
 
-	def get_header
-
+	def get_patient_id
+		m = []
+		self.current_text_segment.scan(/Patient\s+ID\s+(?<k>\d+)$/) do |l|
+	      n = Regexp.last_match
+	      m << n[:k].to_s
+	    end
+	    raise "more than one result #{m.to_s}" if (m.size > 1)
+	    return m[0] if m.size == 1
+	    return nil
 	end
+
 	## we override the lab interface methods
 	## and we don't pollute the lab interface itself.
 	## as this is a custom analyzer.
@@ -52,56 +106,90 @@ class SiemensAbgElectrolyteServer < AstmServer
 	          concat+=x
 	        end
 	    end
-	    ## nwo write concat to file
-	    ## File.open("electrolytes_plain_text.txt", 'a+') { |file| file.write(concat) }
-	    ## Header
-	    ## Patient
-	    ## Order
-	    ## Result
-	    ## Terminator
-
-	    ## GET PO2
-	    concat.scan(/pCO2\s+(?<pco>(\d+)(\.\d)*)(\^|v)?\s+mmHg/) do |k|
-	      n = Regexp.last_match
-	      puts n[:pco].to_s
-	    end
-
-	    ## GET PCO2
-	    concat.scan(/pO2\s+(?<po>(\d+)(\.\d)*)(\^|v)?\s+mmHg/) do |k|
-	      n = Regexp.last_match
-	      puts n[:po].to_s
-	    end
-
-	    ## GET PH
-
-	    ## GET NA+
-
-	    ## GET K+
-
-	    ## GET CL-
-
-	    ## GET PATIENT_ID
-
-	    ## GET DATE AND TIME
-
-	    start_measure = false
 	    
-	    concat.split(/\n/).each do |line|
-	      if line =~ /348\-D718/
-	        header = Header.new({:line => line})
-	        self.headers ||= []
-	        self.headers << header
-	      elsif line =~ /\-{32}/
-	      elsif line =~ /Patient\s+ID/
-	      elsif line =~ /Measured/
-	      elsif line =~ /outside ref/
-	      else
-	      end
-	    end
+	    self.headers ||= [Header.new]
+	    concat.split("--------------------------------").each do |record|
 
-	    ## so we can do this.
+	    	self.current_text_segment = record
+	    	if patient_id = get_patient_id
+	    		self.headers[-1].patients ||= []
+	    		p = Patient.new
+	    		p.patient_id = patient_id
+	    		p.orders ||= []
+	    		o = Order.new
+	    		o.results ||= {}
+	    		if sodium = get_na
+	    			r = Result.new
+	    			r.name = "Na"
+	    			r.report_name = "Serum Electrolytes"
+	    			r.value = sodium
+	    			r.units = "mmol/L"
+	    			r.timestamp = Time.now.to_i
+	    			o.results["Na"] = r
+	    		end
+
+	    		if potassium = get_k
+	    			r = Result.new
+	    			r.name = "K"
+	    			r.report_name = "Serum Electrolytes"
+	    			r.value = potassium
+	    			r.units = "mmol/L"
+	    			r.timestamp = Time.now.to_i
+	    			o.results["K"] = r
+	    		end
+
+	    		if chloride = get_cl
+	    			r = Result.new
+	    			r.name = "Cl"
+	    			r.report_name = "Serum Electrolytes"
+	    			r.value = chloride
+	    			r.units = "mmol/L"
+	    			r.timestamp = Time.now.to_i
+	    			o.results["Cl"] = r
+	    		end
+	    		
+	    		if ph = get_ph
+	    			r = Result.new
+	    			r.name = "pH"
+	    			r.report_name = "Serum Electrolytes"
+	    			r.value = ph
+	    			r.units = "mmol/L"
+	    			r.timestamp = Time.now.to_i
+	    			o.results["pH"] = r
+	    		end
+	    		
+	    		if po2 = get_po2
+	    			r = Result.new
+	    			r.name = "po2"
+	    			r.report_name = "Serum Electrolytes"
+	    			r.value = po2
+	    			r.units = "mmHg"
+	    			r.timestamp = Time.now.to_i
+	    			o.results["po2"] = r
+	    		end
+	    		
+	    		if pco2 = get_pco2
+	    			r = Result.new
+	    			r.name = "pco2"
+	    			r.report_name = "Serum Electrolytes"
+	    			r.value = pco2
+	    			r.units = "mmHg"
+	    			r.timestamp = Time.now.to_i
+	    			o.results["pco2"] = r
+	    		end
+	    		
+	    		p.orders << o
+	    		self.headers[-1].patients << p
+	    	end
+	    end
 
 	end
+
+	def process_text_file(full_file_path)
+		k = IO.read(full_file_path)
+		process_electrolytes(k.bytes)
+	end
+
 
 	def receive_data(data)
       

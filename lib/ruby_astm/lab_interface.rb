@@ -9,9 +9,7 @@ module LabInterface
   CR = "\x13"
   ETX = "\x03"
   EOT = "\x04"
-  SIEMENS_ELECTROLYTE_END = [10,10,10,10]
-  ELECTROLYTE_START = [45, 45, 45, 32]
-
+  
 
   mattr_accessor :ethernet_connections
   mattr_accessor :serial_connections
