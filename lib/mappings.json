@@ -529,6 +529,23 @@
 		"REPORT_NAME" : "kidney_function_tests",
 		"PACKAGE_COMPONENTS" : ["CRE", "UREA", "BUN"],
         "TYPE" : "BIOCHEM"	
+	},
+	"SPT" : {
+		"LIS_CODE" : "SPT",
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "PTAPTT",
+        "TYPE" : "BIOCHEM-EXL"	
+	},
+	"SAPTT" : {
+		"LIS_CODE" : "SAPTT",
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "PTAPTT",
+        "TYPE" : "BIOCHEM-EXL"	
+	},
+	"SINR" : {
+		"LIS_CODE" : "SINR",
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "PTAPTT",
+        "TYPE" : "BIOCHEM-EXL"	
 	}
-
 }

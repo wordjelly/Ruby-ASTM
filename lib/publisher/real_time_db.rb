@@ -100,7 +100,14 @@ class RealTimeDb
 	## if the barcode exists,
 	## otherwise create it.
 	def barcode_exists?(barcode)
-		self.connection.get(ENDPOINT, :orderBy => 'barcode', :equalTo => barcode)
+		begin
+			self.connection.get(ENDPOINT, :orderBy => 'barcode', :equalTo => barcode)
+		rescue
+			## reestablish the connection
+			self.connection = RestFirebase.new :site => SITE_URL,
+                     :secret => SECRET, :auth =>generate_access_token
+			true
+		end
 	end
 
 	## idea is simple
