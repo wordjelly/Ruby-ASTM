@@ -159,7 +159,7 @@ module SiemensAbgElectrolyteModule
 	    		if ph = get_ph
 	    			r = Result.new
 	    			r.name = "pH"
-	    			r.report_name = "Serum Electrolytes"
+	    			r.report_name = "ABG"
 	    			r.value = ph
 	    			r.units = "mmol/L"
 	    			r.timestamp = Time.now.to_i
@@ -169,7 +169,7 @@ module SiemensAbgElectrolyteModule
 	    		if po2 = get_po2
 	    			r = Result.new
 	    			r.name = "po2"
-	    			r.report_name = "Serum Electrolytes"
+	    			r.report_name = "ABG"
 	    			r.value = po2
 	    			r.units = "mmHg"
 	    			r.timestamp = Time.now.to_i
@@ -179,7 +179,7 @@ module SiemensAbgElectrolyteModule
 	    		if pco2 = get_pco2
 	    			r = Result.new
 	    			r.name = "pco2"
-	    			r.report_name = "Serum Electrolytes"
+	    			r.report_name = "ABG"
 	    			r.value = pco2
 	    			r.units = "mmHg"
 	    			r.timestamp = Time.now.to_i

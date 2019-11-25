@@ -235,9 +235,12 @@ class Poller
 	      tests.keys.each do |tube_barcode|
 	      	## in this hash we want the key to be only the specimen id.
 	      	## and not prefixed by the tube type like FLUORIDE etc.
+	      	## i don't want the individual tests,
+	      	## i want the report name.
+	      	## prefixed to it.
 	      	tube_barcode.scan(/:(?<barcode>.*)$/) { |barcode|  
 	      		$redis.hset REQUISITIONS_HASH, barcode, JSON.generate(tests[tube_barcode])
-	      		$real_time_db.assign_test(barcode,tests[tube_barcode],$mappings)
+	      		$real_time_db.assign_test(barcode,tests[tube_barcode],$mappings) unless $real_time_db.blank?
 	      	}
 	      end  
 	    end
