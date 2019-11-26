@@ -59,6 +59,9 @@ class Google_Lab_Interface < Poller
     AstmServer.log("Initialized Google Lab Interface")
     $service = Google::Apis::ScriptV1::ScriptService.new
     $service.client_options.application_name = APPLICATION_NAME
+    $service.client_options.send_timeout_sec = 1200
+    $service.client_options.open_timeout_sec = 1200
+    $service.request_options.retries = 3
     $service.authorization = authorize
   end
 
@@ -74,12 +77,16 @@ class Google_Lab_Interface < Poller
       :input => JSON.generate([epoch])
     }
 
+
+
     request = Google::Apis::ScriptV1::ExecutionRequest.new(
       function: 'get_latest_test_information',
       parameters: pp
     )
 
-    begin 
+    puts "params are: #{pp}"
+
+    #begin 
       resp = $service.run_script(self.script_id, request)
       if resp.error
         AstmServer.log("Response Error polling LIS for requisitions: #{resp.error.message}: #{resp.error.code}")
@@ -87,13 +94,13 @@ class Google_Lab_Interface < Poller
         process_LIS_response(resp.response["result"])
         AstmServer.log("Successfully polled lis for requisitions: #{resp.response}")
       end
-    rescue => e
-      AstmServer.log("Rescue Error polling LIS for requisitions: #{e.to_s}")
-      AstmServer.log("Error backtrace")
-      AstmServer.log(e.backtrace.to_s)
-    ensure
+    #rescue => e
+      #AstmServer.log("Rescue Error polling LIS for requisitions: #{e.to_s}")
+      #AstmServer.log("Error backtrace")
+      #AstmServer.log(e.backtrace.to_s)
+    #ensure
       
-    end
+    #end
 
   end
 

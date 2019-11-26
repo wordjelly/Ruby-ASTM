@@ -253,7 +253,24 @@ class Poller
 	def get_checkpoint
 		latest_two_entries = $redis.zrange Poller::REQUISITIONS_SORTED_SET, -2, -1, {withscores: true}
 		unless latest_two_entries.blank?
-    		latest_two_entries[-1][1].to_i
+    		last_entry = latest_two_entries[-1][1].to_i
+    		#one_year_back = Time.now - 1.year
+    		#one_year_back = one_year_back.to_i
+    		#time_now = Time.now.to_i
+    		#puts "diff is: #{time_now*1000 - one_year_back*1000}"
+    		#puts "one year back is "
+    		#puts "last entry is: #{last_entry}"
+    		#puts "last entry - Time.now is :#{Time.now.to_i*1000 - last_entry}"
+    		#puts "default checkpoint is :#{default_checkpoint}"
+    		#last_entry
+    		#default_checkpoint
+    		if (((Time.now.to_i)*1000) - last_entry) >= 86400*1000
+    			puts "diff is too great"
+    			default_checkpoint
+    		else
+    			puts "taking the last entry"
+    			last_entry
+    		end 
     	else
     		default_checkpoint
 		end
