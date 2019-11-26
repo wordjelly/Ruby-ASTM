@@ -12,7 +12,7 @@ class Result
 		if line = args[:line]
 
 			unless line.fields[2].blank?
-				line.fields[2].scan(/\^+(?<name>[A-Za-z0-9\%\#\-\_\?\/]+)\^?(?<dilution>\d+)?/) { |name,dilution|  
+				line.fields[2].scan(/^\^+(?<name>[A-Za-z0-9\%\#\-\_\?\/]+)\^?(?<dilution>\d+)?/) { |name,dilution|  
 					
 					self.name = lookup_mapping(name)
 					

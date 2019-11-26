@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.license       = 'MIT'
   s.add_dependency 'eventmachine'
   s.add_dependency 'em-rubyserial'
-  s.add_dependency 'activesupport','5.2.3'
+  s.add_dependency 'activesupport','5.2.2'
   s.add_dependency 'json'
   s.add_dependency 'redis'
   s.add_dependency 'typhoeus'
@@ -19,5 +19,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'rufus-scheduler', '3.5.2'
   s.add_dependency "rest-firebase"
   s.add_dependency "jwt"
+  s.add_dependency "rake"
 end
 

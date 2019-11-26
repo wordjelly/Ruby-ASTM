@@ -6,7 +6,7 @@ class TestRubyAstm < Minitest::Test
 
 ## we want to send some data by the poller to the remote server, to check if it finds such a file and updates it.
 ## for this we create a remote file, and manually send the parameters
-=begin
+
   def test_siemens_electrolyte
     $redis = Redis.new
     #ethernet_connections = [{:server_ip => "127.0.0.1", :server_port => 3000}]
@@ -483,5 +483,5 @@ class TestRubyAstm < Minitest::Test
     ## it should be that this is still there in the patients.
     assert_equal 1, $redis.llen("patients")
   end 
-=end
+
 end

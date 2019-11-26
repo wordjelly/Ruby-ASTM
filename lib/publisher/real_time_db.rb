@@ -21,6 +21,7 @@ class RealTimeDb
 	attr_accessor :connection
 	attr_accessor :work_allotment_hash
 	attr_accessor :private_key_hash
+	attr_accessor :expires_at
 
 	WORK_TYPES = {
 		"IMMUNO" => "",
@@ -39,6 +40,7 @@ class RealTimeDb
 		$service_account_email = self.private_key_hash["client_email"]
 		$private_key = OpenSSL::PKey::RSA.new self.private_key_hash["private_key"]
 		  now_seconds = Time.now.to_i
+		  self.expires_at = now_seconds + (60*30)
 		  payload = {:iss => $service_account_email,
 		             :sub => $service_account_email,
 		             :aud => self.private_key_hash["token_uri"],
@@ -100,14 +102,12 @@ class RealTimeDb
 	## if the barcode exists,
 	## otherwise create it.
 	def barcode_exists?(barcode)
-		begin
-			self.connection.get(ENDPOINT, :orderBy => 'barcode', :equalTo => barcode)
-		rescue
-			## reestablish the connection
+		current_time = Time.now.to_i
+		if current_time > self.expires_at
 			self.connection = RestFirebase.new :site => SITE_URL,
                      :secret => SECRET, :auth =>generate_access_token
-			true
 		end
+			self.connection.get(ENDPOINT, :orderBy => 'barcode', :equalTo => barcode)
 	end
 
 	## idea is simple
