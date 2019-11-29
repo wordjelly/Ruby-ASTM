@@ -2,6 +2,7 @@
 	"_comment" : "key -> code sent by analyzer, eg sysmex sends WBC count under the code 'WBC'. value -> object. Object structure: 'LIS_CODE': in the google lab interface, this code is present in two places on google drive. one) in the name of the file, two) inside the file, where the test result value should be added. For eg in the hemogram report, TLCparam, is present in the name of the file, as well as inside the file, so the google script will update it with the relevant value. 'TUBE' stands for the type of tube in which this test has to be performed. This should match the constants in the Google Lab Interface.rb file. Now there is another problem that we have to deal with here. When going bidirectional, in some machines like Roche Cobas e411, the test codes come in as numbers, and not letters, so the keys here in this file are numbers, for those tests. Because Roche is a bitch basically.",
 	"A1c" : {
         "LIS_CODE" : "HBA1C",
+        "TUBE" : "EDTA",
         "REPORT_NAME" : "Glycosylated Hemoglobin",
         "TYPE" : "HEMAT"
     },
@@ -479,6 +480,18 @@
 		"REPORT_NAME" : "Urine Routine",
         "TYPE" : "URINE"
 	},
+	"UCRE" : {
+		"LIS_CODE" : "UCRE",
+		"TUBE" : "URINE_CONTAINER",
+		"REPORT_NAME" : "Urine Routine",
+        "TYPE" : "URINE"
+	},
+	"UALB" : {
+		"LIS_CODE" : "UALB",
+		"TUBE" : "URINE_CONTAINER",
+		"REPORT_NAME" : "Urine Routine",
+        "TYPE" : "URINE"
+	},
 	"UA" : {
 		"LIS_CODE" : "SURIC",
 		"TUBE" : "SERUM",
@@ -501,13 +514,13 @@
 		"LIS_CODE" : "full_body_package",
 		"TUBE" : "",
 		"REPORT_NAME" : "full body package",
-		"PACKAGE_COMPONENTS" : ["HBA1C", "TLCparam", "RBCparam", "HBparam", "HCTparam", "MCVparam", "MCHparam", "MCHCparam", "PCparam", "Nparam", "Lparam", "Mparam", "Eparam", "BASOparam", "ANCparam", "ALCparam", "AMCparam", "AECparam", "ABCparam", "RDWCVparam", "GLUR", "GLUPP", "GLUF", "CHOL", "TRIG", "HDLC", "LDL", "VLDLC", "CRE", "UREA", "BUN", "ALB", "GGT", "BID", "CA", "BIT", "BII", "ALPU", "GOTHL", "GPTHL", "HOMCY", "SIRON", "SUIBC", "STIBC", "SURIC", "SPHOS", "SMAG", "SNATRIUM", "SPOTASSIUM", "SCHLORIDE", "SIGE", "SPSA", "SFER", "TSH", "T4", "T3", "VITD", "HCV", "B12", "ESR", "GLU", "BIL", "KET", "SG", "BLO", "pH", "PRO", "URO", "NIT", "LEU", "COL", "CLA"]
+		"PACKAGE_COMPONENTS" : ["HBA1C", "TLCparam", "RBCparam", "HBparam", "HCTparam", "MCVparam", "MCHparam", "MCHCparam", "PCparam", "Nparam", "Lparam", "Mparam", "Eparam", "BASOparam", "ANCparam", "ALCparam", "AMCparam", "AECparam", "ABCparam", "RDWCVparam", "GLUR", "GLUPP", "GLUF", "CHOL", "TRIG", "HDLC", "LDL", "VLDLC", "CRE", "UREA", "BUN", "ALB", "GGT", "BID", "CA", "BIT", "BII", "ALPU", "GOTHL", "GPTHL", "HOMCY", "SIRON", "SUIBC", "STIBC", "SURIC", "SPHOS", "SMAG", "SNATRIUM", "SPOTASSIUM", "SCHLORIDE", "SIGE", "SPSA", "SFER", "TSH", "T4", "T3", "VITD", "HCV", "B12", "ESR", "GLU", "BIL", "KET", "SG", "BLO", "pH", "PRO", "URO", "NIT", "LEU", "COL", "CLA","UCRE","UALB"]
 	},
 	"PRE_OP_PACKAGE" : {
 		"LIS_CODE" : "pre_op_package",
 		"TUBE" : "",
 		"REPORT_NAME" : "pre_op_package",
-		"PACKAGE_COMPONENTS" : ["TLCparam", "RBCparam", "HBparam", "HCTparam", "MCVparam", "MCHparam", "MCHCparam", "PCparam", "Nparam", "Lparam", "Mparam", "Eparam", "BASOparam", "ANCparam", "ALCparam", "AMCparam", "AECparam", "ABCparam", "RDWCVparam", "GLUR","ESR", "GLU", "BIL", "KET", "SG", "BLO", "pH", "PRO", "URO", "NIT", "LEU", "COL", "CLA", "HIV", "HBS"]
+		"PACKAGE_COMPONENTS" : ["TLCparam", "RBCparam", "HBparam", "HCTparam", "MCVparam", "MCHparam", "MCHCparam", "PCparam", "Nparam", "Lparam", "Mparam", "Eparam", "BASOparam", "ANCparam", "ALCparam", "AMCparam", "AECparam", "ABCparam", "RDWCVparam", "GLUR","ESR", "GLU", "BIL", "KET", "SG", "BLO", "pH", "PRO", "URO", "NIT", "LEU", "COL", "CLA", "HIV", "HBS","UCRE","UALB"]
 	},
 	"LIPID_PROFILE" : {
 		"LIS_CODE" : "lipid_profile",

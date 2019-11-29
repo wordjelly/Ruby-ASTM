@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    ruby_astm (1.4.9)
+    ruby_astm (1.5.0)
       activesupport (= 5.2.2)
       em-rubyserial
       eventmachine
@@ -35,7 +35,7 @@ GEM
     ethon (0.12.0)
       ffi (>= 1.3.0)
     eventmachine (1.2.7)
-    faraday (0.17.0)
+    faraday (0.17.1)
       multipart-post (>= 1.2, < 3)
     ffi (1.11.3)
     fugit (1.3.3)
@@ -112,4 +112,4 @@ DEPENDENCIES
   ruby_astm!
 
 BUNDLED WITH
-   1.16.6
+   2.0.2

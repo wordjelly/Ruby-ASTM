@@ -107,7 +107,26 @@ class Poller
 
   	end	
 
+  	def assign_tube(component_machine_code,tests_hash,tube_type)
+  		tube_key = nil
+        unless tests_hash.keys.select{|c| c=~/#{tube_type}/ }.blank?
+        	tube_key = tests_hash.keys.select{|c| c=~/#{tube_type}/ }[0] 
+        	tests_hash[tube_key] << component_machine_code 
+        end
+  	end
+
   	## first we have to test the packages.
+
+  	def determine_tube(component_machine_code,tests_hash)
+  		res = $mappings[component_machine_code]["TUBE"]
+        if res.is_a? Array
+        	res.each do |tube|
+        		assign_tube(component_machine_code,tests_hash,tube)
+        	end
+        elsif res.is_a? String
+       		assign_tube(component_machine_code,tests_hash,res)	
+        end
+  	end
 
   	def build_tests_hash(record)
   		#puts "Record is ---------------------------------------------"
@@ -190,17 +209,21 @@ class Poller
 	        		## for eg plasma tube can do all the tests
 	        		## so can serum
 	        		## but we use the plasma tube only for some.
-
+=begin
 	        		tube = $mappings[component_machine_code]["TUBE"]
 			        tube_key = nil
 			        unless tests_hash.keys.select{|c| c=~/#{tube}/ }.blank?
 			        	tube_key = tests_hash.keys.select{|c| c=~/#{tube}/ }[0] 
 			        	tests_hash[tube_key] << component_machine_code 
 			        end   
+=end
+					determine_tube(component_machine_code,tests_hash)
+
 	        	end
 
 	        else
 	        	## here also it is the same problem.
+	        	## this can be sorted out by using the array of the tube.
 	        	tube = $mappings[machine_code]["TUBE"]
 		        tube_key = nil
 		        unless tests_hash.keys.select{|c| c=~/#{tube}/ }.blank?

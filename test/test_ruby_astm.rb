@@ -76,7 +76,7 @@ class TestRubyAstm < Minitest::Test
 
     tests_hash = p.build_tests_hash(record)
 
-    assert_equal tests_hash.deep_symbolize_keys, {:"EDTA:edta1234"=>["WBC", "RBC", "HGB", "HCT", "MCV", "MCH", "MCHC", "PLT", "NEUT%", "LYMPH%", "MONO%", "EO%", "BASO%", "NEUT#", "LYMPH#", "MONO#", "EO#", "BASO#", "RDW-CV"], :"SERUM:serum1234"=>[], :"PLASMA:plasma1234"=>["5", "4"], :"FLUORIDE:fluoride1234"=>["GLUR"], :"URINE_CONTAINER:urine1234"=>["GLU", "BIL", "KET", "SG", "BLO", "pH", "PRO", "URO", "NIT", "LEU", "COL", "CLA"]}.deep_symbolize_keys
+    assert_equal tests_hash.deep_symbolize_keys, {:"EDTA:edta1234"=>["WBC", "RBC", "HGB", "HCT", "MCV", "MCH", "MCHC", "PLT", "NEUT%", "LYMPH%", "MONO%", "EO%", "BASO%", "NEUT#", "LYMPH#", "MONO#", "EO#", "BASO#", "RDW-CV"], :"SERUM:serum1234"=>[], :"PLASMA:plasma1234"=>["5", "4"], :"FLUORIDE:fluoride1234"=>["GLUR"], :"URINE_CONTAINER:urine1234"=>["GLU", "BIL", "KET", "SG", "BLO", "pH", "PRO", "URO", "NIT", "LEU", "COL", "CLA","UCRE","UALB"]}.deep_symbolize_keys
   end
 
 
@@ -210,7 +210,7 @@ class TestRubyAstm < Minitest::Test
     tests_hash = p.build_tests_hash(record)
 
    
-    assert_equal tests_hash.deep_symbolize_keys,{:"EDTA:edta1234"=>["A1c", "WBC", "RBC", "HGB", "HCT", "MCV", "MCH", "MCHC", "PLT", "NEUT%", "LYMPH%", "MONO%", "EO%", "BASO%", "NEUT#", "LYMPH#", "MONO#", "EO#", "BASO#", "RDW-CV"], :"SERUM:serum1234"=>["CHOL", "TRIGO", "HDLC", "LDL", "VLDL", "CREAT", "UREA", "BUNC", "ALB", "GGTP", "BIDDY", "CAA", "BITDY", "INBDY", "ALPE", "GOT", "GPT", "HOMCY", "SIRON", "SUIBC", "STIBC", "UA", "PHOS", "MG", "SNATRIUM", "SPOTASSIUM", "SCHLORIDE", "11", "10", "9", "8", "7", "6", "3", "1"], :"PLASMA:plasma1234"=>["2"], :"FLUORIDE:fluoride1234"=>["GLUR", "GLUPP", "GLUF"], :"URINE_CONTAINER:urine1234"=>["GLU", "BIL", "KET", "SG", "BLO", "pH", "PRO", "URO", "NIT", "LEU", "COL", "CLA"]}.deep_symbolize_keys
+    assert_equal tests_hash.deep_symbolize_keys,{:"EDTA:edta1234"=>["A1c", "WBC", "RBC", "HGB", "HCT", "MCV", "MCH", "MCHC", "PLT", "NEUT%", "LYMPH%", "MONO%", "EO%", "BASO%", "NEUT#", "LYMPH#", "MONO#", "EO#", "BASO#", "RDW-CV"], :"SERUM:serum1234"=>["CHOL", "TRIGO", "HDLC", "LDL", "VLDL", "CREAT", "UREA", "BUNC", "ALB", "GGTP", "BIDDY", "CAA", "BITDY", "INBDY", "ALPE", "GOT", "GPT", "HOMCY", "SIRON", "SUIBC", "STIBC", "UA", "PHOS", "MG", "SNATRIUM", "SPOTASSIUM", "SCHLORIDE", "11", "10", "9", "8", "7", "6", "3", "1"], :"PLASMA:plasma1234"=>["2"], :"FLUORIDE:fluoride1234"=>["GLUR", "GLUPP", "GLUF"], :"URINE_CONTAINER:urine1234"=>["GLU", "BIL", "KET", "SG", "BLO", "pH", "PRO", "URO", "NIT", "LEU", "COL", "CLA","UCRE","UALB"]}.deep_symbolize_keys
 
   end
 
