@@ -78,6 +78,17 @@ module LabInterface
       File.dirname __dir__
   end
 
+
+  def process_byte_file(full_file_path)
+    bytes = eval(IO.read(full_file_path))
+    bytes = bytes.flatten
+    text = pre_process_bytes(bytes,"")
+    text.each_line do |line|
+      line.split('\\r').each do |txt| 
+        process_text(txt)
+      end
+    end
+  end
   ## can process a file which contains ASTM output.
   ## this method is added so that you can load previously generated ASTM output into your database
   ## it also simplifies testing.
@@ -209,76 +220,7 @@ module LabInterface
 
   end
 
-  ## @param[Array] : 
-  ## [[bytes],[bytes]....]
-  def process_electrolytes(data_bytes)
-    #puts "came to process electrolytes_plain_text"
-    byte_arr = data_bytes.flatten
-    #puts "the end part of the arr is"
-    return if byte_arr[-4..-1] != SIEMENS_ELECTROLYTE_END
-    self.data_bytes = []
-    concat = ""
-    byte_arr.each do |byte|
-        x = [byte].pack('c*').force_encoding('UTF-8')
-        if x == "\r"
-          concat+="\n"
-        elsif x == "\n"
-          #puts "new line found --- "
-          concat+=x
-          #puts "last thing in concat."
-          #puts concat[-1].to_s
-        else
-          concat+=x
-        end
-    end
-    ## nwo write concat to file
-    ## File.open("electrolytes_plain_text.txt", 'a+') { |file| file.write(concat) }
-    ## Header
-    ## Patient
-    ## Order
-    ## Result
-    ## Terminator
-
-    ## GET PO2
-    concat.scan(/pCO2\s+(?<pco>(\d+)(\.\d)*)(\^|v)?\s+mmHg/) do |k|
-      n = Regexp.last_match
-      puts n[:pco].to_s
-    end
-
-    ## GET PCO2
-    concat.scan(/pO2\s+(?<po>(\d+)(\.\d)*)(\^|v)?\s+mmHg/) do |k|
-      n = Regexp.last_match
-      puts n[:po].to_s
-    end
-
-    ## GET PH
-
-    ## GET NA+
-
-    ## GET K+
-
-    ## GET CL-
-
-    ## GET PATIENT_ID
-
-    ## GET DATE AND TIME
-
-    start_measure = false
-    
-    concat.split(/\n/).each do |line|
-      if line =~ /348\-D718/
-        header = Header.new({:line => line})
-        self.headers ||= []
-        self.headers << header
-      elsif line =~ /\-{32}/
-      elsif line =~ /Patient\s+ID/
-      elsif line =~ /Measured/
-      elsif line =~ /outside ref/
-      else
-      end
-    end
-
-  end
+  
 
 	def receive_data(data)
       
@@ -306,9 +248,9 @@ module LabInterface
     
       concat = pre_process_bytes(byte_arr,concat)
  
-      puts "concat is:"
+      #puts "concat is:"
       
-      puts concat.to_s
+      #puts concat.to_s
       
       self.data_buffer << concat
 
@@ -324,10 +266,10 @@ module LabInterface
       if data.bytes.to_a[-1] == 4
         puts "GOT EOT --- PROCESSING BUFFER, AND CLEARING."
         process_text(self.data_buffer)
-        #root_path = File.dirname __dir
+        #root_path = File.dirname __dir__
         #puts "root path #{root_path}"
-        #IO.write((File.join root_path,'test','resources','roche_multi_frame_bytes.txt'),self.test_data_bytes.to_s)
-        #puts self.test_data_bytes.flatten.to_s
+        #IO.write((File.join root_path,'../test','resources','stago.txt'),self.test_data_bytes.to_s)
+        puts self.test_data_bytes.flatten.to_s
         self.data_buffer = ''
         unless self.headers.blank?
           if self.headers[-1].queries.blank?
@@ -413,7 +355,7 @@ module LabInterface
       puts "text is:"
       puts text
       text.split("\n").each do |l|
-        puts "doing line:#{l}" 
+        #puts "doing line:#{l}" 
 		    line = Line.new({:text => l})
         process_type(line)
       end
@@ -443,18 +385,18 @@ module LabInterface
           self.headers[-1].patients[-1].orders << hl7_order
         end
       when "Header"
-        puts "got header"
+        #puts "got header"
         header = Header.new({:line => line})
         self.headers ||= []
         self.headers << header
       when "Query"
-        puts "got query"
+        #puts "got query"
         query = Query.new({:line => line})
         unless self.headers.blank?
           self.headers[-1].queries << query
         end
       when "Patient"
-        puts "got patient."
+        #puts "got patient."
         patient = Patient.new({:line => line})
         unless self.headers.blank?
           self.headers[-1].patients << patient
@@ -467,7 +409,10 @@ module LabInterface
           end
         end
       when "Result"
+        #puts "GOT RESULT------------------>"
+        #puts "line is :#{line}"
         result = Result.new({:line => line})
+        #puts "made new result"
         unless self.headers.blank?
           unless self.headers[-1].patients.blank?
             unless self.headers[-1].patients[-1].orders[-1].blank?
@@ -478,7 +423,7 @@ module LabInterface
       when "Terminator"
         ## it didn't terminate so there was no commit being called.
         unless self.headers.blank?
-          puts "got terminator."
+          #puts "got terminator."
           self.headers[-1].commit
         end
       end

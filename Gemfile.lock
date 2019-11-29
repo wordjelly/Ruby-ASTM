@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    ruby_astm (1.4.5)
+    ruby_astm (1.4.9)
       activesupport (= 5.2.2)
       em-rubyserial
       eventmachine

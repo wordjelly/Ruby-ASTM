@@ -74,6 +74,7 @@ class Order
 	end
 
 	def initialize(args={})
+		puts "------------ INITIALIZING ORDER -------------- "
 		set_id(args)
 		set_priority(args)
 		set_sequence_number(args)

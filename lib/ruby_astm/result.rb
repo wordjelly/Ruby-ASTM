@@ -9,9 +9,12 @@ class Result
 	attr_accessor :dilution
 
 	def set_name(args)
+		puts "came to set name"
 		if line = args[:line]
-
+			puts "line fields is: #{line.fields}"
 			unless line.fields[2].blank?
+				puts "line fields 2 is:"
+				puts line.fields[2]
 				line.fields[2].scan(/^\^+(?<name>[A-Za-z0-9\%\#\-\_\?\/]+)\^?(?<dilution>\d+)?/) { |name,dilution|  
 					
 					self.name = lookup_mapping(name)
@@ -47,6 +50,9 @@ class Result
 				}
 			end
 			unless line.fields[2].blank?
+				puts "line fields 2 is:"
+				puts line.fields[2]
+				puts "----------------------------"
 				line.fields[2].scan(/\^+(?<name>[A-Za-z0-9\%\#\-\_\?\/]+)\^?(?<dilution>\d+)?/) { |name,dilution|  
 					if transform_expression = lookup_transform(name)
 						self.value = eval(transform_expression)
@@ -107,6 +113,7 @@ class Result
 
 	## here will call mappings and check the result correlation
 	def initialize(args={})
+		#puts "called initialize result"
 		set_name(args)
 		set_flags(args)
 		set_value(args)

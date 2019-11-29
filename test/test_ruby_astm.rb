@@ -6,6 +6,19 @@ class TestRubyAstm < Minitest::Test
 
 ## we want to send some data by the poller to the remote server, to check if it finds such a file and updates it.
 ## for this we create a remote file, and manually send the parameters
+  def test_stago
+    ethernet_connections = [{:server_ip => "127.0.0.1", :server_port => 3000}]
+    server = AstmServer.new(ethernet_connections,[])
+    #$redis.del("patients")
+    root_path = File.dirname __dir__
+    input_file_path = File.join root_path,'test','resources','stago.txt'
+    server.process_byte_file(input_file_path)
+    #assert_equal 1, $redis.llen("patients")
+    #patient = JSON.parse($redis.lrange("patients",0,0)[0])
+    #assert_equal "pragya", patient["@orders"][0]["id"]
+    #assert_equal "0.325", patient["@orders"][0]["results"]["HIV"]["value"]
+    #assert_equal "0.318", patient["@orders"][0]["results"]["HBS"]["value"]
+  end
 
   def test_siemens_electrolyte
     $redis = Redis.new
@@ -423,18 +436,20 @@ class TestRubyAstm < Minitest::Test
     poller = Poller.new
     $redis.del Poller::REQUISITIONS_SORTED_SET
     $redis.del Poller::REQUISITIONS_HASH
-    ## here the only issue is that it is dependent, so we cannot test this like this. 
+    ## here the only issue is that it is dependent, so we cannot test this like this. \
+    first_inst = Time.now.to_i*1000
+    second_inst = first_inst + 1
     lis_response = {
-      "1543490233000" => [
+      first_inst.to_s => [
         [nil, nil, nil, nil, nil, nil, nil, "HIV,HBS,ESR,GLUPP", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, "Lavender:barcode", "Serum:barcode", "Plasma:barcode", "Fluoride:barcode", "Urine:barcode", "ESR:barcode"]
       ],
-      "1543490233001" => [
+      second_inst.to_s => [
         [nil, nil, nil, nil, nil, nil, nil, "HIV,HBS,ESR,GLUPP", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, "Lavender:barcode", "Serum:barcode", "Plasma:barcode", "Fluoride:barcode", "Urine:barcode", "ESR:barcode"]
       ]
     }
     poller.process_LIS_response(JSON.generate(lis_response))
     checkpoint = poller.get_checkpoint
-    assert_equal checkpoint, 1543490233001
+    assert_equal second_inst.to_s,checkpoint.to_s
   end
 
   def test_query_uses_requisitions_hash_to_generate_response
@@ -483,5 +498,6 @@ class TestRubyAstm < Minitest::Test
     ## it should be that this is still there in the patients.
     assert_equal 1, $redis.llen("patients")
   end 
+
 
 end

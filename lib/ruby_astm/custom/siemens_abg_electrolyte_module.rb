@@ -9,6 +9,8 @@ module SiemensAbgElectrolyteModule
 
 	SIEMENS_ELECTROLYTE_END = [10,10,10,10]
 	ELECTROLYTE_START = [45, 45, 45, 32]
+	SIEMENS_ELEC_ABG_RESULTS_HASH = "SIEMENS_ELEC_ABG_RESULTS_HASH"
+
 	attr_accessor :current_text_segment
 
 	def get_po2
@@ -88,6 +90,19 @@ module SiemensAbgElectrolyteModule
 	    return nil
 	end
 
+	## @param[String] barcode : the barcode
+	## @param[Result] result  : result_object
+	def add_result?(barcode,result)
+		return true if $redis.hget(SIEMENS_ELEC_ABG_RESULTS_HASH,barcode).blank?
+		existing_results = JSON.parse($redis.hget(SIEMENS_ELEC_ABG_RESULTS_HASH,barcode))
+		if existing_results[result.name].blank?
+			return true
+		elsif existing_results[result.name] != result.value
+			return true
+		end
+		false
+	end
+
 	## we override the lab interface methods
 	## and we don't pollute the lab interface itself.
 	## as this is a custom analyzer.
@@ -133,7 +148,7 @@ module SiemensAbgElectrolyteModule
 	    			r.value = sodium
 	    			r.units = "mmol/L"
 	    			r.timestamp = Time.now.to_i
-	    			o.results["SNATRIUM"] = r
+	    			o.results["SNATRIUM"] = r if add_result?(patient_id,r)
 	    		end
 
 	    		if potassium = get_k
@@ -143,7 +158,7 @@ module SiemensAbgElectrolyteModule
 	    			r.value = potassium
 	    			r.units = "mmol/L"
 	    			r.timestamp = Time.now.to_i
-	    			o.results["SPOTASSIUM"] = r
+	    			o.results["SPOTASSIUM"] = r if add_result?(patient_id,r)
 	    		end
 
 	    		if chloride = get_cl
@@ -153,7 +168,7 @@ module SiemensAbgElectrolyteModule
 	    			r.value = chloride
 	    			r.units = "mmol/L"
 	    			r.timestamp = Time.now.to_i
-	    			o.results["SCHLORIDE"] = r
+	    			o.results["SCHLORIDE"] = r if add_result?(patient_id,r)
 	    		end
 	    		
 	    		if ph = get_ph
@@ -163,7 +178,7 @@ module SiemensAbgElectrolyteModule
 	    			r.value = ph
 	    			r.units = "mmol/L"
 	    			r.timestamp = Time.now.to_i
-	    			o.results["pH"] = r
+	    			o.results["pH"] = r if add_result?(patient_id,r)
 	    		end
 	    		
 	    		if po2 = get_po2
@@ -173,7 +188,7 @@ module SiemensAbgElectrolyteModule
 	    			r.value = po2
 	    			r.units = "mmHg"
 	    			r.timestamp = Time.now.to_i
-	    			o.results["po2"] = r
+	    			o.results["po2"] = r if add_result?(patient_id,r)
 	    		end
 	    		
 	    		if pco2 = get_pco2
@@ -183,18 +198,20 @@ module SiemensAbgElectrolyteModule
 	    			r.value = pco2
 	    			r.units = "mmHg"
 	    			r.timestamp = Time.now.to_i
-	    			o.results["pco2"] = r
+	    			o.results["pco2"] = r if add_result?(patient_id,r)
 	    		end
 	    		
-	    		p.orders << o
-	    		self.headers[-1].patients << p
+	    		unless o.results.blank?
+	    			p.orders << o
+	    			self.headers[-1].patients << p
+	    		end
+
 	    	end
 	    end
 
 	    if self.headers.size > 0
             self.headers[-1].commit
             clear
-            #send_data(self.headers[-1].generate_ack_success_response)
         end
 
 	end
