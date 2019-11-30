@@ -6,6 +6,7 @@ class TestRubyAstm < Minitest::Test
 
 ## we want to send some data by the poller to the remote server, to check if it finds such a file and updates it.
 ## for this we create a remote file, and manually send the parameters
+=begin
   def test_stago
     ethernet_connections = [{:server_ip => "127.0.0.1", :server_port => 3000}]
     server = AstmServer.new(ethernet_connections,[])
@@ -19,11 +20,25 @@ class TestRubyAstm < Minitest::Test
     #assert_equal "0.325", patient["@orders"][0]["results"]["HIV"]["value"]
     #assert_equal "0.318", patient["@orders"][0]["results"]["HBS"]["value"]
   end
+=end
+  def test_ignores_same_electrolyte_result
+    $redis = Redis.new
+    $redis.del("patients")
+    server = SiemensAbgElectrolyteServer.new([],[])
+    root_path = File.dirname __dir__
+    electrolyte_input_file_path = File.join root_path,'electrolytes_plain_text.txt'
+    server.process_text_file(electrolyte_input_file_path)
+    assert_equal 2, $redis.llen("patients")
+    server = SiemensAbgElectrolyteServer.new([],[])
+    root_path = File.dirname __dir__
+    electrolyte_input_file_path = File.join root_path,'electrolytes_plain_text.txt'
+    server.process_text_file(electrolyte_input_file_path)
+    assert_equal 2, $redis.llen("patients")
+  end
 
+=begin
   def test_siemens_electrolyte
     $redis = Redis.new
-    #ethernet_connections = [{:server_ip => "127.0.0.1", :server_port => 3000}]
-    roche_serial_connection = {:port_address => '/dev/ttyS4', :baud_rate => 9600, :parity => 8}
     server = SiemensAbgElectrolyteServer.new([],[])
     root_path = File.dirname __dir__
     electrolyte_input_file_path = File.join root_path,'electrolytes_plain_text.txt'
@@ -498,6 +513,6 @@ class TestRubyAstm < Minitest::Test
     ## it should be that this is still there in the patients.
     assert_equal 1, $redis.llen("patients")
   end 
-
+=end
 
 end
