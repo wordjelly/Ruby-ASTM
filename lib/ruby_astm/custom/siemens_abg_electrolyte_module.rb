@@ -93,6 +93,7 @@ module SiemensAbgElectrolyteModule
 	## @param[String] barcode : the barcode
 	## @param[Result] result  : result_object
 	def add_result?(barcode,result)
+		puts "Came to add result"
 		return true if $redis.hget(SIEMENS_ELEC_ABG_RESULTS_HASH,barcode).blank?
 		existing_results = JSON.parse($redis.hget(SIEMENS_ELEC_ABG_RESULTS_HASH,barcode))
 		if existing_results[result.name].blank?
@@ -203,6 +204,7 @@ module SiemensAbgElectrolyteModule
 	    		
 	    		unless o.results.blank?
 	    			p.orders << o
+	    			$redis.hset(SIEMENS_ELEC_ABG_RESULTS_HASH,patient_id,JSON.generate(o.results_values_hash))
 	    			self.headers[-1].patients << p
 	    		end
 

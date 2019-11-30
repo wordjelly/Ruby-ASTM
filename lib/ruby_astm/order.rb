@@ -146,4 +146,12 @@ class Order
 
 	end	
 
+	def results_values_hash
+		values_hash = {}
+		self.results.keys.each do |k|
+			values_hash[k] = self.results[k].value
+		end
+		values_hash
+	end
+
 end

@@ -16,6 +16,7 @@ class TestRubyAstm < Minitest::Test
 =begin
 ## we want to send some data by the poller to the remote server, to check if it finds such a file and updates it.
 ## for this we create a remote file, and manually send the parameters
+=begin
   def test_stago
     ethernet_connections = [{:server_ip => "127.0.0.1", :server_port => 3000}]
     server = AstmServer.new(ethernet_connections,[])
@@ -29,11 +30,25 @@ class TestRubyAstm < Minitest::Test
     #assert_equal "0.325", patient["@orders"][0]["results"]["HIV"]["value"]
     #assert_equal "0.318", patient["@orders"][0]["results"]["HBS"]["value"]
   end
+=end
+  def test_ignores_same_electrolyte_result
+    $redis = Redis.new
+    $redis.del("patients")
+    server = SiemensAbgElectrolyteServer.new([],[])
+    root_path = File.dirname __dir__
+    electrolyte_input_file_path = File.join root_path,'electrolytes_plain_text.txt'
+    server.process_text_file(electrolyte_input_file_path)
+    assert_equal 2, $redis.llen("patients")
+    server = SiemensAbgElectrolyteServer.new([],[])
+    root_path = File.dirname __dir__
+    electrolyte_input_file_path = File.join root_path,'electrolytes_plain_text.txt'
+    server.process_text_file(electrolyte_input_file_path)
+    assert_equal 2, $redis.llen("patients")
+  end
 
+=begin
   def test_siemens_electrolyte
     $redis = Redis.new
-    #ethernet_connections = [{:server_ip => "127.0.0.1", :server_port => 3000}]
-    roche_serial_connection = {:port_address => '/dev/ttyS4', :baud_rate => 9600, :parity => 8}
     server = SiemensAbgElectrolyteServer.new([],[])
     root_path = File.dirname __dir__
     electrolyte_input_file_path = File.join root_path,'electrolytes_plain_text.txt'
@@ -86,7 +101,7 @@ class TestRubyAstm < Minitest::Test
 
     tests_hash = p.build_tests_hash(record)
 
-    assert_equal tests_hash.deep_symbolize_keys, {:"EDTA:edta1234"=>["WBC", "RBC", "HGB", "HCT", "MCV", "MCH", "MCHC", "PLT", "NEUT%", "LYMPH%", "MONO%", "EO%", "BASO%", "NEUT#", "LYMPH#", "MONO#", "EO#", "BASO#", "RDW-CV"], :"SERUM:serum1234"=>[], :"PLASMA:plasma1234"=>["5", "4"], :"FLUORIDE:fluoride1234"=>["GLUR"], :"URINE_CONTAINER:urine1234"=>["GLU", "BIL", "KET", "SG", "BLO", "pH", "PRO", "URO", "NIT", "LEU", "COL", "CLA"]}.deep_symbolize_keys
+    assert_equal tests_hash.deep_symbolize_keys, {:"EDTA:edta1234"=>["WBC", "RBC", "HGB", "HCT", "MCV", "MCH", "MCHC", "PLT", "NEUT%", "LYMPH%", "MONO%", "EO%", "BASO%", "NEUT#", "LYMPH#", "MONO#", "EO#", "BASO#", "RDW-CV"], :"SERUM:serum1234"=>[], :"PLASMA:plasma1234"=>["5", "4"], :"FLUORIDE:fluoride1234"=>["GLUR"], :"URINE_CONTAINER:urine1234"=>["GLU", "BIL", "KET", "SG", "BLO", "pH", "PRO", "URO", "NIT", "LEU", "COL", "CLA","UCRE","UALB"]}.deep_symbolize_keys
   end
 
 
@@ -220,7 +235,7 @@ class TestRubyAstm < Minitest::Test
     tests_hash = p.build_tests_hash(record)
 
    
-    assert_equal tests_hash.deep_symbolize_keys,{:"EDTA:edta1234"=>["A1c", "WBC", "RBC", "HGB", "HCT", "MCV", "MCH", "MCHC", "PLT", "NEUT%", "LYMPH%", "MONO%", "EO%", "BASO%", "NEUT#", "LYMPH#", "MONO#", "EO#", "BASO#", "RDW-CV"], :"SERUM:serum1234"=>["CHOL", "TRIGO", "HDLC", "LDL", "VLDL", "CREAT", "UREA", "BUNC", "ALB", "GGTP", "BIDDY", "CAA", "BITDY", "INBDY", "ALPE", "GOT", "GPT", "HOMCY", "SIRON", "SUIBC", "STIBC", "UA", "PHOS", "MG", "SNATRIUM", "SPOTASSIUM", "SCHLORIDE", "11", "10", "9", "8", "7", "6", "3", "1"], :"PLASMA:plasma1234"=>["2"], :"FLUORIDE:fluoride1234"=>["GLUR", "GLUPP", "GLUF"], :"URINE_CONTAINER:urine1234"=>["GLU", "BIL", "KET", "SG", "BLO", "pH", "PRO", "URO", "NIT", "LEU", "COL", "CLA"]}.deep_symbolize_keys
+    assert_equal tests_hash.deep_symbolize_keys,{:"EDTA:edta1234"=>["A1c", "WBC", "RBC", "HGB", "HCT", "MCV", "MCH", "MCHC", "PLT", "NEUT%", "LYMPH%", "MONO%", "EO%", "BASO%", "NEUT#", "LYMPH#", "MONO#", "EO#", "BASO#", "RDW-CV"], :"SERUM:serum1234"=>["CHOL", "TRIGO", "HDLC", "LDL", "VLDL", "CREAT", "UREA", "BUNC", "ALB", "GGTP", "BIDDY", "CAA", "BITDY", "INBDY", "ALPE", "GOT", "GPT", "HOMCY", "SIRON", "SUIBC", "STIBC", "UA", "PHOS", "MG", "SNATRIUM", "SPOTASSIUM", "SCHLORIDE", "11", "10", "9", "8", "7", "6", "3", "1"], :"PLASMA:plasma1234"=>["2"], :"FLUORIDE:fluoride1234"=>["GLUR", "GLUPP", "GLUF"], :"URINE_CONTAINER:urine1234"=>["GLU", "BIL", "KET", "SG", "BLO", "pH", "PRO", "URO", "NIT", "LEU", "COL", "CLA","UCRE","UALB"]}.deep_symbolize_keys
 
   end
 
