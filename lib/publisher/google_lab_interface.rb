@@ -2,10 +2,9 @@ require 'google/apis/script_v1'
 require 'googleauth'
 require 'googleauth/stores/file_token_store'
 require 'fileutils'
-require 'publisher/poller'
+require_relative "poller"
 
 class Google_Lab_Interface < Poller
-
 
   OOB_URI = 'urn:ietf:wg:oauth:2.0:oob'.freeze
   APPLICATION_NAME = 'Google Apps Script API Ruby Quickstart'.freeze

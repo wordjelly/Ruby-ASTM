@@ -4,6 +4,16 @@ require 'ruby_astm'
 
 class TestRubyAstm < Minitest::Test
 
+
+  def test_d10_bug
+    ethernet_connections = [{:server_ip => "127.0.0.1", :server_port => 3000}]
+    server = AstmServer.new(ethernet_connections,[])
+    #$redis.del("patients")
+    root_path = File.dirname __dir__
+    input_file_path = File.join root_path,'test','resources','d10_error.txt'
+    server.process_byte_file(input_file_path)
+  end
+=begin
 ## we want to send some data by the poller to the remote server, to check if it finds such a file and updates it.
 ## for this we create a remote file, and manually send the parameters
   def test_stago
@@ -498,6 +508,6 @@ class TestRubyAstm < Minitest::Test
     ## it should be that this is still there in the patients.
     assert_equal 1, $redis.llen("patients")
   end 
-
+=end
 
 end
