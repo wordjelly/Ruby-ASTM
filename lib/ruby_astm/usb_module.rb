@@ -34,16 +34,6 @@ module UsbModule
 
 		self.usb_response_bytes[-3] == 13
 	end	
-
-	def add_result_by_count?(barcode,result)
-		begin
-
-			
-		rescue => e
-			puts e.to_s
-			return true
-		end
-	end
 	## total times repeated, we can have that as max 3 times.
 	## so after that it wont add.
 	## so we keep a sorted set with the barcode and the count
@@ -76,14 +66,20 @@ module UsbModule
 	end
 
 	def parse_usb_response(string_data)
+		#puts "string data is:"
+		#puts string_data.to_s
 		string_data.bytes.to_a.each do |byte|
 			self.usb_response_bytes.push(byte)
 		end
-		#puts "self usb response bytes:"
-		#puts self.usb_response_bytes.to_s
+		parse_bytes
+		#puts self.usb_response_bytes.pack('c*')
+	end
+
+	def parse_bytes(bytes=nil)
+		self.usb_response_bytes ||= bytes
 		if interpret?
 			#puts "interpret"
-			barcodes = []
+			existing_barcodes = []
 			if kk = self.usb_response_bytes[13..-4]
 				## its going fresh -> old
 				## so if the barcode has already come
@@ -108,7 +104,7 @@ module UsbModule
 								order.id = bar_code
 								order.results = []
 								order.results << result
-								#puts "barcode: #{bar_code}, result : #{result.value}"
+								puts "barcode: #{bar_code}, result : #{result.value}"
 								patient.orders << order
 								if add_result?(bar_code,result.value,existing_barcodes)
 									#puts patient.to_json
@@ -125,7 +121,6 @@ module UsbModule
 		else
 			#puts "dont interpret"		
 		end
-
 	end
 
 end

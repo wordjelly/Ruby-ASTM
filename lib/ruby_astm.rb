@@ -1,4 +1,5 @@
 require_relative "ruby_astm/usb_module"
+require_relative "ruby_astm/custom/esr"
 require_relative "ruby_astm/query"
 require_relative "ruby_astm/frame"
 require_relative "ruby_astm/header"

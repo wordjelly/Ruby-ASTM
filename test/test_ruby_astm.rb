@@ -9,6 +9,16 @@ class TestRubyAstm < Minitest::Test
     $redis.flushall
   end
 
+  def test_esr_repeats
+    $redis.del("patients")
+    e = Esr.new
+    root_path = File.dirname __dir__
+    input_file_path = File.join root_path,'test','resources','esr_server_data.txt'
+    byte_arr = eval(IO.read(input_file_path))
+    e.parse_bytes(byte_arr)
+    puts $redis.lrange("patients",0,-1)
+  end
+
 =begin
   def test_d10_bug
     ethernet_connections = [{:server_ip => "127.0.0.1", :server_port => 3000}]
@@ -18,9 +28,6 @@ class TestRubyAstm < Minitest::Test
     input_file_path = File.join root_path,'test','resources','d10_error.txt'
     server.process_byte_file(input_file_path)
   end
-=end
-## we want to send some data by the poller to the remote server, to check if it finds such a file and updates it.
-## for this we create a remote file, and manually send the parameters
 
 
   def test_stago
@@ -528,6 +535,6 @@ class TestRubyAstm < Minitest::Test
     ## it should be that this is still there in the patients.
     assert_equal 1, $redis.llen("patients")
   end 
-
+=end
 
 end
