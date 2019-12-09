@@ -5,6 +5,9 @@ module UsbModule
 	mattr_accessor :usb_response_bytes
 
 	ESR_RESULTS_HASH = "ESR_RESULTS_HASH"
+	ESR_SORTED_SET = "ESR_SORTED_SET"
+	## a particular barcode will be allowed to have 3 different results, after which the next time it won't be uploaded.
+	MAX_REPEAT_RESULT_COUNT = 3
 
 	def begin_patient_results
 		">00A00013"
@@ -32,20 +35,42 @@ module UsbModule
 		self.usb_response_bytes[-3] == 13
 	end	
 
-	def add_result?(barcode,result)
+	def add_result_by_count?(barcode,result)
+		begin
+
+			
+		rescue => e
+			puts e.to_s
+			return true
+		end
+	end
+	## total times repeated, we can have that as max 3 times.
+	## so after that it wont add.
+	## so we keep a sorted set with the barcode and the count
+	## like key -> value, score
+	## key(barcode) -> value(time) -> score(count)
+	## so we can zincrby, each time.
+	## @param[String] barcode : the barcode of the result
+	## @param[String] 
+	def add_result?(barcode,result,existing_barcodes)
 		begin
 			Integer(result)
 			#puts "result is: #{result}"
+			return false if existing_barcodes.include? barcode
 			return false if result.to_i == 0
 			#puts "the result is not zero"
 			existing_result = $redis.hget(ESR_RESULTS_HASH,barcode)
 			#puts "existing result is: #{existing_result}"
-			if ((existing_result.blank?) || (existing_result != result))
-				return true
+			if (existing_result.blank?)
+				true
+			else
+				if existing_result != result
+					true
+				end
 			end 
 		rescue => e
 			puts e.to_s
-			return false
+			false
 		end
 		
 	end
@@ -58,7 +83,11 @@ module UsbModule
 		#puts self.usb_response_bytes.to_s
 		if interpret?
 			#puts "interpret"
+			barcodes = []
 			if kk = self.usb_response_bytes[13..-4]
+				## its going fresh -> old
+				## so if the barcode has already come
+				## we do not push it.
 				kk.each_slice(32) do |patient_record|
 					unless patient_record.blank?
 						unless patient_record.size < 24
@@ -81,10 +110,11 @@ module UsbModule
 								order.results << result
 								#puts "barcode: #{bar_code}, result : #{result.value}"
 								patient.orders << order
-								if add_result?(bar_code,result.value)
+								if add_result?(bar_code,result.value,existing_barcodes)
 									#puts patient.to_json
 									$redis.lpush("patients",patient.to_json)
 									$redis.hset(ESR_RESULTS_HASH,bar_code,result.value.to_i)
+									existing_barcodes << bar_code
 								end
 							end
 						end 

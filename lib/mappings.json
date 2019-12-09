@@ -196,7 +196,10 @@
 		"LIS_CODE" : "ALB",
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "Albumin",
-        "TYPE" : "BIOCHEM"
+        "TYPE" : "BIOCHEM",
+        "MACHINE_SPECIFIC_LIS_CODES" : {
+        	"CLINITEK" : "UALB"
+        }
 	},
 	"GGTP" : {
 		"LIS_CODE" : "GGT",
@@ -480,7 +483,7 @@
 		"REPORT_NAME" : "Urine Routine",
         "TYPE" : "URINE"
 	},
-	"UCRE" : {
+	"CRE" : {
 		"LIS_CODE" : "UCRE",
 		"TUBE" : "URINE_CONTAINER",
 		"REPORT_NAME" : "Urine Routine",

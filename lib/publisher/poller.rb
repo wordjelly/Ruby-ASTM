@@ -204,8 +204,9 @@ class Poller
 	        		#puts "inverted mappings"
 	        		#puts $inverted_mappings
 	        		component_machine_code = $inverted_mappings[component]
-	        		#puts "component machine code: #{component_machine_code}"
-
+	        		if component == "UCRE"
+	        			puts "component machine code: #{component_machine_code}"
+	        		end
 	        		## for eg plasma tube can do all the tests
 	        		## so can serum
 	        		## but we use the plasma tube only for some.

@@ -381,7 +381,7 @@ module LabInterface
         self.headers[-1].patients << hl7_patient
       when "Hl7_Order"
         unless self.headers[-1].patients.blank?
-          hl7_order = Hl7Order.new({:line => line, :patient_id => self.headers[-1].patients[-1].patient_id})
+          hl7_order = Hl7Order.new({:line => line, :patient_id => self.headers[-1].patients[-1].patient_id, :machine_name => self.headers[-1].machine_name})
           self.headers[-1].patients[-1].orders << hl7_order
         end
       when "Header"

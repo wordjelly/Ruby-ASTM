@@ -8,6 +8,9 @@ class Result
 	attr_accessor :reference_ranges
 	attr_accessor :dilution
 
+	## sometimes we customize the lis code based on the machine which is sending it, so we need this.
+	attr_accessor :machine_name
+
 	def set_name(args)
 		puts "came to set name"
 		if line = args[:line]
@@ -109,6 +112,10 @@ class Result
 		end
 	end
 
+	def set_machine_name(args)
+		self.machine_name = args[:machine_name]
+	end
+
 	
 
 	## here will call mappings and check the result correlation
@@ -120,6 +127,7 @@ class Result
 		set_timestamp(args)
 		set_dilution(args)
 		set_units(args)
+
 
 =begin
 		if args[:line]
@@ -148,7 +156,23 @@ class Result
 
 	## @return[String] the name defined in the mappings.json file, or the name that wqs passed in.
 	def lookup_mapping(name)
-		$mappings[name] ? $mappings[name]["LIS_CODE"] : name 
+		unless $mappings[name].blank?
+			unless self.machine_name.blank?
+				unless $mappings[name]["MACHINE_SPECIFIC_LIS_CODES"].blank?
+					unless $mappings[name]["MACHINE_SPECIFIC_LIS_CODES"][self.machine_name].blank?
+						redirect = $mappings[name]["MACHINE_SPECIFIC_LIS_CODES"][self.machine_name]
+						unless $mappings[redirect].blank?
+							$mappings[redirect]["LIS_CODE"]
+						end
+					end
+				end		
+			else
+				$mappings[name]["LIS_CODE"]
+			end
+		else
+			name
+		end
+		#$mappings[name] ? $mappings[name]["LIS_CODE"] : name 
 	end
 
 	def lookup_transform(name)
