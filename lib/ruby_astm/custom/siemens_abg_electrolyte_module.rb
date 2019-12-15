@@ -207,7 +207,7 @@ module SiemensAbgElectrolyteModule
 	    		unless o.results.blank?
 	    			p.orders << o
 	    			$redis.hset(SIEMENS_ELEC_ABG_RESULTS_HASH,patient_id,JSON.generate(o.results_values_hash))
-	    			self.headers[-1].patients << p
+	    			self.headers[-1].patients = [p]
 	    		end
 
 	    	end

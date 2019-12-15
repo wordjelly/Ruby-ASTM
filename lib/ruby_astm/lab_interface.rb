@@ -267,8 +267,8 @@ module LabInterface
         puts "GOT EOT --- PROCESSING BUFFER, AND CLEARING."
         process_text(self.data_buffer)
         root_path = File.dirname __dir__
-        puts "root path #{root_path}"
-        IO.write((File.join root_path,'../test','resources','d10_error.txt'),self.test_data_bytes.to_s)
+        #puts "root path #{root_path}"
+        #IO.write((File.join root_path,'../test','resources','d10_error.txt'),self.test_data_bytes.to_s)
         #puts self.test_data_bytes.flatten.to_s
         self.data_buffer = ''
         unless self.headers.blank?
