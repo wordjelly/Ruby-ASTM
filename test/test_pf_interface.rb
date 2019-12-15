@@ -4,7 +4,7 @@ require 'ruby_astm'
 ## to test this, you need a
 class TestPfInterface < Minitest::Test
 	
-	HOST = "http://192.168.1.4:3000"
+	HOST = "http://localhost:3000/"
 	LIS_SECURITY_KEY="y_u_RyjX5ApT8y_s9wsw"
 	#############################################
 	##
@@ -19,6 +19,7 @@ class TestPfInterface < Minitest::Test
 	##
 	#############################################
 
+=begin
 	def test_auth_success
 		k = Pf_Lab_Interface.new(nil,LIS_SECURITY_KEY)
 		
@@ -36,7 +37,21 @@ class TestPfInterface < Minitest::Test
 		assert_equal "200", response.code.to_s
 
 	end
-	
+=end
+
+	def test_adds_polled_orders_to_redis
+
+		k = Pf_Lab_Interface.new(nil,LIS_SECURITY_KEY,HOST)
+		
+		k.poll
+
+	end
+
+	## i think the simples is pt inr.
+	## so we go for those three reports to be created first remote.
+	## or here itself.
+	## and we fire -> 
+
 	#############################################
 	##
 	##
@@ -96,13 +111,7 @@ class TestPfInterface < Minitest::Test
 	#end	
 
 =begin
-	def test_adds_polled_orders_to_redis
-
-		k = Pf_Lab_Interface.new(nil,"pathofast")
-		
-		k.poll
-
-	end
+	
 =end
 	#def test_adds_polled_order_barcoes_to_redis
 

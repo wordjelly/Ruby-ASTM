@@ -16,8 +16,8 @@ class Pf_Lab_Interface < Poller
 	## 48 hours, expressed as seconds.
 	DEFAULT_STORAGE_TIME_FOR_ORDERS_IN_SECONDS = 48*3600 
 	## the last request that was made and what it said.
-	POLL_URL_PATH = BASE_URL + "interfaces"
-	PUT_URL_PATH = BASE_URL + "lis_update_orders"
+	POLL_ENDPOINT = "interfaces"
+	PUT_ENDPOINT = "lis_update_orders"
 	LAST_REQUEST = "last_request"
 	FROM_EPOCH = "from_epoch"
 	TO_EPOCH = "to_epoch"
@@ -36,6 +36,10 @@ class Pf_Lab_Interface < Poller
 	ORDERS_TO_UPDATE_PER_CYCLE = 10
 
 	attr_accessor :lis_security_key
+
+	## should include the https://www.xyz.com:3000
+	## defaults to http://localhost:3000
+	attr_accessor :server_url_with_port
 
 	###################################################################
 	##
@@ -223,7 +227,7 @@ class Pf_Lab_Interface < Poller
 			end 
 		end
 		params.merge!(lis_security_key: self.lis_security_key)
-		Typhoeus::Request.new(POLL_URL_PATH,params: params)
+		Typhoeus::Request.new(self.get_poll_url_path,params: params)
 	end
 
 	## commits the request params to redis.
@@ -263,9 +267,10 @@ class Pf_Lab_Interface < Poller
 	###################################################################
 	## @param[String] mpg : path to mappings file. Defaults to nil.
 	## @param[String] lis_security_key : the security key for the LIS organization, to be dowloaded from the organizations/show/id, endpoint in the website.
-	def initialize(mpg=nil,lis_security_key)
+	def initialize(mpg=nil,lis_security_key,server_url_with_port)
 	    super(mpg)
 	    self.lis_security_key = lis_security_key
+	    self.server_url_with_port = (server_url_with_port || BASE_URL)
 	    AstmServer.log("Initialized Lab Interface")
 	end
 
@@ -275,6 +280,8 @@ class Pf_Lab_Interface < Poller
 		request.on_complete do |response|
 		  if response.success?
 		    response_hash = JSON.parse(response.body)
+		    AstmServer.log("Pathofast LIS poll response --->")
+		    AstmServer.log(response_hash.to_s)
 		    orders = response_hash[ORDERS]
 		    orders.each do |order|
 		    	add_order(order) 
@@ -401,7 +408,7 @@ data = [
 		#puts "orders are:"
 		#puts orders.to_s
 
-		req = Typhoeus::Request.new(PUT_URL_PATH, method: :put, body: {orders: orders}.to_json, params: {lis_security_key: self.lis_security_key}, headers: {Accept: 'application/json', "Content-Type".to_sym => 'application/json'})
+		req = Typhoeus::Request.new(self.get_put_url_path, method: :put, body: {orders: orders}.to_json, params: {lis_security_key: self.lis_security_key}, headers: {Accept: 'application/json', "Content-Type".to_sym => 'application/json'})
 
 
 		req.on_complete do |response|
@@ -471,6 +478,14 @@ data = [
 		process_update_queue
 		remove_old_orders
 	
+	end
+
+	def get_poll_url_path
+		self.server_url_with_port + POLL_ENDPOINT
+	end
+
+	def get_put_url_path
+		self.server_url_with_port + PUT_ENDPOINT
 	end
 
 	def poll
