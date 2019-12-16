@@ -34,6 +34,7 @@ class Pf_Lab_Interface < Poller
 	ITEMS = "items"
 	CODE = "code"
 	ORDERS_TO_UPDATE_PER_CYCLE = 10
+	PREV_REQUEST_COMPLETED = "prev_request_completed"
 
 	attr_accessor :lis_security_key
 
@@ -166,7 +167,7 @@ class Pf_Lab_Interface < Poller
 	## start work on simple.
 
 	def update_order(order)
-		$redis.hset(ORDERS,order[ID],JSON.generate(order))
+		$redis.hset(ORDERS,order[ID.to_sym],JSON.generate(order))
 	end
 			
 	## @param[Hash] order : the existing order
@@ -176,16 +177,32 @@ class Pf_Lab_Interface < Poller
 	## $MAPPINGS -> [MACHINE_CODE => LIS_CODE]
 	## $INVERTED_MAPPINGS -> [LIS_CODE => MACHINE_CODE]
 	def add_test_result(order,res)
+		#puts "res is:"
+		#puts res.to_s
+
 		order[REPORTS.to_sym].each do |report|
+			#puts "doing report"
 			report[TESTS.to_sym].each_with_index{|t,k|
-				if t[LIS_CODE.to_sym] == $mappings[res[:name]]
+				#puts "doing test"
+				#puts t.to_s
+				
+				#puts "teh test lis code to sym is:"
+				#puts t[LIS_CODE.to_sym]
+				#puts "the mappings res name is:"
+				#puts "res name is: #{res[:name]}"
+				#puts $mappings.to_s
+				#puts $mappings[res[:name]]
+				if t[LIS_CODE.to_sym] == $mappings[res[:name]]["LIS_CODE"]
+					#puts "got equality"
 					t[RESULT_RAW.to_sym] = res[:value]
+					#puts "set value"
 				end
 			}
 		end
 	end
 
 	def queue_order_for_update(order)
+		update_order(order)
 		$redis.lpush(UPDATE_QUEUE,order[ID.to_sym])
 	end
 
@@ -203,10 +220,11 @@ class Pf_Lab_Interface < Poller
 	end
 =end
 	def all_hits_downloaded?(last_request)
-		last_request[FROM_EPOCH] == last_request[SIZE]
+		last_request[PREV_REQUEST_COMPLETED].to_s == "true"
 	end
 	
 	def fresh_request_params(from_epoch=nil)
+		puts "came to make fresh request params, with from epoch: #{from_epoch}"
 		params = {}
 		params[TO_EPOCH] = Time.now.to_i
 		params[FROM_EPOCH] = from_epoch || (params[TO_EPOCH] - DEFAULT_LOOK_BACK_IN_SECONDS)
@@ -221,7 +239,8 @@ class Pf_Lab_Interface < Poller
 			params = fresh_request_params
 		else
 			if all_hits_downloaded?(last_request)
-				params = fresh_request_params(last_request[:to_epoch])
+				puts "got all hits downloaded-----------------"
+				params = fresh_request_params(last_request[TO_EPOCH])
 			else
 				params = last_request
 			end 
@@ -241,13 +260,15 @@ class Pf_Lab_Interface < Poller
 		$redis.hset(LAST_REQUEST,SIZE,response_hash[SIZE].to_i)
 		$redis.hset(LAST_REQUEST,FROM_EPOCH,response_hash[FROM_EPOCH].to_i)
 		$redis.hset(LAST_REQUEST,TO_EPOCH,response_hash[TO_EPOCH].to_i)
+		$redis.hset(LAST_REQUEST,PREV_REQUEST_COMPLETED,request_size_completed?(response_hash).to_s)
 	end
 
 	# since we request only a certain set of orders per request
 	# we need to know if the earlier request has been completed
 	# or we still need to rerequest the same time frame again.
 	def request_size_completed?(response_hash)
-		response_hash[SKIP].to_i + response_hash[ORDERS].size >= response_hash[SIZE]
+		#puts response_hash.to_s
+		response_hash[SKIP].to_i + response_hash[ORDERS].size >= response_hash[SIZE].to_i
 	end
 	###################################################################
 	##
@@ -271,11 +292,12 @@ class Pf_Lab_Interface < Poller
 	    super(mpg)
 	    self.lis_security_key = lis_security_key
 	    self.server_url_with_port = (server_url_with_port || BASE_URL)
+
 	    AstmServer.log("Initialized Lab Interface")
 	end
 
 	def poll_LIS_for_requisition
-		AstmServer.log("Polling LIS at url:#{BASE_URL}")
+		AstmServer.log("Polling LIS at url:#{self.server_url_with_port}")
 		request = build_request
 		request.on_complete do |response|
 		  if response.success?
@@ -395,18 +417,23 @@ data = [
 	def process_update_queue
 		#puts "came to process update queue."
 		order_ids = []
+		puts $redis.lrange UPDATE_QUEUE, 0, -1
+		
 		ORDERS_TO_UPDATE_PER_CYCLE.times do |n|
 			order_ids << $redis.rpop(UPDATE_QUEUE)
 		end
-		#puts "order ids popped"
-		#puts order_ids.to_s
+		puts "order ids popped"
+		puts order_ids.to_s
+		order_ids.compact!
+		order_ids.uniq!
 		orders = order_ids.map{|c|
 			get_order(c)
 		}.compact
-
+		#puts orders[0].to_s
 		
 		#puts "orders are:"
-		#puts orders.to_s
+		#puts orders.size
+		#exit(1)
 
 		req = Typhoeus::Request.new(self.get_put_url_path, method: :put, body: {orders: orders}.to_json, params: {lis_security_key: self.lis_security_key}, headers: {Accept: 'application/json', "Content-Type".to_sym => 'application/json'})
 
@@ -416,6 +443,7 @@ data = [
 			    response_body = response.body
 			    orders = JSON.parse(response.body)["orders"]
 			    orders.each do |order|
+			    	puts order.to_s
 			    	if order["errors"].blank?
 			    	else
 			    		puts "got an error for the order."
@@ -447,7 +475,40 @@ data = [
 		end
 	end
 
+	ORDERS_KEY = "@orders"
+
+
 	def update(data)
+		#puts "data is:"
+		#puts JSON.pretty_generate(data)
+		data[ORDERS_KEY].each do |order|
+			barcode = order["id"]
+			results = order["results"]
+			results.deep_symbolize_keys!
+			if barcode_hash = get_barcode(barcode)
+				if order = get_order(barcode_hash[:order_id])
+					## update the test results, and add the order to the final update hash.
+					#puts "order got from barcode is:"
+					#puts order
+					machine_codes = barcode_hash[:machine_codes]
+
+					results.values.each do |res|
+						if machine_codes.include? res[:name]
+							## so we need to update to the requisite test inside the order.
+							add_test_result(order,res)	
+							## commit to redis
+							## and then 
+						end
+					end
+					#puts "came to queue order for update"
+					queue_order_for_update(order)
+				end
+			else
+				AstmServer.log("the barcode:#{barcode}, does not exist in the barcodes hash")
+				## does not exist.
+			end
+		end
+=begin
 		data.each do |result|
 			barcode = result[:id]
 			results = result[:results]
@@ -474,7 +535,7 @@ data = [
 				## does not exist.
 			end
 		end 
-
+=end
 		process_update_queue
 		remove_old_orders
 	
@@ -491,7 +552,7 @@ data = [
 	def poll
       	pre_poll_LIS
       	poll_LIS_for_requisition
-      	update_LIS
+      	#update_LIS
       	post_poll_LIS
   	end
 

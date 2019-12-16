@@ -4,7 +4,7 @@ require 'ruby_astm'
 ## to test this, you need a
 class TestPfInterface < Minitest::Test
 	
-	HOST = "http://localhost:3000/"
+	HOST = "http://192.168.1.4:3000/"
 	LIS_SECURITY_KEY="y_u_RyjX5ApT8y_s9wsw"
 	#############################################
 	##
@@ -40,7 +40,12 @@ class TestPfInterface < Minitest::Test
 =end
 
 	def test_adds_polled_orders_to_redis
-
+		$redis = Redis.new
+		if $redis.llen("patients") == 0
+			one = $redis.lpop("processing")
+			$redis.lpush("patients",one)
+		end
+		#exit(1)
 		k = Pf_Lab_Interface.new(nil,LIS_SECURITY_KEY,HOST)
 		
 		k.poll

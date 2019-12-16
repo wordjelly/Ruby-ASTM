@@ -1,0 +1,52 @@
+{
+  "@patients": [
+    {
+      "sequence_number": 1,
+      "patient_id": null,
+      "orders": [
+        {
+          "id": "0000010277",
+          "priority": null,
+          "sequence_number": null,
+          "tests": null,
+          "specimen_type": null,
+          "date_time": null,
+          "action_code": null,
+          "results": {
+            "SPT": {
+              "name": "SPT",
+              "report_name": "PTAPTT",
+              "value": "31.13",
+              "timestamp": "2019-12-15T14:07:09.000+05:30",
+              "dilution": null
+            }
+          }
+        },
+        {
+          "id": "0000010277",
+          "priority": null,
+          "sequence_number": null,
+          "tests": null,
+          "specimen_type": null,
+          "date_time": null,
+          "action_code": null,
+          "results": {
+            "SINR": {
+              "name": "SINR",
+              "report_name": "PTAPTT",
+              "value": "2.74",
+              "timestamp": "2019-12-15T14:07:09.000+05:30",
+              "dilution": null
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "@queries": [
+
+  ],
+  "@response_sent": false,
+  "@machine_name": "STA_Satlellite_Max",
+  "@protocol": "ASTM"
+}
