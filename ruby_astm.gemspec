@@ -20,5 +20,7 @@ Gem::Specification.new do |s|
   s.add_dependency "rest-firebase"
   s.add_dependency "jwt"
   s.add_dependency "rake"
+  s.add_dependency "retriable", '~> 3.1'
+
 end
 

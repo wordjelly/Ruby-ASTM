@@ -60,7 +60,7 @@ module LabInterface
   #######################################################
   module ClassMethods
     def log(message)
-      puts "" + message
+      puts message
       $redis.zadd("ruby_astm_log",Time.now.to_i,message)
     end
 

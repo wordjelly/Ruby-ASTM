@@ -442,7 +442,7 @@ class Poller
   	## name of the sorted set can be defined in the class that inherits from adapter, or will default to "requisitions"
   	## when a query is sent from any laboratory equipment to the local ASTMServer, it will query the redis sorted set, for the test information.
   	## so this poller basically constantly replicates the cloud based test information to the local server.
-	def poll_LIS_for_requisition
+	def poll_LIS_for_requisition(to_epoch=nil)
 
   	end
 

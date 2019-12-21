@@ -1,11 +1,17 @@
 require 'minitest/autorun'
 require 'ruby_astm'
 
-## to test this, you need a
+## BEFORE RUNNING THESE TESTS,
+## YOU NEED TO HAVE THE PATHOFAST SERVER
+## AND run the rake task: pathofast:prepare_ruby_astm_env (from the pathofast/local root folder)
+## then you can run the tests below
+## make sure you copy the lis security key of the pathofast organization.
+## this will be the last line printed by the rake task 
 class TestPfInterface < Minitest::Test
 	
-	HOST = "http://192.168.1.4:3000/"
-	LIS_SECURITY_KEY="y_u_RyjX5ApT8y_s9wsw"
+	HOST = "http://localhost:3000/"
+	LIS_SECURITY_KEY="pathofast"
+	ORGANIZATION_ID="5dfb3c90acbcd62d21d4d3e7-Pathofast"
 	#############################################
 	##
 	##
@@ -18,169 +24,236 @@ class TestPfInterface < Minitest::Test
 	##
 	##
 	#############################################
-
-=begin
-	def test_auth_success
-		k = Pf_Lab_Interface.new(nil,LIS_SECURITY_KEY)
-		
-		request = Typhoeus::Request.new(
-			HOST + "/interfaces",
-			method: :get,
-			headers: { Accept: "application/json" },
-			params: {lis_security_key: LIS_SECURITY_KEY}
-		)
-
-		request.run
-
-		response = request.response
-
-		assert_equal "200", response.code.to_s
-
-	end
-=end
-
-	def test_adds_polled_orders_to_redis
+	### SHUTDOWN SERVER BEFORE RUNNING THIS TEST
+	#####################################
+	##
+	##
+	## REQUISITION PAGINATION
+	##
+	##
+	#####################################
+	def test_paginates_till_all_results_acquired_for_a_timestamp_ignores_order_without_barcode
 		$redis = Redis.new
-		if $redis.llen("patients") == 0
-			one = $redis.lpop("processing")
-			$redis.lpush("patients",one)
-		end
-		#exit(1)
-		k = Pf_Lab_Interface.new(nil,LIS_SECURITY_KEY,HOST)
-		
-		k.poll
-
+		$redis.del("orders")
+		$redis.del("orders_sorted_set")
+		$redis.del("last_request")
+		$redis = Redis.new
+		$redis.del("ruby_astm_log")
+		k = Pf_Lab_Interface.new(nil,LIS_SECURITY_KEY,HOST,ORGANIZATION_ID,JSON.parse(IO.read("/home/bhargav/Downloads/ml-micro-analysis-firebase-adminsdk-3t7e3-be32178718.json")))
+		t = Time.now.to_i.to_s
+		puts "current time is: #{t}"
+		k.test_trigger_lis_poll(t)
+		data = k.connection.get("organizations/#{ORGANIZATION_ID}")
+		puts "Data is : #{data}"
+		k.evented_poll_LIS_for_requisition(data)
+		all_orders = $redis.hgetall("orders")
+		assert_equal 20, all_orders.size
 	end
 
-	## i think the simples is pt inr.
-	## so we go for those three reports to be created first remote.
-	## or here itself.
-	## and we fire -> 
-
-	#############################################
+	#####################################
 	##
 	##
-	## AUTH TESTS.
+	## only adds order if at least one item
+	## with a barcode or a code is present.
 	##
 	##
-	#############################################
-=begin
-	def test_auth_success
-		k = Pf_Lab_Interface.new(nil,"pathofast")
-		
-		request = Typhoeus::Request.new(
-			HOST + "/interfaces",
-			method: :get,
-			headers: { Accept: "application/json" },
-			params: {lis_security_key: "pathofast"}
-		)
-
-		request.run
-
-		response = request.response
-
-		assert_equal "200", response.code.to_s
-
+	#####################################
+	def test_error_while_downloading_retries_thrice
+		## goes into backoff retry.
+		$redis = Redis.new
+		$redis.del("orders")
+		$redis.del("orders_sorted_set")
+		$redis.del("last_request")
+		$redis = Redis.new
+		$redis.del("ruby_astm_log")
+		k = Pf_Lab_Interface.new(nil,"dog",HOST,ORGANIZATION_ID,JSON.parse(IO.read("/home/bhargav/Downloads/ml-micro-analysis-firebase-adminsdk-3t7e3-be32178718.json")))
+		t = Time.now.to_i.to_s
+		k.test_trigger_lis_poll(t)
+		data = k.connection.get("organizations/#{ORGANIZATION_ID}")
+		k.evented_poll_LIS_for_requisition(data)
+		assert_equal 3, k.retry_count
 	end
+	###########################################
+	##
+	##
+	##
+	##
+	##
+	###########################################
 
-
-	def test_auth_failure
-
-		k = Pf_Lab_Interface.new(nil,"pathofas")
+	def test_deletes_order_in_response_to_event
+		$redis = Redis.new
+		$redis.del("orders")
+		$redis.del("orders_sorted_set")
+		$redis.del("last_request")
+		$redis = Redis.new
+		$redis.del("ruby_astm_log")
+		k = Pf_Lab_Interface.new(nil,LIS_SECURITY_KEY,HOST,ORGANIZATION_ID,JSON.parse(IO.read("/home/bhargav/Downloads/ml-micro-analysis-firebase-adminsdk-3t7e3-be32178718.json")))
+		t = Time.now.to_i.to_s
 		
-		request = Typhoeus::Request.new(
-			HOST + "/interfaces",
-			method: :get,
-			headers: { Accept: "application/json" },
-			params: {lis_security_key: "no_key"}
-		)
+		k.test_trigger_lis_poll(t)
 
-		request.run
-
-		response = request.response
-
-		assert_equal "401", response.code.to_s		
-
-	end
-=end
-	## basically i have to finish this thing today.
-	#############################################
-	##
-	##
-	## POLL TESTS
-	##
-	##
-	#############################################
-	#def test_logs_poll_request_error
-
-	#end	
-
-=begin
+		data = k.connection.get("organizations/#{ORGANIZATION_ID}")
+		#puts "TRIGGERED TEST TRIGGER LIS POLL AND GOT THE FOLLOWING DATA"
+		#puts data
+		k.evented_poll_LIS_for_requisition(data)
+		
+		all_orders = $redis.hgetall("orders")
+		
+		first_order_id = $redis.hkeys("orders")[0]
 	
-=end
-	#def test_adds_polled_order_barcoes_to_redis
+		assert_equal 20, all_orders.size
 
-	#end
+		k.test_trigger_delete_order(first_order_id)
+		data = k.connection.get("organizations/#{ORGANIZATION_ID}")
+		#puts "TRIGGERED DELETE AND GOT THE FOLLOWING DATA."
+		#puts data.to_s
+		k.evented_poll_LIS_for_requisition(data)
 
-	#def test_skips_results_till_size_is_reached
+		all_orders = $redis.hgetall("orders")
+		assert_equal 19, all_orders.size
 
-	#end
-
-	##############################################
-	##
-	##
-	## NOT FOUND TESTS.
-	##
-	##
-	##############################################
-
-
-	###################################################################
-	##
-	##
-	## UPDATE TESTS
-	##
-	##
-	###################################################################
-=begin
-	def test_updates_results_to_server
-		data = [
-			{
-				:id => "1234",
-				:results => [
-					{
-						:name => "UREA",
-						:value => 10
-					}
-				]
-			}
-		]
-
-		k = Pf_Lab_Interface.new(nil,"pathofast")
-
-		k.update(data)
-			
 	end
 
-	def returns_no_error_if_result_already_verified
+	# now the update result is a seperate daemon.
+	# and item group and priority tests.
+
+	#####################################
+	##
+	##
+	## RETRY ORDER UPDATE TESTS
+	##
+	##
+	#####################################
+
+	def test_updates_results_for_order
+		$redis = Redis.new
+		$redis.del("orders")
+		$redis.del("orders_sorted_set")
+		$redis.del("last_request")
+		$redis = Redis.new
+		$redis.del("ruby_astm_log")
+
+		k = Pf_Lab_Interface.new(nil,LIS_SECURITY_KEY,HOST,ORGANIZATION_ID,JSON.parse(IO.read("/home/bhargav/Downloads/ml-micro-analysis-firebase-adminsdk-3t7e3-be32178718.json")))
+		t = Time.now.to_i.to_s
+
+		k.test_trigger_lis_poll(t)
+
+		data = k.connection.get("organizations/#{ORGANIZATION_ID}")
+		#puts "TRIGGERED TEST TRIGGER LIS POLL AND GOT THE FOLLOWING DATA"
+		#puts data
+		k.evented_poll_LIS_for_requisition(data)
 		
+		all_orders = $redis.hgetall("orders")
+		
+		first_order_id = $redis.hkeys("orders")[0]
+
+		assert_equal 20, all_orders.size
+
+		## put to the patients.
+		root_path = File.dirname __dir__
+		pt_inr_patient_result_path = File.join root_path,'test','resources','pt_inr_result.json'
+
+		result_hash = JSON.parse(IO.read(pt_inr_patient_result_path))
+		puts result_hash.to_s
+		result_hash["@patients"][0]["@orders"][0]["id"] = "abcdefg1"
+		result_hash["@patients"][0]["@orders"][1]["id"] = "abcdefg1"
+		$redis.lpush("patients",JSON.generate(result_hash["@patients"][0]))
+		k.update_LIS(:exit_on_success => true)
+	end
+
+	## We try to sort it out.
+	## item groups -> their creation -> downloading.
+	## and changing priorities on test names.
+	## i.e -> why not just add all the items.
+	## when it polls for the requisition
+	## we don't want to do certain tests on another machine.
+	## whichever one has the first priority -> that's why i had made priorites.
+
+	def test_update_failure_pushes_results_into_failed_list
+		$redis = Redis.new
+		$redis.del("orders")
+		$redis.del("orders_sorted_set")
+		$redis.del("last_request")
+		$redis = Redis.new
+		$redis.del("ruby_astm_log")
+		$redis.del("failed_updates")
+
+		k = Pf_Lab_Interface.new(nil,LIS_SECURITY_KEY,HOST,ORGANIZATION_ID,JSON.parse(IO.read("/home/bhargav/Downloads/ml-micro-analysis-firebase-adminsdk-3t7e3-be32178718.json")))
+		t = Time.now.to_i.to_s
+
+		k.test_trigger_lis_poll(t)
+
+		data = k.connection.get("organizations/#{ORGANIZATION_ID}")
+		#puts "TRIGGERED TEST TRIGGER LIS POLL AND GOT THE FOLLOWING DATA"
+		k.evented_poll_LIS_for_requisition(data)
+		
+		all_orders = $redis.hgetall("orders")
+		
+		first_order_id = $redis.hkeys("orders")[0]
+	
+		assert_equal 20, all_orders.size
+
+		## put to the patients.
+		root_path = File.dirname __dir__
+		pt_inr_patient_result_path = File.join root_path,'test','resources','pt_inr_result.json'
+
+		result_hash = JSON.parse(IO.read(pt_inr_patient_result_path))
+		puts result_hash.to_s
+		result_hash["@patients"][0]["@orders"][0]["id"] = "abcdefg1"
+		result_hash["@patients"][0]["@orders"][1]["id"] = "abcdefg1"
+		$redis.lpush("patients",JSON.generate(result_hash["@patients"][0]))
+		k.lis_security_key = "dog" 
+		k.update_LIS(:exit_on_failure => true)
+		assert_equal 1, $redis.scard("failed_updates")
+	end
+
+	def polls_for_new_orders_on_startup
+		k = Pf_Lab_Interface.new(nil,LIS_SECURITY_KEY,HOST,ORGANIZATION_ID,JSON.parse(IO.read("/home/bhargav/Downloads/ml-micro-analysis-firebase-adminsdk-3t7e3-be32178718.json")))
+		k._start
+	end
+
+	## so i've sorted out item group
+	## now we add that into rake
+	## we change the counts a bit if needed.
+
+=begin
+	def multiple_barcodes_for_the_same_test_exist
+
+	end
+
+	def another_tube_needs_to_be_used_for_a_patient
+
 	end
 =end
-	#def test_lis_code_clash_between_two_outsourced_organization_reports
-
-	#end
-
-	######################################################
+	## we have item groups -> barcodes -> 
+	##########################################################
 	##
 	##
-	## REDIS DATA HAD TO BE CLEARED TESTS
+	##
+	## INDIVIDUAL MACHINE RESULTS
 	##
 	##
-	######################################################
+	##
+	##########################################################
+=begin
+	def test_updates_hemogram_results_to_lis
+	end
 
-	#def test_what_happens_if_redis_data_is_cleared_and_machine_sends_results
+	def test_updates_esr_to_lis
+	end
 
-	#end
+	def test_updates_hba1c_to_lis
+	end
 
+	def test_updates_immunoassay_to_lis
+	end
+
+	def test_updates_biochem_to_lis
+	end
+
+	def test_updates_urine_to_lis
+	end
+=end
 
 end	

@@ -1,8 +1,59 @@
 require 'fileutils'
 require 'publisher/poller'
+require 'publisher/pf_download_exception'
 require 'typhoeus'
+require 'resolv-replace'
+
+RestFirebase.class_eval do 
+	
+	attr_accessor :private_key_hash
+
+	def query
+    	{:access_token => auth}
+  	end
+
+  	def get_jwt
+		puts Base64.encode64(JSON.generate(self.private_key_hash))
+		# Get your service account's email address and private key from the JSON key file
+		$service_account_email = self.private_key_hash["client_email"]
+		$private_key = OpenSSL::PKey::RSA.new self.private_key_hash["private_key"]
+		  now_seconds = Time.now.to_i
+		  payload = {:iss => $service_account_email,
+		             :sub => $service_account_email,
+		             :aud => self.private_key_hash["token_uri"],
+		             :iat => now_seconds,
+		             :exp => now_seconds + 1, # Maximum expiration time is one hour
+		             :scope => 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/firebase.database'
+
+		         }
+		  JWT.encode payload, $private_key, "RS256"
+		
+	end
+
+	def generate_access_token
+	  uri = URI.parse(self.private_key_hash["token_uri"])
+	  https = Net::HTTP.new(uri.host, uri.port)
+	  https.use_ssl = true
+	  req = Net::HTTP::Post.new(uri.path)
+	  req['Cache-Control'] = "no-store"
+	  req.set_form_data({
+	    grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
+	    assertion: get_jwt
+	  })
+
+	  resp = JSON.parse(https.request(req).body)
+	  resp["access_token"]
+	end
+
+	def generate_auth opts={}
+		generate_access_token
+	end
+ 
+end
 
 class Pf_Lab_Interface < Poller
+
+	include StreamModule
 
 	ORDERS = "orders"
 	ORDERS_SORTED_SET = "orders_sorted_set"
@@ -41,6 +92,8 @@ class Pf_Lab_Interface < Poller
 	## should include the https://www.xyz.com:3000
 	## defaults to http://localhost:3000
 	attr_accessor :server_url_with_port
+
+	attr_accessor :retry_count
 
 	###################################################################
 	##
@@ -86,14 +139,20 @@ class Pf_Lab_Interface < Poller
 	###################################################################
 	def remove_order(order_id)
 		order = get_order(order_id)
-		order["reports"].each do |report|
-			report["tests"].each do |test|
-				remove_barcode(test["barcode"])
-				remove_barcode(test["code"])
-			end			
+		puts "order id is:#{order_id} is"
+		unless order.blank?
+			puts "order not blank."
+			order[:reports].each do |report|
+				report[:tests].each do |test|
+					remove_barcode(test[:barcode])
+					remove_barcode(test[:code])
+				end			
+			end
+			$redis.hdel(ORDERS,order_id)
+			$redis.zrem(ORDERS_SORTED_SET,order_id)
+		else
+			puts "order is blank."
 		end
-		$redis.hdel(ORDERS,order[ID])
-		$redis.zrem(ORDERS_SORTED_SET,order[ID])
 	end
 
 	def remove_barcode(barcode)
@@ -137,7 +196,7 @@ class Pf_Lab_Interface < Poller
 
 	## @param[Hash] order : order object, as a hash.
 	def add_order(order)
-		## this whole thing should be done in one transaction
+		at_least_one_item_exists = false
 		order[REPORTS].each do |report|
 			test_machine_codes = report[TESTS].map{|c|
 				$inverted_mappings[c[LIS_CODE]]
@@ -145,6 +204,7 @@ class Pf_Lab_Interface < Poller
 			report[REQUIREMENTS].each do |req|
 				get_priority_category(req)[ITEMS].each do |item|
 					if !item[BARCODE].blank?
+						at_least_one_item_exists = true
 						add_barcode(item[BARCODE],JSON.generate(
 							{
 								:order_id => order[ID],
@@ -152,6 +212,7 @@ class Pf_Lab_Interface < Poller
 							}
 						))
 					elsif !item[CODE].blank?
+						at_least_one_item_exists = true
 						add_barcode(item[CODE],JSON.generate({
 								:order_id => order[ID],
 								:machine_codes => test_machine_codes
@@ -160,8 +221,10 @@ class Pf_Lab_Interface < Poller
 				end
 			end
 		end
-		$redis.hset(ORDERS,order[ID],JSON.generate(order))
-		$redis.zadd(ORDERS_SORTED_SET,Time.now.to_i,order[ID])
+		unless at_least_one_item_exists.blank?
+			$redis.hset(ORDERS,order[ID],JSON.generate(order))
+			$redis.zadd(ORDERS_SORTED_SET,Time.now.to_i,order[ID])
+		end
 	end
 
 	## start work on simple.
@@ -222,30 +285,48 @@ class Pf_Lab_Interface < Poller
 	def all_hits_downloaded?(last_request)
 		last_request[PREV_REQUEST_COMPLETED].to_s == "true"
 	end
-	
-	def fresh_request_params(from_epoch=nil)
-		puts "came to make fresh request params, with from epoch: #{from_epoch}"
+		
+	## @param[Time] from : time object 
+	## @param[Time] to : time object
+	def fresh_request_params(from,to)
+		#puts "came to make fresh request params, with from epoch: #{from_epoch}"
 		params = {}
-		params[TO_EPOCH] = Time.now.to_i
-		params[FROM_EPOCH] = from_epoch || (params[TO_EPOCH] - DEFAULT_LOOK_BACK_IN_SECONDS)
+		params[TO_EPOCH] = to.to_i
+		params[FROM_EPOCH] = from.to_i
 		params[SKIP] = 0
 		params
 	end
 
-	def build_request
+	## so build request should have a from and a to
+	## what are the defaults ?
+	## @param[Time] from : default (nil)
+	## @param[Time] to : default(nil) 
+	def build_request(from=nil,to=nil)
+		puts "entering build request with from: #{from} and to:#{to}"
+		to ||= Time.now
+		from ||= to - 1.day
 		last_request = get_last_request
 		params = nil
 		if last_request.blank?
-			params = fresh_request_params
+			AstmServer.log("no last request, making fresh request")
+			params = fresh_request_params(from,to)
 		else
 			if all_hits_downloaded?(last_request)
-				puts "got all hits downloaded-----------------"
-				params = fresh_request_params(last_request[TO_EPOCH])
+				AstmServer.log("last request all hits have been downloaded, going for next request.")
+				if last_request[TO_EPOCH].to_i == to.to_i
+					return nil
+				else
+					params = fresh_request_params(last_request[TO_EPOCH],to)
+				end
 			else
+				AstmServer.log("last request all hits not downloaded.")
 				params = last_request
 			end 
 		end
 		params.merge!(lis_security_key: self.lis_security_key)
+		AstmServer.log("reuqest params become: #{params}")
+		AstmServer.log("sleeping")
+		#sleep(10000)
 		Typhoeus::Request.new(self.get_poll_url_path,params: params)
 	end
 
@@ -288,40 +369,152 @@ class Pf_Lab_Interface < Poller
 	###################################################################
 	## @param[String] mpg : path to mappings file. Defaults to nil.
 	## @param[String] lis_security_key : the security key for the LIS organization, to be dowloaded from the organizations/show/id, endpoint in the website.
-	def initialize(mpg=nil,lis_security_key,server_url_with_port)
+	def initialize(mpg=nil,lis_security_key,server_url_with_port,organization_id,private_key_hash)
 	    super(mpg)
+	    self.private_key_hash = private_key_hash
+	    self.event_source = "organizations/" + organization_id
+	    self.on_message_handler_function = "evented_poll_LIS_for_requisition"
 	    self.lis_security_key = lis_security_key
+	    
 	    self.server_url_with_port = (server_url_with_port || BASE_URL)
-
+	    self.retry_count = 0
+	    ## called from stream module
+	    setup_connection
 	    AstmServer.log("Initialized Lab Interface")
 	end
 
-	def poll_LIS_for_requisition
-		AstmServer.log("Polling LIS at url:#{self.server_url_with_port}")
-		request = build_request
-		request.on_complete do |response|
-		  if response.success?
-		    response_hash = JSON.parse(response.body)
-		    AstmServer.log("Pathofast LIS poll response --->")
-		    AstmServer.log(response_hash.to_s)
-		    orders = response_hash[ORDERS]
-		    orders.each do |order|
-		    	add_order(order) 
-		    end
-		    commit_request_params_to_redis(response_hash)
-		  elsif response.timed_out?
-		    # aw hell no
-		    # put to astm log.
-		    AstmServer.log("Polling time out")
-		  elsif response.code == 0
-		    # Could not get an http response, something's wrong.
-		    AstmServer.log(response.return_message)
-		  else
-		    # Received a non-successful http response.
-		    AstmServer.log("HTTP request failed: " + response.code.to_s)
-		  end
+	## this is triggered by whatever firebase sends
+	## you put this in the callback, and let me block and see what happens.
+	## we cannot watch two different endpoints ?
+	## or we can ?
+	## on the same endpoint -> will 
+	## so it becomes a merged document.
+	## and both events will fire.
+	## and get triggered.
+	def evented_poll_LIS_for_requisition(data)
+		unless data.blank?
+			
+			data = data["data"].blank? ? data : data["data"]
+
+			unless data["delete_order"].blank?
+				puts "delete order is not blank"
+				unless data["delete_order"]["order_id"].blank?
+					puts "order id is not blank"
+					puts "going to delete the completed order --------------->"
+					delete_completed_order(data["delete_order"]["order_id"])
+				end
+			end
+			unless data["trigger_lis_poll"].blank?
+				unless data["trigger_lis_poll"]["epoch"].blank?
+					new_poll_LIS_for_requisition(data["trigger_lis_poll"]["epoch"].to_i)
+				end
+			end
+		else
+
 		end
-		request.run
+	end
+
+	def delete_completed_order(order_id)
+		remove_order(order_id)
+	end
+
+	def put_delete_order_event(order_id)
+		puts self.connection.put(self.event_source,:order_id => order_id)
+	end
+
+	def test_trigger_lis_poll(epoch=nil)
+		puts self.connection.put(self.event_source + "/trigger_lis_poll", :epoch => epoch)
+	end
+
+	def test_trigger_delete_order(order_id)
+		puts self.connection.put(self.event_source + "/delete_order", :order_id => order_id)
+	end
+
+	def new_poll_LIS_for_requisition(to_epoch=nil)
+		AstmServer.log(to_epoch.to_s)
+		while true
+			orders = []
+			begin
+				Retriable.retriable(on: PfDownloadException) do 
+					self.retry_count+=1
+					AstmServer.log("retrying----->")
+					request = build_request(nil,to_epoch)
+					break if request.blank?
+					request.run
+					response = request.response
+					if response.success?
+						code = response.code
+						time = response.total_time
+						headers = response.headers
+						#AstmServer.log("successfully polled server")
+						response_hash = JSON.parse(response.body)
+					    #AstmServer.log("Pathofast LIS poll response --->")
+					    #AstmServer.log(response_hash.to_s)
+					    orders = response_hash[ORDERS]
+					    orders.each do |order|
+					    	add_order(order) 
+					    end
+					    commit_request_params_to_redis(response_hash)
+					    #puts "are the orders blank: #{orders.blank?}"
+					    #break if orders.blank?
+					elsif response.timed_out?
+						#AstmServer.log("Error polling server with code: #{code}")
+						raise PfDownloadException.new("timeout")
+					elsif response.code == 0
+						#AstmServer.log("Error polling server with code: #{code}")
+						raise PfDownloadException.new("didnt get any http response")
+					else
+						#AstmServer.log("Error polling server with code: #{code}")
+						raise PfDownloadException.new("non 200 response")
+					end
+				end
+			rescue => e
+				puts e.to_s
+				puts "raised exception-----------> breaking."
+				## retryable has raised the errors again.
+				break
+			else
+				## break only if the orders are blank.
+				break if orders.blank?
+			end
+		end
+	end
+
+	## how it deletes the records is that when all the reports in that order are verified, then that order is cleared from all LIS receptive organizations.
+	## that's the only way.
+	## once I'm done with that, its only the barcodes, and then the inventory bits.
+
+	## how it deletes records
+	## so this is called in the form of a while loop.
+	## how it handles the update response.
+	def poll_LIS_for_requisition(to_epoch=nil)
+		AstmServer.log(to_epoch.to_s)
+		while true
+			#puts "came back to true"
+			request = build_request(nil,to_epoch)
+			break if request.blank?
+			request.run
+			response = request.response
+			code = response.code
+			time = response.total_time
+			headers = response.headers
+			if code.to_s != "200"
+				AstmServer.log("Error polling server with code: #{code}")
+				break
+			else
+				AstmServer.log("successfully polled server")
+				response_hash = JSON.parse(response.body)
+			    AstmServer.log("Pathofast LIS poll response --->")
+			    #AstmServer.log(response_hash.to_s)
+			    orders = response_hash[ORDERS]
+			    orders.each do |order|
+			    	add_order(order) 
+			    end
+			    commit_request_params_to_redis(response_hash)
+			    puts "are the orders blank: #{orders.blank?}"
+			    break if orders.blank?
+			end
+		end
 	end
 
 =begin
@@ -417,13 +610,22 @@ data = [
 	def process_update_queue
 		#puts "came to process update queue."
 		order_ids = []
-		puts $redis.lrange UPDATE_QUEUE, 0, -1
-		
+		#puts $redis.lrange UPDATE_QUEUE, 0, -1
+			
+		## first push that to patient.
+		## first create that order and add that barcode.
+		## for citrate.
+		## then let that get downloaded.
+		## so keep on test going for that.
+		## 
+		## why complicate this so much.
+		## just do a brpop?
+		## 
 		ORDERS_TO_UPDATE_PER_CYCLE.times do |n|
 			order_ids << $redis.rpop(UPDATE_QUEUE)
 		end
-		puts "order ids popped"
-		puts order_ids.to_s
+		#puts "order ids popped"
+		#puts order_ids.to_s
 		order_ids.compact!
 		order_ids.uniq!
 		orders = order_ids.map{|c|
@@ -442,20 +644,25 @@ data = [
 			if response.success?
 			    response_body = response.body
 			    orders = JSON.parse(response.body)["orders"]
-			    orders.each do |order|
-			    	puts order.to_s
+			    #puts orders.to_s
+			    orders.values.each do |order|
+			    	#puts order.to_s
 			    	if order["errors"].blank?
 			    	else
 			    		puts "got an error for the order."
 			    		## how many total error attempts to manage.
 			    	end
 			    end
+			    ## here we have to raise.
 			elsif response.timed_out?
 			    AstmServer.log("got a time out")
+			    raise PfUpdateException.new("update order timed out")
 			elsif response.code == 0
 			    AstmServer.log(response.return_message)
+			    raise PfUpdateException.new("update order response code 0")
 			else
 			    AstmServer.log("HTTP request failed: " + response.code.to_s)
+			    raise PfUpdateException.new("update order response code non success: #{response.code}")
 			end
 		end
 
@@ -476,6 +683,64 @@ data = [
 	end
 
 	ORDERS_KEY = "@orders"
+	FAILED_UPDATES = "failed_updates"
+	PATIENTS_REDIS_LIST = "patients"
+	PROCESSING_REDIS_LIST = "processing"
+
+	## this is only done on startup
+	## okay so what do we 
+	def reattempt_failed_updates
+		$redis.scard(FAILED_UPDATES).times do 
+			if patient_results = $redis.spop(FAILED_UPDATES)
+				patient_results = JSON.parse(patient_results)
+				begin
+					Retriable.retriable(on: PfUpdateException) do 
+						unless update(patient_results)
+							raise PfUpdateException.new("didnt get any http response")
+						end
+					end
+				rescue => e
+					AstmServer.log("reattempted and failed")
+				ensure
+
+				end
+			end
+		end
+	end
+
+	## we can do this.
+	## args can be used to modulate exit behaviours 
+	## @param[Hash] args : hash of arguments
+	def update_LIS(args={})
+		prepare_redis
+		exit_requested = false
+		Kernel.trap( "INT" ) { exit_requested = true }
+		while !exit_requested
+			puts "exit not requested."
+			if patient_results = $redis.brpoplpush(PATIENTS_REDIS_LIST,PROCESSING_REDIS_LIST,0)
+				puts "got patient results."
+				patient_results = JSON.parse(patient_results)
+				begin
+					Retriable.retriable(on: PfUpdateException) do 
+						unless update(patient_results)
+							raise PfUpdateException.new("didnt get any http response")
+						end
+					end
+					exit_requested = !args[:exit_on_success].blank?
+					#puts "exit requested becomes: #{exit_requested}"
+				rescue => e
+					$redis.sadd(FAILED_UPDATES,JSON.generate(patient_results))
+					exit_requested = !args[:exit_on_failure].blank?
+					puts "came to eventual rescue, exit requested is: #{exit_requested}"
+				ensure
+					$redis.lpop("processing")
+				end
+			else
+				puts "no patient results"
+			end
+		end
+	end
+
 
 
 	def update(data)
@@ -508,36 +773,9 @@ data = [
 				## does not exist.
 			end
 		end
-=begin
-		data.each do |result|
-			barcode = result[:id]
-			results = result[:results]
-			if barcode_hash = get_barcode(barcode)
-				if order = get_order(barcode_hash[:order_id])
-					## update the test results, and add the order to the final update hash.
-					puts "order got from barcode is:"
-					puts order
-					machine_codes = barcode_hash[:machine_codes]
-					## it has to be registered on this.
-					results.each do |res|
-						if machine_codes.include? res[:name]
-							## so we need to update to the requisite test inside the order.
-							add_test_result(order,res)	
-							## commit to redis
-							## and then 
-						end
-					end
-					puts "came to queue order for update"
-					queue_order_for_update(order)
-				end
-			else
-				AstmServer.log("the barcode:#{barcode}, does not exist in the barcodes hash")
-				## does not exist.
-			end
-		end 
-=end
+
 		process_update_queue
-		remove_old_orders
+		
 	
 	end
 
@@ -549,12 +787,20 @@ data = [
 		self.server_url_with_port + PUT_ENDPOINT
 	end
 
+	
+	def _start
+		evented_poll_LIS_for_requisition({"trigger_lis_poll" => {"epoch" => Time.now.to_i.to_s}})
+		reattempt_failed_updates
+		update_LIS
+	end
+
+	## the watcher is seperate.
+	## that deals with other things.
+
+	## this method is redundant, and no longer used
+	## the whole thing is now purely evented.
 	def poll
-      	pre_poll_LIS
-      	poll_LIS_for_requisition
-      	#update_LIS
-      	post_poll_LIS
   	end
 
-  
+
 end
