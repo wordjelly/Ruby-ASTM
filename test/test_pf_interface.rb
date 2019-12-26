@@ -213,19 +213,37 @@ class TestPfInterface < Minitest::Test
 		k._start
 	end
 
-	## so i've sorted out item group
-	## now we add that into rake
-	## we change the counts a bit if needed.
 
-=begin
-	def multiple_barcodes_for_the_same_test_exist
+	## could sort this out, and now we move in for lis of all machines today itself.
+	## it should be updating the orders
+	## patient consent
+	## we can add a certain storage requirement
+	## 
+	##############################################################
+	##
+	##
+	## BARCODE PRIORITY CHANGE WITHIN A CATEGORY
+	##
+	##
+	##############################################################
+	def test_sequence
+		## add one item
+		## it goes to the lis
+		## there it gets a result
+		## now add another report, and another item
+		## now it goes back to the lis
+		## what happens when that gets reupdated.
+	end
+
+
+	def test_barcode_priority_change_triggers_poll
 
 	end
 
-	def another_tube_needs_to_be_used_for_a_patient
+	def test_barcode_change_responds_to_query_on_new_barcode
 
 	end
-=end
+
 	## we have item groups -> barcodes -> 
 	##########################################################
 	##

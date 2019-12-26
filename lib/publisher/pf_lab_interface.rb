@@ -221,6 +221,7 @@ class Pf_Lab_Interface < Poller
 				end
 			end
 		end
+		
 		unless at_least_one_item_exists.blank?
 			$redis.hset(ORDERS,order[ID],JSON.generate(order))
 			$redis.zadd(ORDERS_SORTED_SET,Time.now.to_i,order[ID])
