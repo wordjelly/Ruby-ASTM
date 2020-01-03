@@ -23,4 +23,6 @@ require_relative "ruby_astm/HL7/hl7_order"
 require_relative "ruby_astm/HL7/hl7_observation"
 require_relative "ruby_astm/custom/siemens_abg_electrolyte_module"
 require_relative "ruby_astm/custom/siemens_abg_electrolyte_server"
+require_relative "ruby_astm/custom/siemens_dimension_exl_module"
+require_relative "ruby_astm/custom/siemens_dimension_exl_server"
 

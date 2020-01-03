@@ -9,9 +9,10 @@ require 'ruby_astm'
 ## this will be the last line printed by the rake task 
 class TestPfInterface < Minitest::Test
 	
-	HOST = "http://localhost:3000/"
+	HOST = "http://192.168.1.4:3000/"
 	LIS_SECURITY_KEY="pathofast"
-	ORGANIZATION_ID="5dfb3c90acbcd62d21d4d3e7-Pathofast"
+	ORGANIZATION_ID="5e04d6f4acbcd64701f86044-Pathofast"
+	PRIVATE_KEY_FILE="/home/root1/Downloads/ml-micro-analysis-b2eeef4f2d47.json"
 	#############################################
 	##
 	##
@@ -32,6 +33,7 @@ class TestPfInterface < Minitest::Test
 	##
 	##
 	#####################################
+=begin
 	def test_paginates_till_all_results_acquired_for_a_timestamp_ignores_order_without_barcode
 		$redis = Redis.new
 		$redis.del("orders")
@@ -39,7 +41,7 @@ class TestPfInterface < Minitest::Test
 		$redis.del("last_request")
 		$redis = Redis.new
 		$redis.del("ruby_astm_log")
-		k = Pf_Lab_Interface.new(nil,LIS_SECURITY_KEY,HOST,ORGANIZATION_ID,JSON.parse(IO.read("/home/bhargav/Downloads/ml-micro-analysis-firebase-adminsdk-3t7e3-be32178718.json")))
+		k = Pf_Lab_Interface.new(nil,LIS_SECURITY_KEY,HOST,ORGANIZATION_ID,JSON.parse(IO.read("/home/bhargav/Downloads/ml-micro-analysis-b2eeef4f2d47.json")))
 		t = Time.now.to_i.to_s
 		puts "current time is: #{t}"
 		k.test_trigger_lis_poll(t)
@@ -208,8 +210,14 @@ class TestPfInterface < Minitest::Test
 		assert_equal 1, $redis.scard("failed_updates")
 	end
 
-	def polls_for_new_orders_on_startup
-		k = Pf_Lab_Interface.new(nil,LIS_SECURITY_KEY,HOST,ORGANIZATION_ID,JSON.parse(IO.read("/home/bhargav/Downloads/ml-micro-analysis-firebase-adminsdk-3t7e3-be32178718.json")))
+=end
+	def test_polls_for_new_orders_on_startup
+		$redis = Redis.new
+		$redis.del("orders")
+		$redis.del("orders_sorted_set")
+		$redis.del("last_request")
+		$redis = Redis.new
+		k = Pf_Lab_Interface.new(nil,LIS_SECURITY_KEY,HOST,ORGANIZATION_ID,JSON.parse(IO.read(PRIVATE_KEY_FILE)))
 		k._start
 	end
 
@@ -226,6 +234,7 @@ class TestPfInterface < Minitest::Test
 	##
 	##
 	##############################################################
+=begin
 	def test_sequence
 		## add one item
 		## it goes to the lis
@@ -243,7 +252,7 @@ class TestPfInterface < Minitest::Test
 	def test_barcode_change_responds_to_query_on_new_barcode
 
 	end
-
+=end
 	## we have item groups -> barcodes -> 
 	##########################################################
 	##

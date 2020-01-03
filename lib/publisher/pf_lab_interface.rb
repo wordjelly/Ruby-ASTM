@@ -1,6 +1,6 @@
 require 'fileutils'
-require 'publisher/poller'
-require 'publisher/pf_download_exception'
+require_relative 'poller'
+require_relative 'pf_download_exception'
 require 'typhoeus'
 require 'resolv-replace'
 
@@ -240,7 +240,7 @@ class Pf_Lab_Interface < Poller
 	## @working : updates the results from res, into the order at the relevant tests inside the order.
 	## $MAPPINGS -> [MACHINE_CODE => LIS_CODE]
 	## $INVERTED_MAPPINGS -> [LIS_CODE => MACHINE_CODE]
-	def add_test_result(order,res)
+	def add_test_result(order,res,lis_code)
 		#puts "res is:"
 		#puts res.to_s
 
@@ -250,16 +250,13 @@ class Pf_Lab_Interface < Poller
 				#puts "doing test"
 				#puts t.to_s
 				
-				#puts "teh test lis code to sym is:"
-				#puts t[LIS_CODE.to_sym]
-				#puts "the mappings res name is:"
-				#puts "res name is: #{res[:name]}"
-				#puts $mappings.to_s
-				#puts $mappings[res[:name]]
-				if t[LIS_CODE.to_sym] == $mappings[res[:name]]["LIS_CODE"]
-					#puts "got equality"
+				puts "teh test lis code to sym is:"
+				puts t[LIS_CODE.to_sym]
+				puts "lis code is: #{lis_code.to_s}"
+				if t[LIS_CODE.to_sym] == lis_code.to_s
+					puts "got equality"
 					t[RESULT_RAW.to_sym] = res[:value]
-					#puts "set value"
+					puts "set value"
 				end
 			}
 		end
@@ -721,6 +718,8 @@ data = [
 			if patient_results = $redis.brpoplpush(PATIENTS_REDIS_LIST,PROCESSING_REDIS_LIST,0)
 				puts "got patient results."
 				patient_results = JSON.parse(patient_results)
+				puts "patient results are:"
+				puts JSON.pretty_generate(patient_results)
 				begin
 					Retriable.retriable(on: PfUpdateException) do 
 						unless update(patient_results)
@@ -745,27 +744,42 @@ data = [
 
 
 	def update(data)
-		#puts "data is:"
-		#puts JSON.pretty_generate(data)
+		puts "data is:"
+		puts JSON.pretty_generate(data)
 		data[ORDERS_KEY].each do |order|
+			puts "order is "
+			puts order
 			barcode = order["id"]
 			results = order["results"]
+			puts "barcode is: #{barcode}, results are : #{results}"
 			results.deep_symbolize_keys!
 			if barcode_hash = get_barcode(barcode)
+				puts "barcode hash is: #{barcode_hash}"
 				if order = get_order(barcode_hash[:order_id])
+					puts "got order"
 					## update the test results, and add the order to the final update hash.
 					#puts "order got from barcode is:"
 					#puts order
 					machine_codes = barcode_hash[:machine_codes]
+					puts "machine codes: #{machine_codes}"
 
+					results.keys.each do |lis_code|
+						res = results[lis_code]
+						add_test_result(order,res,lis_code)
+					end
+
+=begin
 					results.values.each do |res|
 						if machine_codes.include? res[:name]
 							## so we need to update to the requisite test inside the order.
-							add_test_result(order,res)	
+							puts "came to add test result"
+							puts res
+							add_test_result(order,res,nil)	
 							## commit to redis
 							## and then 
 						end
 					end
+=end
 					#puts "came to queue order for update"
 					queue_order_for_update(order)
 				end
