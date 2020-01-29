@@ -107,34 +107,17 @@ module SiemensDimensionExlModule
 
 	      self.data_bytes.push(byte_arr)
 
-	    
 	      concat = pre_process_bytes(byte_arr,concat)
-	 
-	      #puts "concat is:"
-	      
-	      #puts concat.to_s
 	      
 	      self.data_buffer << concat
 
-	      #acknowledge if message_ends?
 
 	      if message_ends?
 	      	acknowledge
 	      	no_request
 	      end
 
-	      #puts data_buffer.to_s
-	      ## if the last byte is EOT, then call process text.
-	      ## inside that split by line and process one at a time.
-	      ##process_text(concat)   
-	      #puts "data bytes -1: #{self.data_bytes[-1]}"
-	      #puts "data bytes 0: #{self.data_bytes[0]}"   
-	      #if self.data_bytes[0] == ELECTROLYTE_START
-	      #self.process_electrolytes(self.data_bytes) 
-	      #end
-
-	     
-
+	    
 	    rescue => e
 	      
 	      #self.headers = []
