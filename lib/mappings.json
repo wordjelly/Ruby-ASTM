@@ -198,10 +198,37 @@
 		"REPORT_NAME" : "Blood Urea Nitrogen",
         "TYPE" : "BIOCHEM"
 	},
+	"TP" : {
+		"LIS_CODE" : "STP",
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "Total Protein",
+        "TYPE" : "BIOCHEM",
+        "MACHINE_SPECIFIC_LIS_CODES" : {
+        	"CLINITEK" : "UALB"
+        }
+	},
 	"ALB" : {
 		"LIS_CODE" : "ALB",
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "Albumin",
+        "TYPE" : "BIOCHEM",
+        "MACHINE_SPECIFIC_LIS_CODES" : {
+        	"CLINITEK" : "UALB"
+        }
+	},
+	"MALB" : {
+		"LIS_CODE" : "MICRAL",
+		"TUBE" : "URINE_CONTAINER",
+		"REPORT_NAME" : "Urine MicroAlbumin",
+        "TYPE" : "BIOCHEM",
+        "MACHINE_SPECIFIC_LIS_CODES" : {
+        	"CLINITEK" : "UALB"
+        }
+	},
+	"U_CSF_PROTEIN" : {
+		"LIS_CODE" : "U_CSF_PROTEIN",
+		"TUBE" : "URINE_CONTAINER",
+		"REPORT_NAME" : "Urine CSF Protein",
         "TYPE" : "BIOCHEM",
         "MACHINE_SPECIFIC_LIS_CODES" : {
         	"CLINITEK" : "UALB"
@@ -320,6 +347,24 @@
 		"TUBE" : "SERUM",
 		"REPORT_NAME" : "pco2",
         "TYPE" : "BIOCHEM-ELECTROLYTE"
+	},
+	"18" : {
+		"LIS_CODE" : "SCORT",
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "Serum FT4",
+        "TYPE" : "IMMUNO"
+	},
+	"17" : {
+		"LIS_CODE" : "SFT4",
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "Serum FT4",
+        "TYPE" : "IMMUNO"
+	},
+	"16" : {
+		"LIS_CODE" : "SFT3",
+		"TUBE" : "SERUM",
+		"REPORT_NAME" : "Serum FT3",
+        "TYPE" : "IMMUNO"
 	},
 	"15" : {
 		"LIS_CODE" : "SPRL",
