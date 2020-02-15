@@ -1,14 +1,6 @@
-require 'rubygems'
-require 'eventmachine'
-require 'em-rubyserial'
-require "active_support/all"
-require "json"
-require "redis"
-require "rest-firebase"
+class PfServer
 
-class AstmServer
-
-	include LabInterface
+	include PfModule
 
 	## DEFAULT SERIAL PORT : /dev/ttyS0
 	## DEFAULT USB PORT : /dev/ttyUSB0
@@ -33,24 +25,20 @@ class AstmServer
 		$mappings = JSON.parse(IO.read(mpg || self.class.default_mappings))
 	end
 
-	def parse_options(options)
-		self.query_class = options[:query_class] unless options[:query_class].blank?
-		puts "parsing options: #{self.query_class}"
-	end
 
 	def start_server
 		EventMachine.run {
 			self.ethernet_connections.each do |econn|
 				raise "please provide a valid ethernet configuration with ip address" unless econn[:server_ip]
 				raise "please provide a valid ethernet configuration with port" unless econn[:server_port]
-				EventMachine::start_server econn[:server_ip], econn[:server_port], LabInterface	
+				EventMachine::start_server econn[:server_ip], econn[:server_port],PfModule
 				self.class.log("Running ETHERNET  with configuration #{econn}")
 			end
 			self.serial_connections.each do |sconn|
 				raise "please provide a valid serial configuration with port address" unless sconn[:port_address]
 				raise "please provide a valid serial configuration with baud rate" unless sconn[:baud_rate]
 				raise "please provide a valid serial configuration with parity" unless sconn[:parity]
-				EventMachine.open_serial(sconn[:port_address], sconn[:baud_rate], sconn[:parity],LabInterface)
+				EventMachine.open_serial(sconn[:port_address], sconn[:baud_rate], sconn[:parity],PfModule)
 				puts "RUNNING SERIAL port with configuration : #{sconn}"
 			end
 

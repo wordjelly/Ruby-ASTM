@@ -42,6 +42,9 @@ module LabInterface
   ## buffer of incoming data.
   attr_accessor :data_buffer
 
+  ## class to use for Query
+  attr_accessor :query_class
+
   $ENQ = "[5]"
   $start_text = "[2]"
   $end_text = "[3]"
@@ -390,8 +393,10 @@ module LabInterface
         self.headers ||= []
         self.headers << header
       when "Query"
-        #puts "got query"
-        query = Query.new({:line => line})
+        puts "got query, what is the query class: #{self.query_class}"
+        self.query_class ||= "Query"
+        puts "the query class is: #{self.query_class}"
+        query = self.query_class.constantize.new({:line => line})
         unless self.headers.blank?
           self.headers[-1].queries << query
         end

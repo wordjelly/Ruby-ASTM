@@ -86,6 +86,7 @@ class Pf_Lab_Interface < Poller
 	CODE = "code"
 	ORDERS_TO_UPDATE_PER_CYCLE = 10
 	PREV_REQUEST_COMPLETED = "prev_request_completed"
+	MACHINE_CODES = "machine_codes"
 
 	attr_accessor :lis_security_key
 
