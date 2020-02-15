@@ -194,11 +194,29 @@ class Pf_Lab_Interface < Poller
 		priority_category
 	end
 
+	## @param[Hash]barcodes_to_tests_hash => key(barcode or code), value => test_machine_Codes
+	## @param[String]code : the code or barcode
+	## @param[Array]test_machine_codes : array of machine codes.
+	## @return[nil]
+	## @called_from : 
+	def update_codes(barcodes_to_tests_hash,code,test_machine_codes)
+		if barcodes_to_tests_hash[code].blank?
+			barcodes_to_tests_hash[code] = test_machine_codes
+		else
+			barcodes_to_tests_hash[code] << test_machine_codes
+			barcodes_to_tests_hash[code].flatten!
+		end
+	end
+
 	## @param[Hash] order : order object, as a hash.
 	def add_order(order)
 		puts "came to add order with inverted mappings"
 		puts JSON.pretty_generate($inverted_mappings)
 		at_least_one_item_exists = false
+		## a hash for the order.
+		## key -> [String]barcode
+		## value -> [Array]test_machine_codes
+		barcodes_to_tests_hash = {}
 		order[REPORTS].each do |report|
 			test_machine_codes = report[TESTS].map{|c|
 				puts "checking test #{c['name']} with lis code: #{c[LIS_CODE]}"
@@ -210,24 +228,37 @@ class Pf_Lab_Interface < Poller
 				get_priority_category(req)[ITEMS].each do |item|
 					if !item[BARCODE].blank?
 						at_least_one_item_exists = true
+						update_codes(barcodes_to_tests_hash,item[BARCODE],test_machine_codes)
+						
+=begin
 						add_barcode(item[BARCODE],JSON.generate(
 							{
 								:order_id => order[ID],
 								:machine_codes => test_machine_codes
 							}
 						))
+=end
 					elsif !item[CODE].blank?
 						at_least_one_item_exists = true
+						update_codes(barcodes_to_tests_hash,item[CODE],test_machine_codes)
+=begin
 						add_barcode(item[CODE],JSON.generate({
 								:order_id => order[ID],
 								:machine_codes => test_machine_codes
 							}))
+=end
 					end
 				end
 			end
 		end
 		
 		unless at_least_one_item_exists.blank?
+			barcodes_to_tests_hash.keys.each do |barcode|
+				add_barcode(barcode,JSON.generate({
+					:order_id => order[ID],
+					:machine_codes => barcodes_to_tests_hash[barcode]
+				}))
+			end
 			$redis.hset(ORDERS,order[ID],JSON.generate(order))
 			$redis.zadd(ORDERS_SORTED_SET,Time.now.to_i,order[ID])
 		end
