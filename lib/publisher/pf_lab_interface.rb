@@ -229,24 +229,9 @@ class Pf_Lab_Interface < Poller
 					if !item[BARCODE].blank?
 						at_least_one_item_exists = true
 						update_codes(barcodes_to_tests_hash,item[BARCODE],test_machine_codes)
-						
-=begin
-						add_barcode(item[BARCODE],JSON.generate(
-							{
-								:order_id => order[ID],
-								:machine_codes => test_machine_codes
-							}
-						))
-=end
 					elsif !item[CODE].blank?
 						at_least_one_item_exists = true
 						update_codes(barcodes_to_tests_hash,item[CODE],test_machine_codes)
-=begin
-						add_barcode(item[CODE],JSON.generate({
-								:order_id => order[ID],
-								:machine_codes => test_machine_codes
-							}))
-=end
 					end
 				end
 			end
