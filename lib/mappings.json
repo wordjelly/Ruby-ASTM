@@ -53,6 +53,12 @@
 		"REPORT_NAME" : "Hemogram",
         "TYPE" : "HEMAT"
 	},
+	"MPV": {
+		"LIS_CODE" : "MPVparam",
+		"TUBE" : "EDTA",
+		"REPORT_NAME" : "Hemogram",
+        "TYPE" : "HEMAT"
+	},
 	"PLT" : {
 		"LIS_CODE" : "PCparam",
 		"TUBE" : "EDTA",

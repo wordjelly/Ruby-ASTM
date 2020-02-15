@@ -196,11 +196,16 @@ class Pf_Lab_Interface < Poller
 
 	## @param[Hash] order : order object, as a hash.
 	def add_order(order)
+		puts "came to add order with inverted mappings"
+		puts JSON.pretty_generate($inverted_mappings)
 		at_least_one_item_exists = false
 		order[REPORTS].each do |report|
 			test_machine_codes = report[TESTS].map{|c|
+				puts "checking test #{c['name']} with lis code: #{c[LIS_CODE]}"
 				$inverted_mappings[c[LIS_CODE]]
 			}.compact.uniq
+			puts "test machine codes become:"
+			puts test_machine_codes
 			report[REQUIREMENTS].each do |req|
 				get_priority_category(req)[ITEMS].each do |item|
 					if !item[BARCODE].blank?
@@ -325,6 +330,7 @@ class Pf_Lab_Interface < Poller
 		AstmServer.log("reuqest params become: #{params}")
 		AstmServer.log("sleeping")
 		#sleep(10000)
+		puts "params: #{params}, url #{self.get_poll_url_path}"
 		Typhoeus::Request.new(self.get_poll_url_path,params: params)
 	end
 
@@ -381,6 +387,20 @@ class Pf_Lab_Interface < Poller
 	    AstmServer.log("Initialized Lab Interface")
 	end
 
+	def _trigger_lis_poll?(data)
+		unless data["path"].blank?
+			if data["path"] =~ /trigger_lis_poll/
+				return data["data"]["epoch"].to_i
+			end
+			if data["path"] == "/"
+				unless data["data"]["trigger_lis_poll"].blank?
+					return data["data"]["trigger_lis_poll"]["epoch"].to_i
+				end
+			end
+		end
+		return
+	end
+
 	## this is triggered by whatever firebase sends
 	## you put this in the callback, and let me block and see what happens.
 	## we cannot watch two different endpoints ?
@@ -390,8 +410,14 @@ class Pf_Lab_Interface < Poller
 	## and both events will fire.
 	## and get triggered.
 	def evented_poll_LIS_for_requisition(data)
+		puts "got data it is :#{data}"
 		unless data.blank?
 			
+			if epoch = _trigger_lis_poll?(data)
+				puts "trigger lis poll epoch is:#{epoch}"
+				new_poll_LIS_for_requisition(epoch)
+			end
+=begin
 			data = data["data"].blank? ? data : data["data"]
 
 			unless data["delete_order"].blank?
@@ -402,11 +428,7 @@ class Pf_Lab_Interface < Poller
 					delete_completed_order(data["delete_order"]["order_id"])
 				end
 			end
-			unless data["trigger_lis_poll"].blank?
-				unless data["trigger_lis_poll"]["epoch"].blank?
-					new_poll_LIS_for_requisition(data["trigger_lis_poll"]["epoch"].to_i)
-				end
-			end
+=end			
 		else
 
 		end
@@ -437,6 +459,8 @@ class Pf_Lab_Interface < Poller
 					self.retry_count+=1
 					AstmServer.log("retrying----->")
 					request = build_request(nil,to_epoch)
+					puts "request is:"
+					puts request.to_s
 					break if request.blank?
 					request.run
 					response = request.response
@@ -697,8 +721,8 @@ data = [
 							raise PfUpdateException.new("didnt get any http response")
 						end
 					end
-				rescue => e
-					AstmServer.log("reattempted and failed")
+				rescue PfUpdateException => e
+					AstmServer.log("reattempted and failed #{e.to_s}")
 				ensure
 
 				end
@@ -732,6 +756,7 @@ data = [
 					$redis.sadd(FAILED_UPDATES,JSON.generate(patient_results))
 					exit_requested = !args[:exit_on_failure].blank?
 					puts "came to eventual rescue, exit requested is: #{exit_requested}"
+					puts "error is: #{e.to_s}"
 				ensure
 					$redis.lpop("processing")
 				end
@@ -752,7 +777,16 @@ data = [
 			barcode = order["id"]
 			results = order["results"]
 			puts "barcode is: #{barcode}, results are : #{results}"
-			results.deep_symbolize_keys!
+			if results.is_a? Array
+			elsif results.is_a? Hash
+				results = [results]
+			else
+			end
+			results.map!{|c| 
+				c.deep_symbolize_keys!
+				c
+			}
+			#results.deep_symbolize_keys!
 			if barcode_hash = get_barcode(barcode)
 				puts "barcode hash is: #{barcode_hash}"
 				if order = get_order(barcode_hash[:order_id])
@@ -762,24 +796,12 @@ data = [
 					#puts order
 					machine_codes = barcode_hash[:machine_codes]
 					puts "machine codes: #{machine_codes}"
-
-					results.keys.each do |lis_code|
-						res = results[lis_code]
-						add_test_result(order,res,lis_code)
-					end
-
-=begin
-					results.values.each do |res|
-						if machine_codes.include? res[:name]
-							## so we need to update to the requisite test inside the order.
-							puts "came to add test result"
-							puts res
-							add_test_result(order,res,nil)	
-							## commit to redis
-							## and then 
+					results.each do |result|
+						result.keys.each do |lis_code|
+							res = result[lis_code]
+							add_test_result(order,res,lis_code)
 						end
 					end
-=end
 					#puts "came to queue order for update"
 					queue_order_for_update(order)
 				end

@@ -9,10 +9,10 @@ require 'ruby_astm'
 ## this will be the last line printed by the rake task 
 class TestPfInterface < Minitest::Test
 	
-	HOST = "http://192.168.1.4:3000/"
+	HOST = "https://www.pathofast.com/"
 	LIS_SECURITY_KEY="pathofast"
-	ORGANIZATION_ID="5e04d6f4acbcd64701f86044-Pathofast"
-	PRIVATE_KEY_FILE="/home/root1/Downloads/ml-micro-analysis-b2eeef4f2d47.json"
+	ORGANIZATION_ID="5e32676b58aff600042678dd-Pathofast"
+	PRIVATE_KEY_FILE="/home/root1/Desktop/Github/lab_server/private_key.json"
 	#############################################
 	##
 	##
@@ -213,9 +213,9 @@ class TestPfInterface < Minitest::Test
 =end
 	def test_polls_for_new_orders_on_startup
 		$redis = Redis.new
-		$redis.del("orders")
-		$redis.del("orders_sorted_set")
-		$redis.del("last_request")
+		#$redis.del("orders")
+		#$redis.del("orders_sorted_set")
+		#$redis.del("last_request")
 		$redis = Redis.new
 		k = Pf_Lab_Interface.new(nil,LIS_SECURITY_KEY,HOST,ORGANIZATION_ID,JSON.parse(IO.read(PRIVATE_KEY_FILE)))
 		k._start
