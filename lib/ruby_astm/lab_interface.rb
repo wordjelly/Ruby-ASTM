@@ -13,6 +13,7 @@ module LabInterface
   CR = "\x13"
   ETX = "\x03"
   EOT = "\x04"
+
   
 
   attr_accessor :ethernet_connections

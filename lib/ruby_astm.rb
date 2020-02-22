@@ -28,4 +28,6 @@ require_relative "ruby_astm/custom/siemens_dimension_exl_module"
 require_relative "ruby_astm/custom/siemens_dimension_exl_server"
 require_relative "ruby_astm/custom/pf_module"
 require_relative "ruby_astm/custom/pf_server"
+require_relative "ruby_astm/custom/neph_module"
+require_relative "ruby_astm/custom/neph_server"
 
