@@ -275,10 +275,14 @@ class Pf_Lab_Interface < Poller
 				puts "teh test lis code to sym is:"
 				puts t[LIS_CODE.to_sym]
 				puts "lis code is: #{lis_code.to_s}"
-				if t[LIS_CODE.to_sym] == lis_code.to_s
-					puts "got equality"
-					t[RESULT_RAW.to_sym] = res[:value]
-					puts "set value"
+				# and here we use the res["alternate_lis_codes"]
+				res.all_lis_codes.each do |lcode|
+					if t[LIS_CODE.to_sym] == lcode.to_s
+						puts "got equality"
+						t[RESULT_RAW.to_sym] = res[:value]
+						puts "set value"
+						break
+					end
 				end
 			}
 		end

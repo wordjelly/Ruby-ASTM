@@ -7,6 +7,8 @@ class Result
 	attr_accessor :timestamp
 	attr_accessor :reference_ranges
 	attr_accessor :dilution
+	## array.
+	attr_accessor :alternate_lis_codes
 
 	## sometimes we customize the lis code based on the machine which is sending it, so we need this.
 	attr_accessor :machine_name
@@ -21,6 +23,8 @@ class Result
 				line.fields[2].scan(/^\^+(?<name>[A-Za-z0-9\%\#\-\_\?\/]+)\^?(?<dilution>\d+)?/) { |name,dilution|  
 					
 					self.name = lookup_mapping(name)
+
+					## other names.
 					
 					self.report_name = lookup_report_name(name)
 
@@ -116,11 +120,18 @@ class Result
 		self.machine_name = args[:machine_name]
 	end
 
-	
+	## item validation has to be done.
+	## and only if it has been outsourced.
+	## and mask the patient name.
+
+	def all_lis_codes 
+		self.alternate_lis_codes + [self.name]
+	end
 
 	## here will call mappings and check the result correlation
 	def initialize(args={})
 		#puts "called initialize result"
+		self.alternate_lis_codes ||= []
 		set_name(args)
 		set_flags(args)
 		set_value(args)
@@ -173,6 +184,15 @@ class Result
 			name
 		end
 		#$mappings[name] ? $mappings[name]["LIS_CODE"] : name 
+	end
+
+	## these mappings are defined, for the same machine code.
+	def lookup_alternate_mappings(name)
+		unless $mappings[name].blank?
+			unless $mappings[name]["ALTERNATE_LIS_CODES"].blank?
+				self.alternate_lis_codes = $mappings[name]["ALTERNATE_LIS_CODES"]
+			end
+		end
 	end
 
 	def lookup_transform(name)
