@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.license       = 'MIT'
   s.add_dependency 'eventmachine'
   s.add_dependency 'em-rubyserial'
-  s.add_dependency 'activesupport','5.2.2'
+  s.add_dependency 'activesupport','7.0.4.1'
   s.add_dependency 'json'
   s.add_dependency 'redis'
   s.add_dependency 'typhoeus'
